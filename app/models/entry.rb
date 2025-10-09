@@ -9,11 +9,6 @@ class Entry < ApplicationRecord
 
   validates :response, length: { maximum: 10_000 }, allow_nil: true
 
-  validates :image,
-            content_type: %w[image/png image/jpg image/jpeg],
-            size: { less_than: 5.megabytes, message: "5MB未満の画像をアップロードしてください" },
-            allow_nil: true
-
   scope :recent, -> { order(posted_on: :desc) }
   scope :this_month, -> { where(posted_on: Date.current.all_month) }
 

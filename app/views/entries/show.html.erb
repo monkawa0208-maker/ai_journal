@@ -1,0 +1,31 @@
+<h1><%= h @entry.title %></h1>
+
+<p>日付：<%= @entry.posted_on %></p>
+
+<section>
+  <h2>本文</h2>
+  <%= simple_format(h(@entry.content)) %>
+</section>
+
+<% if @entry.image.attached? %>
+  <section>
+    <h2>画像</h2>
+    <%= image_tag @entry.image.variant(resize_to_limit: [1000, 1000]) %>
+  </section>
+<% end %>
+
+<section>
+  <h2>AIからのフィードバック</h2>
+  <% if @entry.response.present? %>
+    <div><%= simple_format(h(@entry.response)) %></div>
+  <% else %>
+    <p>まだフィードバックは生成されていません。</p>
+    <%= button_to "AIにフィードバックをもらう", generate_feedback_entry_path(@entry), method: :post %>
+  <% end %>
+</section>
+
+<nav>
+  <%= link_to "編集", edit_entry_path(@entry) %> |
+  <%= link_to "削除", entry_path(@entry), data: { turbo_method: :delete, turbo_confirm: "本当に削除しますか？" } %> |
+  <%= link_to "一覧へ", entries_path %>
+</nav>
