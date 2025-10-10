@@ -176,42 +176,59 @@
   font-size: 1rem;
   border: 2px solid #e2e8f0;
   border-radius: 10px;
-  background: #f7fafc;
-  transition: all 0.3s ease;
+  background-color: #f7fafc;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-input:hover {
+  border-color: #cbd5e0;
 }
 
 .form-input:focus {
-  background: #fff;
   border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-  transform: translateY(-2px);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+  background-color: #fff;
   outline: none;
+  transform: translateY(-2px);
 }
 
-.form-input::placeholder {
-  font-size: 0.875rem;
-  color: #a0aec0;
-}
-
-.form-hint {
-  margin-top: -0.25rem;
+.password-hint {
+  margin-top: 0.5rem;
   font-size: 0.75rem;
-  font-style: italic;
   color: #718096;
 }
 
-.info-message {
-  margin: 1rem 0;
-  padding: 0.75rem 1rem;
-  border-left: 4px solid #3182ce;
-  border-radius: 8px;
-  background: #bee3f8;
-  color: #2c5282;
-  font-size: 0.875rem;
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
 }
 
-.form-actions {
-  margin-top: 1rem;
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #4a5568;
+}
+
+.remember-me input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  accent-color: #667eea;
+}
+
+.forgot-password {
+  font-size: 0.875rem;
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.forgot-password:hover {
+  color: #764ba2;
 }
 
 .btn-primary {
@@ -219,13 +236,13 @@
   padding: 1rem;
   font-size: 1rem;
   font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
   color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border: none;
   border-radius: 10px;
   cursor: pointer;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
   transition: all 0.3s ease;
 }
@@ -302,6 +319,7 @@
   color: #764ba2;
   transform: translateX(-5px);
 }
+
 #error_explanation {
   margin-bottom: 2rem;
   padding: 1.5rem;
