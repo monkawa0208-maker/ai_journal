@@ -37,23 +37,6 @@ class EntriesController < ApplicationController
     redirect_to entries_path, notice: "日記を削除しました。"
   end
 
-  def generate_feedback
-    if @entry.response.present?
-      redirect_to @entry, notice: "AIからのコメントは既に生成済みです。"
-      return
-    end
-
-    feedback = AiFeedbackGenerator.call(@entry)
-    if @entry.update(response: feedback)
-      redirect_to @entry, notice: "AIからのコメントを追加しました。"
-    else
-      redirect_to @entry, alert: "AIからのコメント保存に失敗しました。"
-    end
-  rescue StandardError => e
-    Rails.logger.error("[EntriesController#generate_feedback] #{e.class}: #{e.message}")
-    redirect_to @entry, alert: "AIからのコメント生成に失敗しました。"
-  end
-
   # /days/:date → その日のエントリへ（1日1件前提で詳細へ直行）
   def by_date
     date = Date.parse(params[:date]) rescue nil

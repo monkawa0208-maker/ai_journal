@@ -1,5 +1,15 @@
 <%= form_with model: entry, local: true, html: { class: "entry-form", multipart: true } do |f| %>
 
+  <% if entry.errors.any? %>
+    <div class="form-errors">
+      <h2>入力内容に誤りがあります</h2>
+      <ul>
+        <% entry.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
 
   <div class="form-field">
     <%= f.label :posted_on, "日付", class: "form-label" %>

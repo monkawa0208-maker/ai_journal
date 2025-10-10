@@ -1,2 +1,16 @@
 ja:
   hello: "こんにちは"
+  activerecord:
+    models:
+      entry: "日記"
+    attributes:
+      entry:
+        title: "タイトルのエラー："
+        content: "本文のエラー："
+        posted_on: "日付のエラー："
+    errors:
+      models:
+        entry:
+          attributes:
+            posted_on:
+              taken: "すでにこの日の日記は作成済みです"

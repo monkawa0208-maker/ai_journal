@@ -25,11 +25,10 @@
   <section class="entry-detail__section ai-feedback">
     <h2>AIからのコメント</h2>
     <% if @entry.response.present? %>
-      <div class="ai-feedback__body"><%= simple_format(h(@entry.response)) %></div>
-      <p class="ai-feedback__hint">このコメントは最新の投稿内容から自動生成されています。</p>
+
     <% else %>
       <p class="ai-feedback__hint">まだコメントはありません。ボタンを押すとAIが感想を返します。</p>
-      <%= button_to "AIからのコメントをもらう", generate_feedback_entry_path(@entry), method: :post, class: "button primary" %>
+      <%= button_to "AIからのコメントをもらう", "#", class: "button primary" %>
     <% end %>
   </section>
 
