@@ -1,14 +1,5 @@
-<%= form_with model: entry, local: true, html: { class: "entry-form" } do |f| %>
-  <% if entry.errors.any? %>
-    <div id="error_explanation" class="form-errors" role="alert">
-      <h2><%= entry.errors.count %>件のエラーがあります</h2>
-      <ul>
-        <% entry.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
+<%= form_with model: entry, local: true, html: { class: "entry-form", multipart: true } do |f| %>
+
 
   <div class="form-field">
     <%= f.label :posted_on, "日付", class: "form-label" %>
@@ -41,12 +32,6 @@
     <%= f.file_field :image,
                      accept: "image/png,image/jpg,image/jpeg",
                      class: "form-input" %>
-    <% if entry.image.attached? %>
-      <div class="form-image-preview">
-        <%= image_tag entry.image.variant(resize_to_limit: [600, 600]).processed,
-                      alt: "#{entry.title.presence || '投稿'}の画像プレビュー" %>
-      </div>
-    <% end %>
     <p class="field-hint">5MB未満のPNG/JPG画像をアップロードできます。</p>
   </div>
 

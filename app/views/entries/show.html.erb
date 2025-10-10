@@ -1,31 +1,41 @@
-<h1><%= h @entry.title %></h1>
+<article class="entry-detail">
+  <header class="entry-detail__header">
+    <h1><%= h @entry.title %></h1>
+    <p class="entry-detail__meta">日付：<%= @entry.posted_on %></p>
+  </header>
 
-<p>日付：<%= @entry.posted_on %></p>
-
-<section>
-  <h2>本文</h2>
-  <%= simple_format(h(@entry.content)) %>
-</section>
-
-<% if @entry.image.attached? %>
-  <section>
-    <h2>画像</h2>
-    <%= image_tag @entry.image.variant(resize_to_limit: [1000, 1000]) %>
+  <section class="entry-detail__section">
+    <h2>本文</h2>
+    <div class="entry-detail__body"><%= simple_format(h(@entry.content)) %></div>
   </section>
-<% end %>
 
-<section>
-  <h2>AIからのフィードバック</h2>
-  <% if @entry.response.present? %>
-    <div><%= simple_format(h(@entry.response)) %></div>
-  <% else %>
-    <p>まだフィードバックは生成されていません。</p>
-    <%= button_to "AIにフィードバックをもらう", generate_feedback_entry_path(@entry), method: :post %>
+  <% if @entry.image.attached? %>
+    <section class="entry-detail__section">
+      <h2>画像</h2>
+      <% if @entry.image.variable? %>
+        <%= image_tag @entry.image.variant(resize_to_limit: [800, 800]).processed,
+                      alt: "#{@entry.title.presence || '日記'}の画像" %>
+      <% else %>
+        <%= image_tag @entry.image,
+                      alt: "#{@entry.title.presence || '日記'}の画像" %>
+      <% end %>
+    </section>
   <% end %>
-</section>
 
-<nav>
-  <%= link_to "編集", edit_entry_path(@entry) %> |
-  <%= link_to "削除", entry_path(@entry), data: { turbo_method: :delete, turbo_confirm: "本当に削除しますか？" } %> |
-  <%= link_to "一覧へ", entries_path %>
-</nav>
+  <section class="entry-detail__section ai-feedback">
+    <h2>AIからのコメント</h2>
+    <% if @entry.response.present? %>
+      <div class="ai-feedback__body"><%= simple_format(h(@entry.response)) %></div>
+      <p class="ai-feedback__hint">このコメントは最新の投稿内容から自動生成されています。</p>
+    <% else %>
+      <p class="ai-feedback__hint">まだコメントはありません。ボタンを押すとAIが感想を返します。</p>
+      <%= button_to "AIからのコメントをもらう", generate_feedback_entry_path(@entry), method: :post, class: "button primary" %>
+    <% end %>
+  </section>
+
+  <nav class="entry-detail__actions">
+    <%= link_to "編集", edit_entry_path(@entry), class: "button secondary" %>
+    <%= link_to "削除", entry_path(@entry), data: { turbo_method: :delete, turbo_confirm: "本当に削除しますか？" }, class: "button danger" %>
+    <%= link_to "一覧へ戻る", entries_path, class: "button ghost" %>
+  </nav>
+</article>
