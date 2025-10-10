@@ -1,5 +1,11 @@
 body {
   margin: 0;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+:root {
+  --auth-gradient-start: #667eea;
+  --auth-gradient-end: #764ba2;
 }
 
 main {
