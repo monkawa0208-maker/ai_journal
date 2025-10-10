@@ -22,13 +22,17 @@
     </section>
   <% end %>
 
-  <section class="entry-detail__section ai-feedback">
+  <section class="entry-detail__section ai-feedback" data-controller="ai-feedback">
     <h2>AIからのコメント</h2>
     <% if @entry.response.present? %>
-
+      <div data-ai-feedback-target="output"><%= simple_format(h(@entry.response)) %></div>
     <% else %>
-      <p class="ai-feedback__hint">まだコメントはありません。ボタンを押すとAIが感想を返します。</p>
-      <%= button_to "AIからのコメントをもらう", "#", class: "button primary" %>
+      <p class="ai-feedback__hint" data-ai-feedback-target="hint">まだコメントはありません。ボタンを押すとAIがコメントします。</p>
+      <div data-ai-feedback-target="output"></div>
+      <button class="button primary"
+              data-ai-feedback-target="button"
+              data-action="click->ai-feedback#generate"
+              data-url="<%= generate_feedback_entry_path(@entry, format: :json) %>">AIからのコメントをもらう</button>
     <% end %>
   </section>
 
