@@ -2,25 +2,9 @@
   <div class="content-wrapper">
     <section class="calendar-section">
       <div class="calendar-card">
-        <div class="calendar-header">
-          <button class="nav-button prev">&lt;</button>
-          <h2 class="calendar-month">April 2024</h2>
-          <button class="nav-button next">&gt;</button>
-        </div>
-        <div class="calendar-grid">
-          <div class="calendar-day-header">Su</div>
-          <div class="calendar-day-header">Mo</div>
-          <div class="calendar-day-header">Tu</div>
-          <div class="calendar-day-header">We</div>
-          <div class="calendar-day-header">Th</div>
-          <div class="calendar-day-header">Fr</div>
-          <div class="calendar-day-header">Sa</div>
-          
-          <% (1..30).each do |day| %>
-            <div class="calendar-day <%= 'active' if day == 21 %>" data-day="<%= day %>">
-              <%= day %>
-            </div>
-          <% end %>
+        <div id="fullcalendar" 
+             data-controller="calendar"
+             data-calendar-entries-url-value="<%= entries_path(format: :json) %>">
         </div>
       </div>
     </section>

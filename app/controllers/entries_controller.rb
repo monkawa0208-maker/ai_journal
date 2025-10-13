@@ -7,8 +7,13 @@ class EntriesController < ApplicationController
     # 最新の投稿を取得（Recent Entryセクション用）
     @recent_entry = current_user.entries.order(created_at: :desc).first
     
-    # 全投稿を取得（将来的にカレンダー表示などで使用）
+    # 全投稿を取得（カレンダー表示用）
     @entries = current_user.entries.order(created_at: :desc)
+    
+    respond_to do |format|
+      format.html
+      format.json { render json: @entries.select(:id, :title, :posted_on) }
+    end
   end
 
   def show; end
