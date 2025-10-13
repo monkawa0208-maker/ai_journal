@@ -14,7 +14,7 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
+  <body class="<%= content_for?(:body_class) ? yield(:body_class) : '' %>">
     <header class="app-header">
       <div class="header-container">
         <div class="header-logo">
@@ -22,12 +22,10 @@
         </div>
         <div class="header-user">
           <% if user_signed_in? %>
-            <div class="user-info">
-              <span class="user-greeting">ようこそ</span>
-              <span class="user-name"><%= current_user.nickname %> さん</span>
-            </div>
+            <span class="user-greeting">ようこそ</span>
+            <span class="user-name"><%= current_user.nickname %> さん</span>
             <div class="header-actions">
-              <%= link_to 'プロフィール編集', edit_user_registration_path, class: 'login-btn' %>
+              <%= link_to '登録情報の編集', edit_user_registration_path, class: 'login-btn' %>
               <%= link_to 'ログアウト', destroy_user_session_path, class: 'logout-btn', data: { turbo_method: :delete } %>
               <%= link_to "NEW POST", new_entry_path, class: "button new-post" %>
             </div>

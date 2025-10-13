@@ -4,7 +4,11 @@ class EntriesController < ApplicationController
   before_action :set_entry, only: %i[show edit update destroy generate_feedback]
 
   def index
-    @entries = Entry.all
+    # 最新の投稿を取得（Recent Entryセクション用）
+    @recent_entry = current_user.entries.order(created_at: :desc).first
+    
+    # 全投稿を取得（将来的にカレンダー表示などで使用）
+    @entries = current_user.entries.order(created_at: :desc)
   end
 
   def show; end
@@ -38,20 +42,37 @@ class EntriesController < ApplicationController
   end
 
   def generate_feedback
-    if @entry.response.present?
-      redirect_to @entry, notice: "AIからのコメントは既に生成済みです。"
-      return
-    end
+    if request.format.json?
+      if @entry.response.present?
+        return render json: { response: @entry.response }, status: :ok
+      end
 
-    feedback = AiFeedbackGenerator.call(@entry)
-    if @entry.update(response: feedback)
-      redirect_to @entry, notice: "AIからのコメントを追加しました。"
+      feedback = AiFeedbackGenerator.call(@entry)
+      if @entry.update(response: feedback)
+        render json: { response: @entry.response }, status: :ok
+      else
+        render json: { error: "AIからのコメントが保存できませんでした。" }, status: :unprocessable_entity
+      end
     else
-      redirect_to @entry, alert: "AIからのコメント保存に失敗しました。"
+      if @entry.response.present?
+        redirect_to @entry, notice: "AIからのコメントは既に生成済みです。"
+        return
+      end
+
+      feedback = AiFeedbackGenerator.call(@entry)
+      if @entry.update(response: feedback)
+        redirect_to @entry, notice: "AIからのコメントを追加しました。"
+      else
+        redirect_to @entry, alert: "AIからのコメント保存に失敗しました。"
+      end
     end
   rescue StandardError => e
     Rails.logger.error("[EntriesController#generate_feedback] #{e.class}: #{e.message}")
-    redirect_to @entry, alert: "AIからのコメント生成に失敗しました。"
+    if request.format.json?
+      render json: { error: "AIからのコメント生成に失敗しました。" }, status: :internal_server_error
+    else
+      redirect_to @entry, alert: "AIからのコメント生成に失敗しました。"
+    end
   end
 
   # /days/:date → その日のエントリへ（1日1件前提で詳細へ直行）
