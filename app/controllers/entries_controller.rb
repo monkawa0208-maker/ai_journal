@@ -4,7 +4,11 @@ class EntriesController < ApplicationController
   before_action :set_entry, only: %i[show edit update destroy generate_feedback]
 
   def index
-    @entries = Entry.all
+    # 最新の投稿を取得（Recent Entryセクション用）
+    @recent_entry = current_user.entries.order(created_at: :desc).first
+    
+    # 全投稿を取得（将来的にカレンダー表示などで使用）
+    @entries = current_user.entries.order(created_at: :desc)
   end
 
   def show; end

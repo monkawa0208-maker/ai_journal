@@ -1,4 +1,12 @@
-<h1>新規投稿</h1>
-<%= render "form", entry: @entry %>
+<% content_for :body_class, 'entries-form' %>
 
-<p><%= link_to "一覧へ戻る", entries_path %></p>
+<main class="form-page">
+  <div class="form-container">
+    <header class="form-header">
+      <h1 class="form-title">新規投稿</h1>
+      <p class="form-subtitle">今日の出来事や感想を英語で書いてみましょう</p>
+    </header>
+
+    <%= render "form", entry: @entry %>
+  </div>
+</main>

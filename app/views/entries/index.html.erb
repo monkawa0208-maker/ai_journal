@@ -27,25 +27,37 @@
 
     <section class="entry-detail-section">
       <div class="entry-detail-card">
-        <% if @entries.present? && @entries.first %>
-          <% entry = @entries.first %>
-          <h2 class="detail-section-title">Recent Entry</h2>
-          <time class="detail-date" datetime="<%= entry.created_at.iso8601 %>">
-            <%= entry.created_at.strftime("%B %e, %Y") %>
+        <% if @recent_entry %>
+          <h2 class="detail-section-title"><%= link_to "最新の投稿", entry_path(@recent_entry), class: "section-title-link" %></h2>
+          <time class="detail-date" datetime="<%= @recent_entry.posted_on.iso8601 %>">
+            <%= @recent_entry.posted_on.strftime("%Y年%m月%d日") %>
           </time>
-          <h3 class="detail-title"><%= entry.title %></h3>
+          <h3 class="detail-title"><%= @recent_entry.title %></h3>
+          <% if @recent_entry.image.attached? %>
+            <div class="detail-image">
+              <% if @recent_entry.image.variable? %>
+                <%= image_tag @recent_entry.image.variant(resize_to_limit: [200, 150]).processed,
+                              alt: "#{@recent_entry.title.presence || '日記'}の画像",
+                              class: "recent-entry-thumbnail" %>
+              <% else %>
+                <%= image_tag @recent_entry.image,
+                              alt: "#{@recent_entry.title.presence || '日記'}の画像",
+                              class: "recent-entry-thumbnail" %>
+              <% end %>
+            </div>
+          <% end %>
           <div class="detail-content">
-            <%= simple_format(entry.content) %>
+            <%= simple_format(truncate(@recent_entry.content, length: 200, omission: "...")) %>
           </div>
           <footer class="detail-footer">
-            <%= link_to "Read Full Entry →", entry_path(entry), class: "read-full-link" %>
+            <%= link_to "全文を読む →", entry_path(@recent_entry), class: "read-full-link" %>
           </footer>
         <% else %>
           <div class="empty-detail">
             <div class="empty-icon">📝</div>
-            <h3>No entries yet</h3>
-            <p>Start your journaling journey today! Write your first entry and begin improving your English.</p>
-            <%= link_to "Write Your First Entry", new_entry_path, class: "button primary" %>
+            <h3>まだ投稿がありません</h3>
+            <p>今日から英語日記を始めましょう！最初の投稿を書いて、英語力を向上させていきましょう。</p>
+            <%= link_to "最初の投稿を書く", new_entry_path, class: "button primary" %>
           </div>
         <% end %>
       </div>

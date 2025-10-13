@@ -37,7 +37,9 @@ export default class extends Controller {
         const data = await res.json()
         if (!res.ok) throw new Error(data.error || '生成に失敗しました')
         if (this.hasHintTarget) this.hintTarget.remove()
-        this.outputTarget.textContent = data.response || ''
+        // 改行を適切に処理してHTMLとして表示
+        const formattedResponse = this.formatTextWithLineBreaks(data.response || '')
+        this.outputTarget.innerHTML = formattedResponse
         // アニメーション停止してボタンを除去
         if (this.loadingTimer) {
           clearInterval(this.loadingTimer)
@@ -61,6 +63,17 @@ export default class extends Controller {
   getCsrfToken() {
     const meta = document.querySelector('meta[name="csrf-token"]')
     return meta && meta.getAttribute('content')
+  }
+
+  formatTextWithLineBreaks(text) {
+    // 改行文字を<br>タグに変換し、HTMLエスケープも行う
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;')
+      .replace(/\n/g, '<br>')
   }
 }
 

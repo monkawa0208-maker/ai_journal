@@ -1,4 +1,12 @@
-<h1>編集</h1>
-<%= render "form", entry: @entry %>
+<% content_for :body_class, 'entries-form' %>
 
-<p><%= link_to "詳細へ戻る", @entry %> | <%= link_to "一覧へ戻る", entries_path %></p>
+<main class="form-page">
+  <div class="form-container">
+    <header class="form-header">
+      <h1 class="form-title">投稿を編集</h1>
+      <p class="form-subtitle">内容を修正して、より良い英語日記にしましょう</p>
+    </header>
+
+    <%= render "form", entry: @entry %>
+  </div>
+</main>
