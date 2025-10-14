@@ -22,6 +22,12 @@ export default class extends Controller {
     try {
       // エントリーデータを取得
       const response = await fetch(this.entriesUrlValue)
+
+      // レスポンスが成功したかチェック
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
       const entries = await response.json()
 
       // エントリーをFullCalendar用のイベントに変換
