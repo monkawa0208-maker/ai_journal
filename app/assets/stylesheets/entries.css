@@ -345,6 +345,50 @@ body.entries-show {
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
 }
 
+/* Japanese Section Styling */
+.entry-detail__section.japanese-section {
+  background: linear-gradient(135deg, #fff5f0 0%, #ffe6e6 100%);
+  border-left-color: #f56565;
+}
+
+.entry-detail__section.japanese-section h2::before {
+  content: "";
+}
+
+/* AI Translation Section Styling */
+.entry-detail__section.ai-translation-section {
+  background: linear-gradient(135deg, #f0fff4 0%, #e6fffa 100%);
+  border-left-color: #48bb78;
+}
+
+.entry-detail__section.ai-translation-section h2::before {
+  content: "";
+}
+
+.ai-translation-content {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: #2d3748;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.ai-translation-content .translation-section-title {
+  display: block;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #48bb78;
+  margin: 1.5rem 0 0.75rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.ai-translation-content .translation-section-title:first-child {
+  margin-top: 0;
+}
+
 /* AI Feedback Section Special Styling */
 .entry-detail__section.ai-feedback {
   background: linear-gradient(135deg, #f0f4ff 0%, #e6f3ff 100%);
@@ -1054,6 +1098,13 @@ body.entries-show {
   margin-bottom: 0.5rem;
 }
 
+.toggle-hint {
+  margin: 0.5rem 0 0 0;
+  font-size: 0.875rem;
+  color: #718096;
+  font-style: italic;
+}
+
 .toggle-button {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
@@ -1154,4 +1205,99 @@ body.entries-show {
 [data-translation-target="japaneseSection"],
 [data-translation-target="englishSection"] {
   animation: fadeIn 0.3s ease-out;
+}
+
+/* 翻訳結果表示エリア */
+.translation-result {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #e6f3ff 100%);
+  border: 2px solid #667eea;
+  border-radius: 16px;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.translation-result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.translation-result-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #667eea;
+  margin: 0;
+}
+
+.translation-apply-button {
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+}
+
+.translation-apply-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(72, 187, 120, 0.4);
+  background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
+}
+
+.translation-apply-button:active {
+  transform: translateY(0);
+}
+
+.translation-result-content {
+  background: white;
+  padding: 1.25rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #2d3748;
+  word-wrap: break-word;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  min-height: 100px;
+}
+
+.translation-section-title {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #667eea;
+  margin: 1.5rem 0 0.75rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.translation-section-title:first-child {
+  margin-top: 0;
+}
+
+.translation-result-hint {
+  margin: 1rem 0 0 0;
+  font-size: 0.875rem;
+  color: #718096;
+  font-style: italic;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .translation-result-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .translation-apply-button {
+    width: 100%;
+  }
 }

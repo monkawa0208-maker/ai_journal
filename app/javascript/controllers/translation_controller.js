@@ -25,15 +25,13 @@ export default class extends Controller {
     this.isJapaneseMode = !this.isJapaneseMode
 
     if (this.isJapaneseMode) {
-      // 日本語モードに切り替え
+      // 日本語入力フィールドを表示
       this.japaneseSectionTarget.style.display = "block"
-      this.englishSectionTarget.style.display = "none"
-      this.toggleButtonTarget.textContent = "🇬🇧 英語で書く"
+      this.toggleButtonTarget.textContent = "✕ 日本語入力を閉じる"
       this.toggleButtonTarget.classList.add("active")
     } else {
-      // 英語モードに切り替え
+      // 日本語入力フィールドを非表示
       this.japaneseSectionTarget.style.display = "none"
-      this.englishSectionTarget.style.display = "block"
       this.toggleButtonTarget.textContent = "📝 日本語で書く"
       this.toggleButtonTarget.classList.remove("active")
     }
@@ -99,10 +97,9 @@ export default class extends Controller {
       const englishText = this.extractEnglishText(this.currentTranslation)
       this.englishTextTarget.value = englishText
 
-      // 英語セクションに切り替え
+      // 日本語入力フィールドを閉じる
       this.isJapaneseMode = false
       this.japaneseSectionTarget.style.display = "none"
-      this.englishSectionTarget.style.display = "block"
       this.toggleButtonTarget.textContent = "📝 日本語で書く"
       this.toggleButtonTarget.classList.remove("active")
 

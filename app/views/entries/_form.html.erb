@@ -23,12 +23,24 @@
     <%= f.label :title, "タイトル", class: "form-label" %>
     <%= f.text_field :title,
                      required: true,
-                     maxlength: 100,
+                     maxlength: 200,
                      autofocus: true,
                      class: "form-input" %>
   </div>
 
-  <!-- 日本語/英語切り替えボタン -->
+  <!-- 英語入力フィールド（常に表示） -->
+  <div class="form-field" data-translation-target="englishSection">    
+    <%= f.label :content, "本文（英語）", class: "form-label" %>
+    <%= f.text_area :content,
+                    rows: 8,
+                    required: true,
+                    maxlength: 30_000,
+                    class: "form-textarea",
+                    "data-translation-target": "englishText",
+                    placeholder: "Write your diary in English..." %>
+  </div>
+
+  <!-- 日本語入力フィールド表示/非表示切り替えボタン -->
   <div class="form-field">
     <div class="language-toggle">
       <button type="button" 
@@ -37,6 +49,7 @@
               data-translation-target="toggleButton">
         📝 日本語で書く
       </button>
+      <p class="toggle-hint">日本語で入力してAI翻訳を利用できます</p>
     </div>
   </div>
 
@@ -44,8 +57,8 @@
   <div class="form-field" data-translation-target="japaneseSection" style="display: none;">
     <%= f.label :content_ja, "日本語本文", class: "form-label" %>
     <%= f.text_area :content_ja,
-                    rows: 12,
-                    maxlength: 10_000,
+                    rows: 8,
+                    maxlength: 30_000,
                     class: "form-textarea",
                     "data-translation-target": "japaneseText",
                     placeholder: "日本語で日記を書いてください..." %>
@@ -58,18 +71,21 @@
       </button>
       <span class="translate-status" data-translation-target="status"></span>
     </div>
-  </div>
 
-  <!-- 英語入力フィールド -->
-  <div class="form-field" data-translation-target="englishSection">
-    <%= f.label :content, "本文（英語）", class: "form-label" %>
-    <%= f.text_area :content,
-                    rows: 12,
-                    required: true,
-                    maxlength: 10_000,
-                    class: "form-textarea",
-                    "data-translation-target": "englishText",
-                    placeholder: "Write your diary in English..." %>
+    <!-- AI翻訳結果表示エリア -->
+    <div class="translation-result" data-translation-target="translationResult" style="display: none;">
+      <div class="translation-result-header">
+        <h4 class="translation-result-title">✨ AI翻訳結果</h4>
+        <button type="button" 
+                class="translation-apply-button"
+                data-action="click->translation#applyTranslation"
+                data-translation-target="applyButton">
+          ✓ この翻訳を使用
+        </button>
+      </div>
+      <div class="translation-result-content" data-translation-target="translationText"></div>
+      <p class="translation-result-hint">翻訳結果を確認して、「この翻訳を使用」ボタンで英語フィールドに反映できます。</p>
+    </div>
   </div>
 
   <!-- AI翻訳結果を保存するための隠しフィールド -->
