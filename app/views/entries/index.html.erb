@@ -1,57 +1,40 @@
 <main class="entries-index">
   <div class="content-wrapper">
-    <section class="calendar-section">
-      <div class="calendar-card">
-        <div class="calendar-header">
-          <button class="nav-button prev">&lt;</button>
-          <h2 class="calendar-month">April 2024</h2>
-          <button class="nav-button next">&gt;</button>
-        </div>
-        <div class="calendar-grid">
-          <div class="calendar-day-header">Su</div>
-          <div class="calendar-day-header">Mo</div>
-          <div class="calendar-day-header">Tu</div>
-          <div class="calendar-day-header">We</div>
-          <div class="calendar-day-header">Th</div>
-          <div class="calendar-day-header">Fr</div>
-          <div class="calendar-day-header">Sa</div>
-          
-          <% (1..30).each do |day| %>
-            <div class="calendar-day <%= 'active' if day == 21 %>" data-day="<%= day %>">
-              <%= day %>
-            </div>
-          <% end %>
-        </div>
-      </div>
-    </section>
-
     <section class="entry-detail-section">
       <div class="entry-detail-card">
-        <% if @recent_entry %>
-          <h2 class="detail-section-title"><%= link_to "最新の投稿", entry_path(@recent_entry), class: "section-title-link" %></h2>
-          <time class="detail-date" datetime="<%= @recent_entry.posted_on.iso8601 %>">
-            <%= @recent_entry.posted_on.strftime("%Y年%m月%d日") %>
-          </time>
-          <h3 class="detail-title"><%= @recent_entry.title %></h3>
-          <% if @recent_entry.image.attached? %>
-            <div class="detail-image">
-              <% if @recent_entry.image.variable? %>
-                <%= image_tag @recent_entry.image.variant(resize_to_limit: [200, 150]).processed,
-                              alt: "#{@recent_entry.title.presence || '日記'}の画像",
-                              class: "recent-entry-thumbnail" %>
-              <% else %>
-                <%= image_tag @recent_entry.image,
-                              alt: "#{@recent_entry.title.presence || '日記'}の画像",
-                              class: "recent-entry-thumbnail" %>
+        <% if @recent_entries.present? %>
+          <h2 class="detail-section-title">最近の投稿</h2>
+          
+          <div class="recent-entries-list">
+            <% @recent_entries.each do |entry| %>
+              <%= link_to entry_path(entry), class: "recent-entry-item-link" do %>
+                <article class="recent-entry-item">
+                  <div class="recent-entry-header">
+                    <time class="recent-entry-date" datetime="<%= entry.posted_on.iso8601 %>">
+                      <%= entry.posted_on.strftime("%Y年%m月%d日") %>
+                    </time>
+                    <% if entry.image.attached? %>
+                      <div class="recent-entry-image">
+                        <% if entry.image.variable? %>
+                          <%= image_tag entry.image.variant(resize_to_limit: [150, 150]).processed,
+                                        alt: "#{entry.title.presence || '日記'}の画像",
+                                        class: "recent-entry-thumbnail" %>
+                        <% else %>
+                          <%= image_tag entry.image,
+                                        alt: "#{entry.title.presence || '日記'}の画像",
+                                        class: "recent-entry-thumbnail" %>
+                        <% end %>
+                      </div>
+                    <% end %>
+                  </div>
+                  <h3 class="recent-entry-title"><%= entry.title %></h3>
+                  <div class="recent-entry-content">
+                    <%= simple_format(truncate(entry.content, length: 100, omission: "...")) %>
+                  </div>
+                </article>
               <% end %>
-            </div>
-          <% end %>
-          <div class="detail-content">
-            <%= simple_format(truncate(@recent_entry.content, length: 200, omission: "...")) %>
+            <% end %>
           </div>
-          <footer class="detail-footer">
-            <%= link_to "全文を読む →", entry_path(@recent_entry), class: "read-full-link" %>
-          </footer>
         <% else %>
           <div class="empty-detail">
             <div class="empty-icon">📝</div>
@@ -60,6 +43,15 @@
             <%= link_to "最初の投稿を書く", new_entry_path, class: "button primary" %>
           </div>
         <% end %>
+      </div>
+    </section>
+
+    <section class="calendar-section">
+      <div class="calendar-card">
+        <div id="fullcalendar" 
+             data-controller="calendar"
+             data-calendar-entries-url-value="<%= entries_path(format: :json) %>">
+        </div>
       </div>
     </section>
   </div>
