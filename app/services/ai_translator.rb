@@ -7,34 +7,50 @@ class AiTranslator
 
   def initialize(japanese_text)
     @japanese_text = japanese_text
-    @client = OpenAI::Client.new(access_token: ENV.fetch("OPENAI_API_KEY"))
+    @api_key = ENV.fetch("OPENAI_API_KEY")
   end
 
   def call
     return "" if @japanese_text.blank?
 
-    response = @client.chat(
-      parameters: {
-        model: "gpt-4o-mini",
-        messages: [
-          {
-            role: "system",
-            content: system_prompt
-          },
-          {
-            role: "user",
-            content: @japanese_text
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 2000
-      }
-    )
+    require 'http'
+    base_url = 'https://api.openai.com/v1/chat/completions'
 
-    translation = response.dig("choices", 0, "message", "content")
+    payload = {
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "system",
+          content: system_prompt
+        },
+        {
+          role: "user",
+          content: @japanese_text
+        }
+      ],
+      temperature: 0.7,
+      max_tokens: 2000
+    }
+
+    response = HTTP.headers(
+      'Authorization' => "Bearer #{@api_key}",
+      'Content-Type' => 'application/json'
+    ).post(base_url, json: payload)
+
+    unless response.status.success?
+      error_message = "OpenAI API error: #{response.status} #{response.body.to_s}"
+      Rails.logger.error("[AiTranslator] #{error_message}")
+      raise TranslationError, "翻訳処理中にエラーが発生しました: #{response.status}"
+    end
+
+    body = JSON.parse(response.body.to_s)
+    translation = body.dig("choices", 0, "message", "content")
+    
     raise TranslationError, "翻訳結果が取得できませんでした" if translation.blank?
 
     translation.strip
+  rescue TranslationError => e
+    raise e
   rescue StandardError => e
     Rails.logger.error("[AiTranslator] #{e.class}: #{e.message}")
     raise TranslationError, "翻訳処理中にエラーが発生しました: #{e.message}"

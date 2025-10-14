@@ -14,6 +14,7 @@ export default class extends Controller {
 
   connect() {
     this.isJapaneseMode = false
+    console.log("Translation controller connected")
   }
 
   toggleLanguage() {
@@ -35,7 +36,9 @@ export default class extends Controller {
   }
 
   async translate() {
+    console.log("Translate function called")
     const japaneseText = this.japaneseTextTarget.value.trim()
+    console.log("Japanese text:", japaneseText)
 
     // 入力チェック
     if (!japaneseText) {
@@ -49,6 +52,7 @@ export default class extends Controller {
     this.showStatus("AI翻訳を実行中...", "loading")
 
     try {
+      console.log("Sending translation request...")
       const response = await fetch("/entries/translate", {
         method: "POST",
         headers: {
@@ -58,7 +62,9 @@ export default class extends Controller {
         body: JSON.stringify({ text: japaneseText })
       })
 
+      console.log("Response status:", response.status)
       const data = await response.json()
+      console.log("Response data:", data)
 
       if (response.ok) {
         // 翻訳成功
@@ -76,10 +82,12 @@ export default class extends Controller {
         }, 2000)
       } else {
         // エラー処理
+        console.error("Translation failed:", data)
         this.showStatus(`❌ ${data.error || "翻訳に失敗しました"}`, "error")
       }
     } catch (error) {
       console.error("Translation error:", error)
+      console.error("Error details:", error.message, error.stack)
       this.showStatus("❌ ネットワークエラーが発生しました", "error")
     } finally {
       // ボタンを再有効化
