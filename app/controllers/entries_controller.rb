@@ -46,6 +46,23 @@ class EntriesController < ApplicationController
     redirect_to entries_path, notice: "日記を削除しました。"
   end
 
+  def translate
+    japanese_text = params[:text]
+    
+    if japanese_text.blank?
+      return render json: { error: "翻訳するテキストが入力されていません。" }, status: :unprocessable_entity
+    end
+
+    translated_text = AiTranslator.call(japanese_text)
+    render json: { translation: translated_text }, status: :ok
+  rescue AiTranslator::TranslationError => e
+    Rails.logger.error("[EntriesController#translate] #{e.class}: #{e.message}")
+    render json: { error: e.message }, status: :internal_server_error
+  rescue StandardError => e
+    Rails.logger.error("[EntriesController#translate] #{e.class}: #{e.message}")
+    render json: { error: "翻訳処理中にエラーが発生しました。" }, status: :internal_server_error
+  end
+
   def generate_feedback
     if request.format.json?
       if @entry.response.present?
@@ -102,6 +119,6 @@ class EntriesController < ApplicationController
 
   def entry_params
     # tagsは後で実装予定なら一旦許可しない or :tag_ids => [] を付ける
-    params.require(:entry).permit(:title, :content, :posted_on, :image)
+    params.require(:entry).permit(:title, :content, :content_ja, :ai_translate, :posted_on, :image)
   end
 end
