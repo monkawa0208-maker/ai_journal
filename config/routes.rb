@@ -4,5 +4,6 @@ Rails.application.routes.draw do
   resources :entries do
     post :generate_feedback, on: :member
     post :translate, on: :collection
+    post :preview_feedback, on: :collection
   end
 end
