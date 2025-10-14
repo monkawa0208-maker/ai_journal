@@ -648,7 +648,7 @@ body.entries-show {
 }
 
 #fullcalendar .fc-scrollgrid {
-  border: none;
+  border: 1px solid #e2e8f0;
 }
 
 #fullcalendar .fc-theme-standard td,
@@ -746,7 +746,80 @@ body.entries-show {
   font-size: 2rem;
   font-weight: 700;
   color: #667eea;
-  margin: 0 0 1rem;
+  margin: 0 0 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+/* 最新投稿リスト */
+.recent-entries-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.recent-entry-item-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.recent-entry-item {
+  padding: 1.25rem;
+  background: #f8fafc;
+  border-radius: 12px;
+  border-left: 4px solid #667eea;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.recent-entry-item-link:hover .recent-entry-item {
+  background: #f1f5f9;
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.recent-entry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.recent-entry-date {
+  font-size: 0.9rem;
+  color: #718096;
+  font-weight: 500;
+}
+
+.recent-entry-image {
+  flex-shrink: 0;
+}
+
+.recent-entry-thumbnail {
+  width: 100px;
+  height: 100px;
+  border-radius: 8px;
+  object-fit: cover;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.recent-entry-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 0.75rem 0;
+  color: #2d3748;
+  transition: color 0.2s ease;
+}
+
+.recent-entry-item-link:hover .recent-entry-title {
+  color: #667eea;
+}
+
+.recent-entry-content {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #4a5568;
 }
 
 .section-title-link {
@@ -951,15 +1024,27 @@ body.entries-show {
   }
 
   .detail-section-title {
-    font-size: 2rem;
+    font-size: 1.75rem;
   }
 
   .detail-content {
     font-size: 1rem;
   }
 
+  .recent-entry-item {
+    padding: 1rem;
+  }
+
   .recent-entry-thumbnail {
-    max-width: 80px;
-    max-height: 60px;
+    width: 80px;
+    height: 80px;
+  }
+
+  .recent-entry-title {
+    font-size: 1.1rem;
+  }
+
+  .recent-entry-content {
+    font-size: 0.9rem;
   }
 }

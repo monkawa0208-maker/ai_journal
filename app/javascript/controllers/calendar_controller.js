@@ -57,11 +57,11 @@ export default class extends Controller {
             window.location.href = info.event.url
           }
         },
-        dateClick: (info) => {
-          // 日付クリック時の処理（新規投稿ページへ遷移）
-          const date = info.dateStr
-          window.location.href = `/entries/new?entry[posted_on]=${date}`
-        },
+        // dateClick: (info) => {
+        //   // 日付クリック時の処理（新規投稿ページへ遷移）
+        //   const date = info.dateStr
+        //   window.location.href = `/entries/new?entry[posted_on]=${date}`
+        // },
         // カスタムボタンのスタイル
         buttonIcons: {
           prev: 'chevron-left',
