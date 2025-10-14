@@ -1048,3 +1048,110 @@ body.entries-show {
     font-size: 0.9rem;
   }
 }
+
+/* Translation Feature Styles */
+.language-toggle {
+  margin-bottom: 0.5rem;
+}
+
+.toggle-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.toggle-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.toggle-button:active {
+  transform: translateY(0);
+}
+
+.toggle-button.active {
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+}
+
+.translate-action {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.translate-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.translate-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.translate-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.translate-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.translate-status {
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.translate-status.loading {
+  color: #667eea;
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.translate-status.success {
+  color: #38a169;
+  background: rgba(72, 187, 120, 0.1);
+}
+
+.translate-status.error {
+  color: #e53e3e;
+  background: rgba(229, 62, 62, 0.1);
+}
+
+/* フェードインアニメーション */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+[data-translation-target="japaneseSection"],
+[data-translation-target="englishSection"] {
+  animation: fadeIn 0.3s ease-out;
+}

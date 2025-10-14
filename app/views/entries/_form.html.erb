@@ -1,4 +1,4 @@
-<%= form_with model: entry, local: true, html: { class: "entry-form", multipart: true } do |f| %>
+<%= form_with model: entry, local: true, html: { class: "entry-form", multipart: true, "data-controller": "translation" } do |f| %>
 
   <% if entry.errors.any? %>
     <div class="form-errors">
@@ -28,14 +28,52 @@
                      class: "form-input" %>
   </div>
 
+  <!-- 日本語/英語切り替えボタン -->
   <div class="form-field">
-    <%= f.label :content, "本文", class: "form-label" %>
+    <div class="language-toggle">
+      <button type="button" 
+              class="toggle-button" 
+              data-action="click->translation#toggleLanguage"
+              data-translation-target="toggleButton">
+        📝 日本語で書く
+      </button>
+    </div>
+  </div>
+
+  <!-- 日本語入力フィールド（デフォルトで非表示） -->
+  <div class="form-field" data-translation-target="japaneseSection" style="display: none;">
+    <%= f.label :content_ja, "日本語本文", class: "form-label" %>
+    <%= f.text_area :content_ja,
+                    rows: 12,
+                    maxlength: 10_000,
+                    class: "form-textarea",
+                    "data-translation-target": "japaneseText",
+                    placeholder: "日本語で日記を書いてください..." %>
+    <div class="translate-action">
+      <button type="button" 
+              class="button translate-button"
+              data-action="click->translation#translate"
+              data-translation-target="translateButton">
+        🌐 英語に翻訳
+      </button>
+      <span class="translate-status" data-translation-target="status"></span>
+    </div>
+  </div>
+
+  <!-- 英語入力フィールド -->
+  <div class="form-field" data-translation-target="englishSection">
+    <%= f.label :content, "本文（英語）", class: "form-label" %>
     <%= f.text_area :content,
                     rows: 12,
                     required: true,
                     maxlength: 10_000,
-                    class: "form-textarea" %>
+                    class: "form-textarea",
+                    "data-translation-target": "englishText",
+                    placeholder: "Write your diary in English..." %>
   </div>
+
+  <!-- AI翻訳結果を保存するための隠しフィールド -->
+  <%= f.hidden_field :ai_translate, "data-translation-target": "aiTranslateField" %>
 
   <div class="form-field">
     <%= f.label :image, "画像（任意）", class: "form-label" %>
