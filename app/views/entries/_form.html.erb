@@ -1,4 +1,4 @@
-<%= form_with model: entry, local: true, html: { class: "entry-form", multipart: true, "data-controller": "translation form-feedback" } do |f| %>
+<%= form_with model: entry, local: true, html: { class: "entry-form", multipart: true, "data-controller": "translation form-feedback preview", "data-preview-url-value": (entry.image.attached? ? url_for(entry.image) : "") } do |f| %>
 
   <% if entry.errors.any? %>
     <div class="form-errors">
@@ -120,8 +120,12 @@
     <%= f.label :image, "Photo of the day（任意）", class: "form-label" %>
     <%= f.file_field :image,
                      accept: "image/png,image/jpg,image/jpeg",
-                     class: "form-input" %>
+                     class: "form-input",
+                     "data-preview-target": "input",
+                     "data-action": "change->preview#preview" %>
     <p class="field-hint">5MB未満のPNG/JPG画像をアップロードできます。</p>
+    <%# 画像プレビュー表示エリア %>
+    <img data-preview-target="preview" style="display: none; max-width: 100%; max-height: 300px; margin-top: 10px; border-radius: 8px;" alt="プレビュー">
   </div>
 
 
