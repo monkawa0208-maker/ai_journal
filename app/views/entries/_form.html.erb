@@ -32,7 +32,7 @@
   <div class="form-field" data-translation-target="englishSection">    
     <%= f.label :content, "本文（英語）", class: "form-label" %>
     <%= f.text_area :content,
-                    rows: 8,
+                    rows: 4,
                     required: true,
                     maxlength: 30_000,
                     class: "form-textarea",
@@ -82,7 +82,7 @@
   <div class="form-field" data-translation-target="japaneseSection" style="display: none;">
     <%= f.label :content_ja, "日本語本文", class: "form-label" %>
     <%= f.text_area :content_ja,
-                    rows: 8,
+                    rows: 4,
                     maxlength: 30_000,
                     class: "form-textarea",
                     "data-translation-target": "japaneseText",
