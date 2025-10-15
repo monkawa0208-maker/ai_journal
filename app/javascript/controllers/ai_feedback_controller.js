@@ -37,9 +37,10 @@ export default class extends Controller {
         const data = await res.json()
         if (!res.ok) throw new Error(data.error || '生成に失敗しました')
         if (this.hasHintTarget) this.hintTarget.remove()
-        // 改行を適切に処理してHTMLとして表示
-        const formattedResponse = this.formatTextWithLineBreaks(data.response || '')
+        // フィードバックを装飾して表示
+        const formattedResponse = this.formatFeedback(data.response || '')
         this.outputTarget.innerHTML = formattedResponse
+        this.outputTarget.className = 'ai-feedback-content'
         // アニメーション停止してボタンを除去
         if (this.loadingTimer) {
           clearInterval(this.loadingTimer)
@@ -63,6 +64,18 @@ export default class extends Controller {
   getCsrfToken() {
     const meta = document.querySelector('meta[name="csrf-token"]')
     return meta && meta.getAttribute('content')
+  }
+
+  formatFeedback(feedbackText) {
+    // AIフィードバックを見やすく整形して表示
+    const formatted = feedbackText
+      .replace(/# 英文アドバイス/g, '<strong class="feedback-section-title">✏️ 英文アドバイス</strong>')
+      .replace(/# 修正後の文章/g, '<strong class="feedback-section-title">✨ 修正後の文章</strong>')
+      .replace(/# より良い表現/g, '<strong class="feedback-section-title">🌟 より良い表現</strong>')
+      .replace(/# コメント/g, '<strong class="feedback-section-title">💬 コメント</strong>')
+      .replace(/\n/g, '<br>')
+
+    return formatted
   }
 
   formatTextWithLineBreaks(text) {

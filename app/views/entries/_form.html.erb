@@ -1,4 +1,4 @@
-<%= form_with model: entry, local: true, html: { class: "entry-form", multipart: true } do |f| %>
+<%= form_with model: entry, local: true, html: { class: "entry-form", multipart: true, "data-controller": "translation form-feedback" } do |f| %>
 
   <% if entry.errors.any? %>
     <div class="form-errors">
@@ -23,27 +23,108 @@
     <%= f.label :title, "タイトル", class: "form-label" %>
     <%= f.text_field :title,
                      required: true,
-                     maxlength: 100,
+                     maxlength: 200,
                      autofocus: true,
                      class: "form-input" %>
   </div>
 
-  <div class="form-field">
-    <%= f.label :content, "本文", class: "form-label" %>
+  <!-- 英語入力フィールド（常に表示） -->
+  <div class="form-field" data-translation-target="englishSection">    
+    <%= f.label :content, "本文（英語）", class: "form-label" %>
     <%= f.text_area :content,
-                    rows: 12,
+                    rows: 4,
                     required: true,
-                    maxlength: 10_000,
-                    class: "form-textarea" %>
+                    maxlength: 30_000,
+                    class: "form-textarea",
+                    "data-translation-target": "englishText",
+                    placeholder: "Write your diary in English..." %>
   </div>
 
+    <!-- AIフィードバックプレビューセクション -->
   <div class="form-field">
-    <%= f.label :image, "画像（任意）", class: "form-label" %>
+    <div class="ai-feedback-preview-section">
+      <button type="button" 
+              class="button ai-feedback-preview-button"
+              data-action="click->form-feedback#getFeedback"
+              data-form-feedback-target="button">
+        🤖 AIフィードバックをもらう
+      </button>
+      <span class="feedback-preview-status" data-form-feedback-target="status"></span>
+    </div>
+
+    <!-- AIフィードバック表示エリア -->
+    <div class="ai-feedback-preview-result" data-form-feedback-target="resultArea" style="display: none;">
+      <div class="ai-feedback-preview-header">
+        <h4 class="ai-feedback-preview-title">🤖 AIフィードバック</h4>
+      </div>
+      <div class="ai-feedback-preview-content" data-form-feedback-target="feedbackText"></div>
+      <p class="ai-feedback-preview-hint">このフィードバックは保存時に日記と一緒に保存されます。</p>
+    </div>
+  </div>
+
+  <!-- AIフィードバックを保存するための隠しフィールド -->
+  <%= f.hidden_field :response, "data-form-feedback-target": "responseField" %>
+
+  <!-- 日本語入力フィールド表示/非表示切り替えボタン -->
+  <div class="form-field">
+    <div class="language-toggle">
+      <button type="button" 
+              class="toggle-button" 
+              data-action="click->translation#toggleLanguage"
+              data-translation-target="toggleButton">
+        📝 日本語で書く
+      </button>
+      <p class="toggle-hint">日本語で入力してAI翻訳を利用できます</p>
+    </div>
+  </div>
+
+  <!-- 日本語入力フィールド（デフォルトで非表示） -->
+  <div class="form-field" data-translation-target="japaneseSection" style="display: none;">
+    <%= f.label :content_ja, "日本語本文", class: "form-label" %>
+    <%= f.text_area :content_ja,
+                    rows: 4,
+                    maxlength: 30_000,
+                    class: "form-textarea",
+                    "data-translation-target": "japaneseText",
+                    placeholder: "日本語で日記を書いてください..." %>
+    <div class="translate-action">
+      <button type="button" 
+              class="button translate-button"
+              data-action="click->translation#translate"
+              data-translation-target="translateButton">
+        🌐 英語に翻訳
+      </button>
+      <span class="translate-status" data-translation-target="status"></span>
+    </div>
+
+    <!-- AI翻訳結果表示エリア -->
+    <div class="translation-result" data-translation-target="translationResult" style="display: none;">
+      <div class="translation-result-header">
+        <h4 class="translation-result-title">✨ AI翻訳結果</h4>
+        <button type="button" 
+                class="translation-apply-button"
+                data-action="click->translation#applyTranslation"
+                data-translation-target="applyButton">
+          ✓ この翻訳を使用
+        </button>
+      </div>
+      <div class="translation-result-content" data-translation-target="translationText"></div>
+      <p class="translation-result-hint">翻訳結果を確認して、「この翻訳を使用」ボタンで英語フィールドに反映できます。</p>
+    </div>
+  </div>
+
+  <!-- AI翻訳結果を保存するための隠しフィールド -->
+  <%= f.hidden_field :ai_translate, "data-translation-target": "aiTranslateField" %>
+
+  <div class="form-field">
+    <%= f.label :image, "Photo of the day（任意）", class: "form-label" %>
     <%= f.file_field :image,
                      accept: "image/png,image/jpg,image/jpeg",
                      class: "form-input" %>
     <p class="field-hint">5MB未満のPNG/JPG画像をアップロードできます。</p>
   </div>
+
+
 
   <div class="form-actions">
     <%= f.submit "保存する", class: "button primary" %>

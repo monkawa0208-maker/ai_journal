@@ -46,6 +46,45 @@ class EntriesController < ApplicationController
     redirect_to entries_path, notice: "日記を削除しました。"
   end
 
+  def translate
+    japanese_text = params[:text]
+    
+    if japanese_text.blank?
+      return render json: { error: "翻訳するテキストが入力されていません。" }, status: :unprocessable_entity
+    end
+
+    translated_text = AiTranslator.call(japanese_text)
+    render json: { translation: translated_text }, status: :ok
+  rescue AiTranslator::TranslationError => e
+    Rails.logger.error("[EntriesController#translate] #{e.class}: #{e.message}")
+    render json: { error: e.message }, status: :internal_server_error
+  rescue StandardError => e
+    Rails.logger.error("[EntriesController#translate] #{e.class}: #{e.message}")
+    render json: { error: "翻訳処理中にエラーが発生しました。" }, status: :internal_server_error
+  end
+
+  def preview_feedback
+    title = params[:title]
+    content = params[:content]
+    
+    if title.blank? || content.blank?
+      return render json: { error: "タイトルと本文を入力してください。" }, status: :unprocessable_entity
+    end
+
+    # 一時的なエントリーオブジェクトを作成（保存しない）
+    temp_entry = current_user.entries.build(
+      title: title,
+      content: content,
+      posted_on: Date.current
+    )
+
+    feedback = AiFeedbackGenerator.call(temp_entry)
+    render json: { response: feedback }, status: :ok
+  rescue StandardError => e
+    Rails.logger.error("[EntriesController#preview_feedback] #{e.class}: #{e.message}")
+    render json: { error: "フィードバック生成に失敗しました。" }, status: :internal_server_error
+  end
+
   def generate_feedback
     if request.format.json?
       if @entry.response.present?
@@ -102,6 +141,6 @@ class EntriesController < ApplicationController
 
   def entry_params
     # tagsは後で実装予定なら一旦許可しない or :tag_ids => [] を付ける
-    params.require(:entry).permit(:title, :content, :posted_on, :image)
+    params.require(:entry).permit(:title, :content, :content_ja, :ai_translate, :response, :posted_on, :image)
   end
 end
