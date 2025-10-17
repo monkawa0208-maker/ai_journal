@@ -367,7 +367,7 @@ body.entries-show {
 
 .ai-translation-content {
   font-size: 1.05rem;
-  line-height: 1.8;
+  line-height: 2;
   color: #2d3748;
   background: white;
   padding: 1rem;
@@ -387,6 +387,13 @@ body.entries-show {
 
 .ai-translation-content .translation-section-title:first-child {
   margin-top: 0;
+}
+
+/* Add spacing after each line break in translation content */
+.ai-translation-content br {
+  display: block;
+  margin-bottom: 0.5rem;
+  content: "";
 }
 
 /* AI Feedback Section Special Styling */
