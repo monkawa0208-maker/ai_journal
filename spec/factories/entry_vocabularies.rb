@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :entry_vocabulary do
-    entry { nil }
-    vocabulary { nil }
+    association :entry
+    association :vocabulary
   end
 end
