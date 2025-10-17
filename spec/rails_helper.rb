@@ -46,6 +46,9 @@ RSpec.configure do |config|
   # FactoryBotのメソッドをテストで使用できるようにする
   config.include FactoryBot::Syntax::Methods
 
+  # Deviseのテストヘルパーを使用できるようにする
+  config.include Devise::Test::IntegrationHelpers, type: :request
+
   # You can uncomment this line to turn off ActiveRecord support entirely.
   # config.use_active_record = false
 

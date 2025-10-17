@@ -4,7 +4,7 @@ FactoryBot.define do
     title { Faker::Lorem.sentence(word_count: 5) }
     content { Faker::Lorem.paragraph(sentence_count: 10) }
     posted_on { Date.today }
-    response { Faker::Lorem.paragraph(sentence_count: 5) }
+    response { nil }
   end
 end
 
