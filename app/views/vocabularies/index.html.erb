@@ -1,0 +1,106 @@
+<% content_for :body_class, 'vocabularies-index' %>
+
+<div class="vocabularies-container" data-controller="vocabulary-filter">
+  <header class="vocabularies-header">
+    <h1>📚 My Dictionary</h1>
+    <p class="vocabulary-count">登録単語数: <%= @vocabularies.total_count %></p>
+  </header>
+
+  <!-- 検索バー -->
+  <div class="vocabulary-search">
+    <input type="text" 
+           placeholder="単語を検索..." 
+           data-vocabulary-filter-target="searchInput"
+           data-action="input->vocabulary-filter#search">
+    <span class="search-icon">🔍</span>
+  </div>
+
+  <!-- フィルターボタン -->
+  <div class="vocabulary-filters">
+    <%= link_to "全て", vocabularies_path, class: "filter-btn #{'active' unless params[:filter].present?}" %>
+    <%= link_to "未習得", vocabularies_path(filter: 'unmastered'), class: "filter-btn #{'active' if params[:filter] == 'unmastered'}" %>
+    <%= link_to "習得済み", vocabularies_path(filter: 'mastered'), class: "filter-btn #{'active' if params[:filter] == 'mastered'}" %>
+    <%= link_to "⭐ お気に入り", vocabularies_path(filter: 'favorited'), class: "filter-btn #{'active' if params[:filter] == 'favorited'}" %>
+  </div>
+
+  <!-- アクションボタン -->
+  <div class="vocabulary-actions">
+    <%= link_to new_vocabulary_path, class: "button secondary" do %>
+      ➕ 新しい単語を追加
+    <% end %>
+    <%= link_to flashcard_vocabularies_path, class: "button primary" do %>
+      🎴 フラッシュカードで復習
+    <% end %>
+  </div>
+
+  <!-- 単語カードグリッド -->
+  <% if @vocabularies.any? %>
+    <div class="vocabulary-grid" data-vocabulary-filter-target="grid">
+      <% @vocabularies.each do |vocabulary| %>
+        <div class="vocabulary-card" 
+             data-vocabulary-id="<%= vocabulary.id %>"
+             data-word="<%= vocabulary.word %>"
+             data-mastered="<%= vocabulary.mastered %>"
+             data-favorited="<%= vocabulary.favorited %>">
+          
+          <!-- 単語と意味 -->
+          <div class="card-header">
+            <h3 class="word"><%= vocabulary.word %></h3>
+            <div class="card-badges">
+              <% if vocabulary.mastered %>
+                <span class="badge badge-mastered">✅ 習得済み</span>
+              <% end %>
+              <% if vocabulary.favorited %>
+                <span class="badge badge-favorited">⭐ お気に入り</span>
+              <% end %>
+            </div>
+          </div>
+
+          <p class="meaning"><%= vocabulary.meaning %></p>
+
+          <!-- 使用した日記リンク -->
+          <% if vocabulary.entries.any? %>
+            <div class="card-entries">
+              <p class="entries-label">📝 使用した日記:</p>
+              <ul class="entries-list">
+                <% vocabulary.entries.limit(3).each do |entry| %>
+                  <li>
+                    <%= link_to entry_path(entry) do %>
+                      <%= entry.posted_on.strftime('%m/%d') %> <%= truncate(entry.title, length: 20) %>
+                    <% end %>
+                  </li>
+                <% end %>
+                <% if vocabulary.entries.count > 3 %>
+                  <li>他 <%= vocabulary.entries.count - 3 %> 件</li>
+                <% end %>
+              </ul>
+            </div>
+          <% else %>
+            <div class="card-entries">
+              <p class="entries-label no-entries">📝 日記に紐づいていません</p>
+            </div>
+          <% end %>
+
+          <!-- アクションボタン -->
+          <div class="card-actions">
+            <%= link_to "編集", edit_vocabulary_path(vocabulary), class: "btn-edit" %>
+            <%= link_to "削除", vocabulary_path(vocabulary), 
+                        data: { turbo_method: :delete, turbo_confirm: "本当に削除しますか？" },
+                        class: "btn-delete" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- ページネーション -->
+    <div class="vocabulary-pagination">
+      <%= paginate @vocabularies %>
+    </div>
+  <% else %>
+    <div class="vocabulary-empty">
+      <p>まだ単語が登録されていません。</p>
+      <p>日記ページから単語を登録するか、「新しい単語を追加」ボタンから追加してください。</p>
+    </div>
+  <% end %>
+</div>
+

@@ -6,9 +6,25 @@
     <p class="entry-detail__meta">日付：<%= @entry.posted_on %></p>
   </header>
 
-  <section class="entry-detail__section">
+  <section class="entry-detail__section" 
+           data-controller="word-selector"
+           data-word-selector-entry-id-value="<%= @entry.id %>">
     <h2>本文（英語）</h2>
-    <div class="entry-detail__body"><%= simple_format(h(@entry.content)) %></div>
+    <div class="entry-detail__body word-selectable">
+      <%= simple_format(h(@entry.content)) %>
+    </div>
+    
+    <!-- 既に登録済みの単語を表示 -->
+    <% if @entry.vocabularies.any? %>
+      <div class="entry-vocabularies">
+        <h3>この日記で登録した単語:</h3>
+        <div class="vocabulary-tags">
+          <% @entry.vocabularies.each do |vocab| %>
+            <%= link_to vocab.word, vocabularies_path(anchor: "vocab-#{vocab.id}"), class: "vocabulary-tag" %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
   </section>
 
 
@@ -73,3 +89,48 @@
     <%= link_to "一覧へ戻る", entries_path, class: "button ghost" %>
   </nav>
 </article>
+
+<!-- 単語登録モーダル -->
+<div class="modal" data-word-selector-target="modal">
+  <div class="modal-content">
+    <span class="modal-close" data-action="click->word-selector#closeModal">&times;</span>
+    <h2>単語を登録</h2>
+    
+    <!-- 成功メッセージ -->
+    <div class="modal-success-message" data-word-selector-target="successMessage" style="display: none;">
+      ✅ 単語を登録しました！続けて別の単語を選択できます。
+    </div>
+    
+    <form data-word-selector-target="form" data-action="submit->word-selector#submitWord">
+      <div class="form-group">
+        <label>英単語</label>
+        <input type="text" 
+               data-word-selector-target="wordInput" 
+               readonly 
+               class="form-control">
+      </div>
+      <div class="form-group">
+        <label>日本語の意味</label>
+        <textarea data-word-selector-target="meaningInput" 
+                  class="form-control" 
+                  rows="3" 
+                  placeholder="単語の意味を入力してください..."
+                  required></textarea>
+      </div>
+      <div class="form-actions">
+        <button type="button" 
+                class="button secondary" 
+                data-action="click->word-selector#closeModal">
+          閉じる
+        </button>
+        <button type="submit" 
+                class="button primary"
+                data-word-selector-target="submitButton">
+          登録
+        </button>
+      </div>
+    </form>
+    
+    <p class="modal-hint">💡 ヒント: 登録後、このウィンドウを開いたまま別の単語を選択できます</p>
+  </div>
+</div>

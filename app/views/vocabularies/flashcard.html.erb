@@ -1,0 +1,75 @@
+<% content_for :body_class, 'vocabularies-flashcard' %>
+
+<div class="flashcard-container" 
+     data-controller="flashcard"
+     data-flashcard-vocabularies-value="<%= @vocabularies.to_json(only: [:id, :word, :meaning, :mastered]) %>">
+  
+  <header class="flashcard-header">
+    <h1>🎴 フラッシュカード復習</h1>
+    
+    <!-- モード切り替え -->
+    <div class="flashcard-mode">
+      <button class="mode-btn active" 
+              data-flashcard-target="modeBtn"
+              data-mode="en-ja"
+              data-action="click->flashcard#switchMode">
+        英→日
+      </button>
+      <button class="mode-btn" 
+              data-flashcard-target="modeBtn"
+              data-mode="ja-en"
+              data-action="click->flashcard#switchMode">
+        日→英
+      </button>
+    </div>
+
+    <!-- 進捗表示 -->
+    <p class="flashcard-progress">
+      <span data-flashcard-target="currentIndex">1</span> / 
+      <span data-flashcard-target="totalCount"><%= @vocabularies.count %></span>
+    </p>
+  </header>
+
+  <!-- フラッシュカード -->
+  <div class="flashcard-stage">
+    <div class="flashcard" 
+         data-flashcard-target="card"
+         data-action="click->flashcard#flipCard">
+      <div class="flashcard-inner">
+        <div class="flashcard-front">
+          <p data-flashcard-target="frontText"></p>
+          <span class="flip-hint">クリックして答えを表示</span>
+        </div>
+        <div class="flashcard-back">
+          <p data-flashcard-target="backText"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- コントロール -->
+  <div class="flashcard-controls">
+    <button class="btn-control btn-prev" 
+            data-action="click->flashcard#prevCard"
+            data-flashcard-target="prevBtn">
+      ⬅ 前へ
+    </button>
+
+    <button class="btn-control btn-mastered" 
+            data-action="click->flashcard#toggleMastered"
+            data-flashcard-target="masteredBtn">
+      <span data-flashcard-target="masteredText">習得済みにする</span>
+    </button>
+
+    <button class="btn-control btn-next" 
+            data-action="click->flashcard#nextCard"
+            data-flashcard-target="nextBtn">
+      次へ ➡
+    </button>
+  </div>
+
+  <div class="flashcard-footer">
+    <%= link_to "単語一覧に戻る", vocabularies_path, class: "button ghost" %>
+  </div>
+</div>
+
