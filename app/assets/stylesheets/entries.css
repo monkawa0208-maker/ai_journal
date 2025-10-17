@@ -260,9 +260,23 @@ body.entries-show {
 }
 
 .entry-detail__header {
+  position: sticky;
+  top: 70px;
+  /* ヘッダーの高さ分下げる */
+  z-index: 100;
   margin-bottom: 1.25rem;
+  padding: 1rem;
   padding-bottom: 1rem;
   border-bottom: 2px solid #e2e8f0;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  margin-left: -1.5rem;
+  margin-right: -1.5rem;
+  margin-top: -1.5rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  padding-top: 1.5rem;
 }
 
 .entry-detail__header h1 {
@@ -520,6 +534,16 @@ body.entries-show {
     border-radius: 16px;
   }
 
+  .entry-detail__header {
+    top: 60px;
+    margin-left: -1rem;
+    margin-right: -1rem;
+    margin-top: -1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 1rem;
+  }
+
   .entry-detail__header h1 {
     font-size: 2rem;
   }
@@ -554,6 +578,13 @@ body.entries-show {
   .entry-detail__header {
     margin-bottom: 1rem;
     padding-bottom: 0.75rem;
+    top: 50px;
+    margin-left: -0.75rem;
+    margin-right: -0.75rem;
+    margin-top: -0.75rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    padding-top: 0.75rem;
   }
 
   .entry-detail__header h1 {

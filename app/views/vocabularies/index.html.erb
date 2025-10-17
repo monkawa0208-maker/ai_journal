@@ -66,7 +66,7 @@
                 <% vocabulary.entries.limit(3).each do |entry| %>
                   <li>
                     <%= link_to entry_path(entry) do %>
-                      <%= entry.posted_on.strftime('%m/%d') %> <%= truncate(entry.title, length: 20) %>
+                      <%= entry.posted_on.strftime('%y/%m/%d') %> <%= truncate(entry.title, length: 20) %>
                     <% end %>
                   </li>
                 <% end %>

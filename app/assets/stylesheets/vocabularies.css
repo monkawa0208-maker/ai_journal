@@ -280,16 +280,31 @@
 
 /* 登録済み単語タグ */
 .entry-vocabularies {
-  margin-top: 1.5rem;
-  padding: 1rem;
-  background: #f5f5f5;
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #f0f4ff 0%, #e6f3ff 100%);
   border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.entry-detail__header .entry-vocabularies {
+  margin-top: 1rem;
+  margin-bottom: 0;
 }
 
 .entry-vocabularies h3 {
-  font-size: 0.9rem;
-  color: #666;
+  font-size: 0.85rem;
+  color: #667eea;
+  font-weight: 600;
   margin-bottom: 0.5rem;
+  margin-top: 0;
+}
+
+.entry-vocabularies p {
+  font-size: 0.85rem;
+  color: #999;
+  margin: 0;
+  font-style: italic;
 }
 
 .vocabulary-tags {
@@ -299,17 +314,22 @@
 }
 
 .vocabulary-tag {
-  padding: 0.25rem 0.75rem;
-  background: #2196F3;
+  display: inline-block;
+  padding: 0.4rem 0.9rem;
+  background: #667eea;
   color: white;
-  border-radius: 12px;
+  border-radius: 20px;
   text-decoration: none;
-  font-size: 0.85rem;
-  transition: background 0.2s;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(102, 126, 234, 0.2);
 }
 
 .vocabulary-tag:hover {
-  background: #1976D2;
+  background: #764ba2;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
 }
 
 /* モーダル */
@@ -411,7 +431,7 @@
 
 /* フラッシュカードコンテナ */
 .flashcard-container {
-  max-width: 800px;
+  max-width: 500px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
@@ -455,11 +475,15 @@
 .flashcard-stage {
   perspective: 1000px;
   margin-bottom: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .flashcard {
   width: 100%;
-  height: 400px;
+  max-width: 450px;
+  height: 250px;
   cursor: pointer;
 }
 
@@ -478,6 +502,8 @@
 .flashcard-front,
 .flashcard-back {
   position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   backface-visibility: hidden;
@@ -490,14 +516,17 @@
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   padding: 2rem;
+  box-sizing: border-box;
 }
 
 .flashcard-front p,
 .flashcard-back p {
-  font-size: 2.5rem;
+  font-size: 1.75rem;
   font-weight: bold;
   color: #333;
   margin: 0;
+  padding: 1rem;
+  word-wrap: break-word;
 }
 
 .flashcard-back {
@@ -507,13 +536,21 @@
 
 .flip-hint {
   position: absolute;
-  bottom: 1.5rem;
-  font-size: 0.9rem;
+  bottom: 1rem;
+  font-size: 0.85rem;
   color: #999;
 }
 
 /* コントロールボタン */
 .flashcard-controls {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.flashcard-status-controls {
   display: flex;
   justify-content: center;
   gap: 1rem;
@@ -561,6 +598,22 @@
 
 .btn-mastered.mastered {
   background: #4CAF50;
+  color: white;
+}
+
+.btn-favorited {
+  background: white;
+  border: 2px solid #FF9800;
+  color: #FF9800;
+}
+
+.btn-favorited:hover {
+  background: #FF9800;
+  color: white;
+}
+
+.btn-favorited.favorited {
+  background: #FF9800;
   color: white;
 }
 
@@ -627,10 +680,7 @@
   border-color: #4CAF50;
 }
 
-.vocabulary-form .form-control[readonly] {
-  background: #f5f5f5;
-  cursor: not-allowed;
-}
+/* フォームコントロールのreadonly状態（削除済み - 全て編集可能に） */
 
 .vocabulary-form .form-hint {
   font-size: 0.85rem;
@@ -697,15 +747,18 @@
   }
 
   .flashcard {
-    height: 300px;
+    height: 200px;
+    max-width: 100%;
   }
 
   .flashcard-front p,
   .flashcard-back p {
-    font-size: 1.8rem;
+    font-size: 1.4rem;
+    padding: 0.75rem;
   }
 
-  .flashcard-controls {
+  .flashcard-controls,
+  .flashcard-status-controls {
     flex-direction: column;
     align-items: stretch;
   }

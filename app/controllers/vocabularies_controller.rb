@@ -24,7 +24,15 @@ class VocabulariesController < ApplicationController
       @vocabularies = @vocabularies.favorited
     end
 
-    @vocabularies = @vocabularies.page(params[:page]).per(20)
+    respond_to do |format|
+      format.html do
+        @vocabularies = @vocabularies.page(params[:page]).per(20)
+      end
+      format.json do
+        # JSON形式の場合はページネーションなしで全件返す（検索用）
+        render json: { vocabularies: @vocabularies.as_json(only: [:id, :word, :meaning, :mastered, :favorited]) }
+      end
+    end
   end
 
   # GET /vocabularies/flashcard
@@ -85,14 +93,22 @@ class VocabulariesController < ApplicationController
     # 既存の単語を検索、なければ新規作成
     @vocabulary = current_user.vocabularies.find_or_initialize_by(word: word)
     
+    is_new = @vocabulary.new_record?
+    
     if @vocabulary.new_record?
+      # 新規登録の場合
       @vocabulary.meaning = meaning
       unless @vocabulary.save
         render json: { error: @vocabulary.errors.full_messages.join(', ') }, status: :unprocessable_entity
         return
       end
     else
-      # 既存の単語の場合は意味を更新しない（ユーザーが既に登録済み）
+      # 既存の単語の場合は意味を更新
+      @vocabulary.meaning = meaning
+      unless @vocabulary.save
+        render json: { error: @vocabulary.errors.full_messages.join(', ') }, status: :unprocessable_entity
+        return
+      end
     end
 
     # 日記との関連付け（entry_idがある場合のみ）
@@ -106,7 +122,8 @@ class VocabulariesController < ApplicationController
     render json: { 
       success: true, 
       vocabulary: @vocabulary.as_json(include: :entries),
-      message: '単語を登録しました'
+      is_new: is_new,
+      message: is_new ? '単語を登録しました' : '単語を更新しました'
     }
   rescue ActiveRecord::RecordNotFound
     render json: { error: '日記が見つかりません' }, status: :not_found

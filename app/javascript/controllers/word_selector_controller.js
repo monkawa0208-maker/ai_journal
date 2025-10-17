@@ -43,7 +43,7 @@ export default class extends Controller {
     }
   }
 
-  openModal(word) {
+  async openModal(word) {
     console.log('openModal called with word:', word)
 
     if (!this.hasModalTarget) {
@@ -51,11 +51,59 @@ export default class extends Controller {
       return
     }
 
+    // 単語を設定（編集可能にする）
     this.wordInputTarget.value = word.toLowerCase()
     this.meaningInputTarget.value = ''
+
+    // 既存の単語かチェック
+    await this.checkExistingWord(word.toLowerCase())
+
     this.modalTarget.classList.add('active')
     console.log('Modal classes:', this.modalTarget.classList)
-    this.meaningInputTarget.focus()
+
+    // 単語フィールドにフォーカス（編集可能なので）
+    this.wordInputTarget.focus()
+    // 意味が既に入力されている場合は意味フィールドにフォーカス
+    if (this.meaningInputTarget.value) {
+      this.meaningInputTarget.focus()
+    }
+  }
+
+  async checkExistingWord(word) {
+    try {
+      const csrfToken = document.querySelector('meta[name="csrf-token"]').content
+
+      const response = await fetch(`/vocabularies?search=${encodeURIComponent(word)}`, {
+        headers: {
+          'X-CSRF-Token': csrfToken,
+          'Accept': 'application/json'
+        }
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        // 完全一致する単語があるか確認
+        const existingVocab = data.vocabularies?.find(v => v.word === word)
+
+        if (existingVocab) {
+          // 既存の単語の場合、意味を自動入力
+          this.meaningInputTarget.value = existingVocab.meaning
+          this.updateModalTitle('単語を編集')
+          return
+        }
+      }
+    } catch (error) {
+      console.log('Existing word check skipped:', error)
+    }
+
+    this.updateModalTitle('単語を登録')
+  }
+
+  updateModalTitle(title) {
+    const modalTitle = this.modalTarget.querySelector('h2')
+    if (modalTitle) {
+      modalTitle.textContent = title
+    }
   }
 
   closeModal(event) {
@@ -128,15 +176,16 @@ export default class extends Controller {
     // モーダルを閉じる
     this.closeModal()
 
-    // 成功通知を表示（アラートまたは通知）
-    this.showSuccessNotification(data.vocabulary.word)
+    // 成功通知を表示（新規登録か更新かを区別）
+    this.showSuccessNotification(data.vocabulary.word, data.is_new)
   }
 
-  showSuccessNotification(word) {
+  showSuccessNotification(word, isNew = true) {
     // 簡易的な成功通知を画面上部に表示
     const notification = document.createElement('div')
     notification.className = 'word-registered-notification'
-    notification.innerHTML = `✅ 「${word}」を登録しました`
+    const message = isNew ? `✅ 「${word}」を登録しました` : `✅ 「${word}」を更新しました`
+    notification.innerHTML = message
     notification.style.cssText = `
       position: fixed;
       top: 80px;
@@ -178,11 +227,11 @@ export default class extends Controller {
         <div class="vocabulary-tags"></div>
       `
 
-      // word-selectableの後に挿入
-      const wordSelectable = this.element.querySelector('.word-selectable')
-      if (wordSelectable) {
-        // 詳細ページの場合
-        wordSelectable.after(vocabulariesDiv)
+      // ヘッダー内に挿入（スティッキーヘッダーの中）
+      const header = this.element.querySelector('.entry-detail__header')
+      if (header) {
+        // 詳細ページの場合、ヘッダー内に挿入
+        header.appendChild(vocabulariesDiv)
       } else {
         // 編集ページの場合、フォームの後に挿入
         const formContainer = this.element.querySelector('.form-container')
@@ -194,17 +243,31 @@ export default class extends Controller {
 
     const tagsContainer = vocabulariesDiv.querySelector('.vocabulary-tags')
 
-    // 既に同じ単語のタグがあるかチェック
+    // 「まだ単語が登録されていません」メッセージを削除
+    const emptyMessage = vocabulariesDiv.querySelector('p')
+    if (emptyMessage) {
+      emptyMessage.remove()
+    }
+
+    // 既に同じ単語のタグがあるかチェック（単語部分のみで比較）
     const existingTag = Array.from(tagsContainer.querySelectorAll('.vocabulary-tag')).find(
-      tag => tag.textContent.trim() === vocabulary.word
+      tag => {
+        const text = tag.textContent.trim()
+        // 「単語 ： 意味」の形式から単語部分を抽出
+        const word = text.split('：')[0].trim()
+        return word === vocabulary.word
+      }
     )
 
-    // なければ追加
-    if (!existingTag) {
+    if (existingTag) {
+      // 既存のタグを更新（意味が変更された可能性があるため）
+      existingTag.textContent = `${vocabulary.word} ： ${vocabulary.meaning}`
+    } else {
+      // なければ新規追加
       const tagLink = document.createElement('a')
       tagLink.href = `/vocabularies#vocab-${vocabulary.id}`
       tagLink.className = 'vocabulary-tag'
-      tagLink.textContent = vocabulary.word
+      tagLink.textContent = `${vocabulary.word} ： ${vocabulary.meaning}`
       tagsContainer.appendChild(tagLink)
     }
   }

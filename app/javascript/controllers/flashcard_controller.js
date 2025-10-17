@@ -9,6 +9,8 @@ export default class extends Controller {
     "totalCount",
     "masteredBtn",
     "masteredText",
+    "favoritedBtn",
+    "favoritedText",
     "prevBtn",
     "nextBtn",
     "modeBtn"
@@ -88,6 +90,9 @@ export default class extends Controller {
 
     // 習得済みボタンの表示を更新
     this.updateMasteredButton(vocabulary.mastered)
+
+    // お気に入りボタンの表示を更新
+    this.updateFavoritedButton(vocabulary.favorited)
   }
 
   updateButtons() {
@@ -109,10 +114,20 @@ export default class extends Controller {
   updateMasteredButton(isMastered) {
     if (isMastered) {
       this.masteredBtnTarget.classList.add('mastered')
-      this.masteredTextTarget.textContent = '習得済み ✓'
+      this.masteredTextTarget.textContent = '✅ 習得済み'
     } else {
       this.masteredBtnTarget.classList.remove('mastered')
       this.masteredTextTarget.textContent = '習得済みにする'
+    }
+  }
+
+  updateFavoritedButton(isFavorited) {
+    if (isFavorited) {
+      this.favoritedBtnTarget.classList.add('favorited')
+      this.favoritedTextTarget.textContent = '⭐ お気に入り'
+    } else {
+      this.favoritedBtnTarget.classList.remove('favorited')
+      this.favoritedTextTarget.textContent = 'お気に入りにする'
     }
   }
 
@@ -141,6 +156,39 @@ export default class extends Controller {
         this.updateMasteredButton(data.mastered)
       } else {
         console.error('習得済みフラグの更新に失敗しました:', data.error)
+        alert('更新に失敗しました')
+      }
+    } catch (error) {
+      console.error('Error:', error)
+      alert('通信エラーが発生しました')
+    }
+  }
+
+  async toggleFavorited() {
+    const vocabulary = this.vocabulariesValue[this.currentIndex]
+    const vocabularyId = vocabulary.id
+
+    try {
+      const csrfToken = document.querySelector('meta[name="csrf-token"]').content
+
+      const response = await fetch(`/vocabularies/${vocabularyId}/toggle_favorited`, {
+        method: 'PATCH',
+        headers: {
+          'X-CSRF-Token': csrfToken,
+          'Content-Type': 'application/json'
+        }
+      })
+
+      const data = await response.json()
+
+      if (response.ok && data.success) {
+        // ローカルのデータを更新
+        this.vocabulariesValue[this.currentIndex].favorited = data.favorited
+
+        // ボタンの表示を更新
+        this.updateFavoritedButton(data.favorited)
+      } else {
+        console.error('お気に入りフラグの更新に失敗しました:', data.error)
         alert('更新に失敗しました')
       }
     } catch (error) {
