@@ -2,6 +2,8 @@ class Entry < ApplicationRecord
 
   belongs_to :user
   has_one_attached :image   # Active Storage：画像添付
+  has_many :entry_vocabularies, dependent: :destroy
+  has_many :vocabularies, through: :entry_vocabularies
 
   validates :title, presence: true, length: { maximum: 100 }
   validates :content, presence: true, length: { maximum: 10_000 }
