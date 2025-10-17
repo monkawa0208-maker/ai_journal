@@ -8,7 +8,11 @@ module ActiveSupport
     parallelize(workers: :number_of_processors)
 
     # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
-    fixtures :all
+    # FactoryBotを使用するためコメントアウト
+    # fixtures :all
+
+    # FactoryBotのメソッドをテストで使用できるようにする
+    include FactoryBot::Syntax::Methods
 
     # Add more helper methods to be used by all tests here...
   end
