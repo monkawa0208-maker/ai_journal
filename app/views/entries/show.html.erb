@@ -1,30 +1,35 @@
 <% content_for :body_class, 'entries-show' %>
 
-<article class="entry-detail">
+<article class="entry-detail" 
+         data-controller="word-selector"
+         data-word-selector-entry-id-value="<%= @entry.id %>">
   <header class="entry-detail__header">
     <h1><%= h @entry.title %></h1>
     <p class="entry-detail__meta">日付：<%= @entry.posted_on %></p>
   </header>
 
-  <section class="entry-detail__section" 
-           data-controller="word-selector"
-           data-word-selector-entry-id-value="<%= @entry.id %>">
-    <h2>本文（英語）</h2>
+  <section class="entry-detail__section">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+      <h2>本文（英語）</h2>
+      
+    </div>
     <div class="entry-detail__body word-selectable">
       <%= simple_format(h(@entry.content)) %>
     </div>
     
     <!-- 既に登録済みの単語を表示 -->
-    <% if @entry.vocabularies.any? %>
-      <div class="entry-vocabularies">
-        <h3>この日記で登録した単語:</h3>
-        <div class="vocabulary-tags">
-          <% @entry.vocabularies.each do |vocab| %>
-            <%= link_to vocab.word, vocabularies_path(anchor: "vocab-#{vocab.id}"), class: "vocabulary-tag" %>
-          <% end %>
-        </div>
+    <div class="entry-vocabularies">
+      <h3>この日記で登録した単語:</h3>
+      <% if @entry.vocabularies.any? %>
+      <div class="vocabulary-tags">
+        <% @entry.vocabularies.each do |vocab| %>
+          <%= link_to vocab.word, vocabularies_path(anchor: "vocab-#{vocab.id}"), class: "vocabulary-tag" %>
+        <% end %>
+      <% else %>
+        <p>まだ単語が登録されていません。</p>
+      <% end %>
       </div>
-    <% end %>
+    </div>
   </section>
 
 
@@ -88,18 +93,12 @@
     <%= link_to "削除", entry_path(@entry), data: { turbo_method: :delete, turbo_confirm: "本当に削除しますか？" }, class: "button danger" %>
     <%= link_to "一覧へ戻る", entries_path, class: "button ghost" %>
   </nav>
-</article>
 
-<!-- 単語登録モーダル -->
-<div class="modal" data-word-selector-target="modal">
+  <!-- 単語登録モーダル -->
+  <div class="modal" data-word-selector-target="modal">
   <div class="modal-content">
     <span class="modal-close" data-action="click->word-selector#closeModal">&times;</span>
     <h2>単語を登録</h2>
-    
-    <!-- 成功メッセージ -->
-    <div class="modal-success-message" data-word-selector-target="successMessage" style="display: none;">
-      ✅ 単語を登録しました！続けて別の単語を選択できます。
-    </div>
     
     <form data-word-selector-target="form" data-action="submit->word-selector#submitWord">
       <div class="form-group">
@@ -121,7 +120,7 @@
         <button type="button" 
                 class="button secondary" 
                 data-action="click->word-selector#closeModal">
-          閉じる
+          キャンセル
         </button>
         <button type="submit" 
                 class="button primary"
@@ -130,7 +129,6 @@
         </button>
       </div>
     </form>
-    
-    <p class="modal-hint">💡 ヒント: 登録後、このウィンドウを開いたまま別の単語を選択できます</p>
   </div>
-</div>
+  </div>
+</article>

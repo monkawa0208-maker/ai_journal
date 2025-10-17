@@ -266,6 +266,18 @@
   background: #ffeb3b;
 }
 
+/* フォーム内のテキストエリアでも単語選択可能 */
+.form-textarea::selection {
+  background: #ffeb3b;
+}
+
+.form-subtitle-hint {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 0.5rem;
+  font-weight: normal;
+}
+
 /* 登録済み単語タグ */
 .entry-vocabularies {
   margin-top: 1.5rem;
@@ -342,22 +354,33 @@
   color: #333;
 }
 
-.modal-success-message {
-  background: #e8f5e9;
-  color: #2e7d32;
-  padding: 0.75rem;
-  border-radius: 6px;
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
-  text-align: center;
+/* 単語登録通知 */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
-.modal-hint {
-  font-size: 0.85rem;
-  color: #999;
-  text-align: center;
-  margin-top: 1rem;
-  margin-bottom: 0;
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.word-registered-notification {
+  animation: slideInRight 0.3s ease-out;
 }
 
 @keyframes fadeIn {
