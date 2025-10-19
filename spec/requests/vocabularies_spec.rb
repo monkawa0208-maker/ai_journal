@@ -101,7 +101,7 @@ RSpec.describe "Vocabularies", type: :request do
         expect {
           post vocabularies_path, params: { vocabulary: invalid_attributes }
         }.not_to change(Vocabulary, :count)
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
   end
@@ -167,7 +167,7 @@ RSpec.describe "Vocabularies", type: :request do
     context "無効なパラメータの場合" do
       it "単語が空の場合はエラーを返す" do
         post add_from_entry_vocabularies_path, params: { word: '', meaning: '意味' }
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         
         json_response = JSON.parse(response.body)
         expect(json_response['error']).to eq('単語と意味が必要です')
@@ -175,7 +175,7 @@ RSpec.describe "Vocabularies", type: :request do
 
       it "意味が空の場合はエラーを返す" do
         post add_from_entry_vocabularies_path, params: { word: 'test', meaning: '' }
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
   end

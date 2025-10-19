@@ -74,7 +74,7 @@ class VocabulariesController < ApplicationController
 
       redirect_to vocabularies_path, notice: '単語を登録しました'
     else
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
@@ -86,7 +86,7 @@ class VocabulariesController < ApplicationController
     entry_id = params[:entry_id]
 
     unless word.present? && meaning.present?
-      render json: { error: '単語と意味が必要です' }, status: :unprocessable_entity
+      render json: { error: '単語と意味が必要です' }, status: :unprocessable_content
       return
     end
 
@@ -99,14 +99,14 @@ class VocabulariesController < ApplicationController
       # 新規登録の場合
       @vocabulary.meaning = meaning
       unless @vocabulary.save
-        render json: { error: @vocabulary.errors.full_messages.join(', ') }, status: :unprocessable_entity
+        render json: { error: @vocabulary.errors.full_messages.join(', ') }, status: :unprocessable_content
         return
       end
     else
       # 既存の単語の場合は意味を更新
       @vocabulary.meaning = meaning
       unless @vocabulary.save
-        render json: { error: @vocabulary.errors.full_messages.join(', ') }, status: :unprocessable_entity
+        render json: { error: @vocabulary.errors.full_messages.join(', ') }, status: :unprocessable_content
         return
       end
     end
@@ -140,7 +140,7 @@ class VocabulariesController < ApplicationController
     if @vocabulary.update(vocabulary_params)
       redirect_to vocabularies_path, notice: '単語を更新しました'
     else
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 
@@ -157,7 +157,7 @@ class VocabulariesController < ApplicationController
     @vocabulary.toggle_mastered!
     render json: { success: true, mastered: @vocabulary.mastered }
   rescue => e
-    render json: { error: e.message }, status: :unprocessable_entity
+    render json: { error: e.message }, status: :unprocessable_content
   end
 
   # PATCH /vocabularies/:id/toggle_favorited (Ajax)
@@ -166,7 +166,7 @@ class VocabulariesController < ApplicationController
     @vocabulary.toggle_favorited!
     render json: { success: true, favorited: @vocabulary.favorited }
   rescue => e
-    render json: { error: e.message }, status: :unprocessable_entity
+    render json: { error: e.message }, status: :unprocessable_content
   end
 
   private

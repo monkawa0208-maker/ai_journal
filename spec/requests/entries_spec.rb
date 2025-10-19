@@ -135,7 +135,7 @@ RSpec.describe "Entries", type: :request do
             posted_on: Date.today
           }
         }
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
   end
@@ -197,7 +197,7 @@ RSpec.describe "Entries", type: :request do
             title: ''
           }
         }
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
   end
@@ -241,7 +241,7 @@ RSpec.describe "Entries", type: :request do
       it "エラーを返すこと" do
         post translate_entries_path, params: { text: '' }
         
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         json_response = JSON.parse(response.body)
         expect(json_response['error']).to include('翻訳するテキストが入力されていません')
       end
@@ -287,7 +287,7 @@ RSpec.describe "Entries", type: :request do
           content: 'Test Content'
         }
         
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         json_response = JSON.parse(response.body)
         expect(json_response['error']).to include('タイトルと本文を入力してください')
       end
