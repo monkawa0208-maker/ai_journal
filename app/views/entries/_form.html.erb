@@ -1,4 +1,4 @@
-<%= form_with model: entry, local: true, html: { class: "entry-form", multipart: true, "data-controller": "translation form-feedback preview", "data-preview-url-value": (entry.image.attached? ? url_for(entry.image) : "") } do |f| %>
+<%= form_with model: entry, local: true, html: { class: "entry-form", multipart: true, "data-controller": "translation form-feedback preview form-confirmation-before-move", "data-preview-url-value": (entry.image.attached? ? url_for(entry.image) : "") } do |f| %>
 
   <% if entry.errors.any? %>
     <div class="form-errors">
@@ -23,66 +23,32 @@
     <%= f.text_field :title,
                      maxlength: 200,
                      autofocus: true,
-                     class: "form-input" %>
+                     class: "form-input",
+                     "data-action": "input->form-feedback#checkTitle" %>
   </div>
-
-  <!-- 英語入力フィールド（常に表示） -->
-  <div class="form-field" data-translation-target="englishSection">    
-    <%= f.label :content, "本文（英語）", class: "form-label" %>
-    <%= f.text_area :content,
-                    rows: 4,
-                    maxlength: 30_000,
-                    class: "form-textarea",
-                    "data-translation-target": "englishText",
-                    placeholder: "Write your diary in English..." %>
-  </div>
-
-    <!-- AIフィードバックプレビューセクション -->
-  <div class="form-field">
-    <div class="ai-feedback-preview-section">
-      <button type="button" 
-              class="button ai-feedback-preview-button"
-              data-action="click->form-feedback#getFeedback"
-              data-form-feedback-target="button">
-        🤖 AIフィードバックをもらう
-      </button>
-      <span class="feedback-preview-status" data-form-feedback-target="status"></span>
-    </div>
-
-    <!-- AIフィードバック表示エリア -->
-    <div class="ai-feedback-preview-result" data-form-feedback-target="resultArea" style="display: none;">
-      <div class="ai-feedback-preview-header">
-        <h4 class="ai-feedback-preview-title">🤖 AIフィードバック</h4>
-      </div>
-      <div class="ai-feedback-preview-content" data-form-feedback-target="feedbackText"></div>
-      <p class="ai-feedback-preview-hint">このフィードバックは保存時に日記と一緒に保存されます。</p>
-    </div>
-  </div>
-
-  <!-- AIフィードバックを保存するための隠しフィールド -->
-  <%= f.hidden_field :response, "data-form-feedback-target": "responseField" %>
 
   <!-- 日本語入力フィールド表示/非表示切り替えボタン -->
   <div class="form-field">
     <div class="language-toggle">
+      <p class="toggle-hint">英文の書き方に迷ったら、まずは日本語で入力してAIに翻訳してもらおう（日本語入力フィールドが表示されます）</p>
       <button type="button" 
               class="toggle-button" 
               data-action="click->translation#toggleLanguage"
               data-translation-target="toggleButton">
         📝 日本語で書く
       </button>
-      <p class="toggle-hint">日本語で入力してAI翻訳を利用できます</p>
     </div>
   </div>
 
   <!-- 日本語入力フィールド（デフォルトで非表示） -->
   <div class="form-field" data-translation-target="japaneseSection" style="display: none;">
-    <%= f.label :content_ja, "日本語本文", class: "form-label" %>
+    <%= f.label :content_ja, "本文（日本語）", class: "form-label" %>
     <%= f.text_area :content_ja,
                     rows: 4,
                     maxlength: 30_000,
                     class: "form-textarea",
                     "data-translation-target": "japaneseText",
+                    "data-action": "input->translation#checkJapaneseContent",
                     placeholder: "日本語で日記を書いてください..." %>
     <div class="translate-action">
       <button type="button" 
@@ -112,15 +78,53 @@
 
   <!-- AI翻訳結果を保存するための隠しフィールド -->
   <%= f.hidden_field :ai_translate, "data-translation-target": "aiTranslateField" %>
+  <!-- 英語入力フィールド（常に表示） -->
+  <div class="form-field" data-translation-target="englishSection">    
+    <%= f.label :content, "本文（英語）", class: "form-label" %>
+    <%= f.text_area :content,
+                    rows: 4,
+                    maxlength: 30_000,
+                    class: "form-textarea",
+                    "data-translation-target": "englishText",
+                    "data-action": "input->form-feedback#checkContent",
+                    placeholder: "Write your diary in English..." %>
+  </div>
+
+    <!-- AIフィードバックプレビューセクション -->
+  <div class="form-field">
+    <div class="ai-feedback-preview-section">
+      <button type="button" 
+              class="button ai-feedback-preview-button"
+              data-action="click->form-feedback#getFeedback"
+              data-form-feedback-target="button">
+        🤖 AIからフィードバックをもらう
+      </button>
+      <span class="feedback-preview-status" data-form-feedback-target="status"></span>
+    </div>
+
+    <!-- AIフィードバック表示エリア -->
+    <div class="ai-feedback-preview-result" data-form-feedback-target="resultArea" style="display: none;">
+      <div class="ai-feedback-preview-header">
+        <h4 class="ai-feedback-preview-title">🤖 AIフィードバック</h4>
+      </div>
+      <div class="ai-feedback-preview-content" data-form-feedback-target="feedbackText"></div>
+      <p class="ai-feedback-preview-hint">AIの回答は日記と一緒に保存されます。</p>
+    </div>
+  </div>
+
+  <!-- AIフィードバックを保存するための隠しフィールド -->
+  <%= f.hidden_field :response, "data-form-feedback-target": "responseField" %>
+
+
 
   <div class="form-field">
     <%= f.label :image, "Photo of the day（任意）", class: "form-label" %>
+    <p class="field-hint">今日1日を表す写真をアップロードできます。</p>
     <%= f.file_field :image,
                      accept: "image/png,image/jpg,image/jpeg",
                      class: "form-input",
                      "data-preview-target": "input",
-                     "data-action": "change->preview#preview" %>
-    <p class="field-hint">5MB未満のPNG/JPG画像をアップロードできます。</p>
+                     "data-action": "change->preview#preview" %>    
     <%# 画像プレビュー表示エリア %>
     <img data-preview-target="preview" style="display: none; max-width: 100%; max-height: 300px; margin-top: 10px; border-radius: 8px;" alt="プレビュー">
   </div>
@@ -128,7 +132,6 @@
 
 
   <div class="form-actions">
-    <%= f.submit "保存する", class: "button primary" %>
-    <%= link_to "一覧に戻る", entries_path, class: "button secondary" %>
+    <%= f.submit "保存する", class: "button primary submit-button", "data-form-feedback-target": "submitButton" %>
   </div>
 <% end %>
