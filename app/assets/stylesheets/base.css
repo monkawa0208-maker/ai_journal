@@ -11,3 +11,78 @@ body {
 main {
   margin: 0;
 }
+
+/* Flash messages */
+.flash-notice,
+.flash-alert {
+  padding: 15px 20px;
+  margin: 20px auto;
+  max-width: 1200px;
+  border-radius: 8px;
+  font-size: 14px;
+  animation: slideDown 0.3s ease-out;
+}
+
+.flash-notice {
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+}
+
+.flash-alert {
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Error messages */
+#error_explanation {
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  color: #721c24;
+}
+
+#error_explanation h2 {
+  margin: 0 0 15px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #721c24;
+}
+
+#error_explanation ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+#error_explanation ul li {
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.alert {
+  padding: 15px 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+}

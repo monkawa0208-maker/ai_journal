@@ -1,13 +1,22 @@
+# rails-i18nが標準的なRailsとActiveRecordの翻訳を提供するため、
+# アプリ固有のカスタマイズのみここに記述します。
+
 ja:
-  hello: "こんにちは"
   activerecord:
     models:
       entry: "日記"
+      user: "ユーザー"
     attributes:
       entry:
-        title: "タイトルのエラー："
-        content: "本文のエラー："
-        posted_on: "日付のエラー："
+        title: "タイトル"
+        content: "本文"
+        posted_on: "日付"
+      user:
+        nickname: "ニックネーム"
+        email: "メールアドレス"
+        password: "パスワード"
+        password_confirmation: "パスワード（確認）"
+        current_password: "現在のパスワード"
     errors:
       models:
         entry:

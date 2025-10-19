@@ -1,6 +1,18 @@
 <div class="devise-container">
   <div class="devise-card">
     <h2 class="devise-title">プロフィールを編集</h2>
+    
+    <% if notice %>
+      <div class="alert alert-success">
+        <%= notice %>
+      </div>
+    <% end %>
+    
+    <% if alert %>
+      <div class="alert alert-danger">
+        <%= alert %>
+      </div>
+    <% end %>
 
     <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put, class: "devise-form" }) do |f| %>
       <%= render "devise/shared/error_messages", resource: resource %>
