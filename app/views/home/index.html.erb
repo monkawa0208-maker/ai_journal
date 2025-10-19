@@ -13,7 +13,7 @@
                       <time class="recent-entry-date" datetime="<%= entry.posted_on.iso8601 %>">
                         <%= entry.posted_on.strftime("%Y年%m月%d日") %>
                       </time>
-                      <h3 class="recent-entry-title"><%= entry.title %></h3>
+                      <h3 class="recent-entry-title"><%= truncate(entry.title, length: 80, omission: "...") %></h3>
                     </div>
                     <% if entry.image.attached? %>
                       <div class="recent-entry-title-right">
@@ -57,7 +57,7 @@
               <li class="recent-vocabulary-item">
                 <span class="recent-vocabulary-word"><%= link_to vocabulary.word, edit_vocabulary_path(vocabulary), class: "recent-vocabulary-link" %></span>
                 <span class="recent-vocabulary-meaning"><%= link_to vocabulary.meaning, edit_vocabulary_path(vocabulary), class: "recent-vocabulary-link" %></span>
-                使用した日記:<%= link_to "#{vocabulary.entries.first.title}（（#{vocabulary.entries.first.posted_on.strftime("%Y年%m月%d日")}））", entry_path(vocabulary.entries.first), class: "recent-vocabulary-link" %>
+                <span class="entry-used-in-recent-vocabulary"> 使用した日記:　<%= link_to "#{truncate(vocabulary.entries.first.title, length: 30)}（#{vocabulary.entries.first.posted_on.strftime("%Y年%m月%d日")}）", entry_path(vocabulary.entries.first), class: "entry-used-in-recent-vocabulary-link"  %> </span>
               </li>
             <% end %>
           </ul>

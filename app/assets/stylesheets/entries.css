@@ -319,9 +319,9 @@ body.entries-show {
 
 .entry-detail__title-row {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
   margin-bottom: 0.625rem;
 }
 
@@ -331,16 +331,18 @@ body.entries-show {
   color: #1f2937;
   margin: 0;
   line-height: 1.3;
-  flex: 1;
+  width: 100%;
+  max-width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .entry-detail__meta {
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   color: #6b7280;
   font-weight: 500;
   margin: 0;
-  white-space: nowrap;
-  flex-shrink: 0;
 }
 
 .entry-detail__section {
@@ -606,12 +608,6 @@ body.entries-show {
     padding-left: 1rem;
     padding-right: 1rem;
     padding-top: 1rem;
-  }
-
-  .entry-detail__title-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
   }
 
   .entry-detail__header h1 {
@@ -1032,6 +1028,23 @@ body.entries-show {
   text-decoration: underline;
 }
 
+.recent-vocabulary-item>.entry-used-in-recent-vocabulary {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.recent-vocabulary-item .entry-used-in-recent-vocabulary-link {
+  text-decoration: none !important;
+  color: #4b5563 !important;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.recent-vocabulary-item .entry-used-in-recent-vocabulary-link:hover {
+  color: #2563eb !important;
+  text-decoration: none !important;
+}
+
 .empty-vocabularies {
   text-align: center;
   padding: 2rem 1rem;
@@ -1131,6 +1144,9 @@ body.entries-show {
   margin: 0 0 0.625rem 0;
   color: #1f2937;
   transition: color 0.2s ease;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
 }
 
 .recent-entry-item-link:hover .recent-entry-title {
