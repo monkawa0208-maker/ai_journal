@@ -44,9 +44,4 @@ export default class extends Controller {
       this.gridTarget.style.display = 'grid'
     }
   }
-
-  // フィルターはサーバーサイド（リンククリック）で実装されているため、
-  // クライアントサイドでの追加フィルタリングは不要
-  // 必要に応じて、将来的にクライアントサイドフィルタリングを追加可能
 }
-

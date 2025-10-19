@@ -5,17 +5,12 @@ export default class extends Controller {
   static values = { entryId: Number }
 
   connect() {
-    console.log('WordSelectorController connected')
-    console.log('Entry ID:', this.entryIdValue)
-    console.log('Modal target:', this.modalTarget)
-
     // テキスト選択イベントを設定
     this.boundHandleTextSelection = this.handleTextSelection.bind(this)
     document.addEventListener('mouseup', this.boundHandleTextSelection)
   }
 
   disconnect() {
-    console.log('WordSelectorController disconnected')
     if (this.boundHandleTextSelection) {
       document.removeEventListener('mouseup', this.boundHandleTextSelection)
     }
@@ -30,42 +25,35 @@ export default class extends Controller {
     const selection = window.getSelection()
     const selectedText = selection.toString().trim()
 
-    console.log('Text selected:', selectedText)
-
     // 単語が選択されている場合（1-50文字の英単語）
     if (selectedText && selectedText.length > 0 && selectedText.length < 50) {
       // 英単語のみ（スペースや特殊文字が少ない）
       const wordPattern = /^[a-zA-Z\s'-]+$/
       if (wordPattern.test(selectedText)) {
-        console.log('Opening modal for word:', selectedText)
         this.openModal(selectedText)
       }
     }
   }
 
   async openModal(word) {
-    console.log('openModal called with word:', word)
-
     if (!this.hasModalTarget) {
-      console.error('Modal target not found!')
       return
     }
 
-    // 単語を設定（編集可能にする）
+    // 単語を設定（編集可能）
     this.wordInputTarget.value = word.toLowerCase()
     this.meaningInputTarget.value = ''
 
-    // 既存の単語かチェック
+    // 既存の単語かチェックして、あれば意味を自動入力
     await this.checkExistingWord(word.toLowerCase())
 
     this.modalTarget.classList.add('active')
-    console.log('Modal classes:', this.modalTarget.classList)
 
-    // 単語フィールドにフォーカス（編集可能なので）
-    this.wordInputTarget.focus()
     // 意味が既に入力されている場合は意味フィールドにフォーカス
     if (this.meaningInputTarget.value) {
       this.meaningInputTarget.focus()
+    } else {
+      this.wordInputTarget.focus()
     }
   }
 
@@ -93,7 +81,7 @@ export default class extends Controller {
         }
       }
     } catch (error) {
-      console.log('Existing word check skipped:', error)
+      // エラーは無視して新規登録モードにする
     }
 
     this.updateModalTitle('単語を登録')
@@ -114,12 +102,6 @@ export default class extends Controller {
     this.meaningInputTarget.value = ''
   }
 
-  // テスト用：手動でモーダルを開く
-  testModal(event) {
-    event.preventDefault()
-    console.log('Test modal button clicked')
-    this.openModal('test')
-  }
 
   async submitWord(event) {
     event.preventDefault()
