@@ -7,12 +7,24 @@ class Entry < ApplicationRecord
 
   validates :title, presence: true, length: { maximum: 100 }
   validates :content, presence: true, length: { maximum: 10_000 }
-  validates :posted_on, presence: true, uniqueness: { scope: :user_id }  # 1日1件ルール
+  validates :posted_on, presence: true
+  validate :unique_posted_on_per_user  # 1日1件ルール
 
   validates :response, length: { maximum: 10_000 }, allow_nil: true
 
   scope :recent, -> { order(posted_on: :desc) }
   scope :this_month, -> { where(posted_on: Date.current.all_month) }
+
+  private
+
+  def unique_posted_on_per_user
+    return if posted_on.nil? || user.nil?
+    
+    existing_entry = user.entries.where(posted_on: posted_on).where.not(id: id).first
+    if existing_entry
+      errors.add(:base, 'すでにこの日の日記は作成済みです')
+    end
+  end
 
 end
 

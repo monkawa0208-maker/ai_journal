@@ -27,7 +27,7 @@ class EntriesController < ApplicationController
     if @entry.save
       redirect_to @entry, notice: "日記を投稿しました。"
     else
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
@@ -37,7 +37,7 @@ class EntriesController < ApplicationController
     if @entry.update(entry_params)
       redirect_to @entry, notice: "日記を更新しました。"
     else
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 
@@ -50,7 +50,7 @@ class EntriesController < ApplicationController
     japanese_text = params[:text]
     
     if japanese_text.blank?
-      return render json: { error: "翻訳するテキストが入力されていません。" }, status: :unprocessable_entity
+      return render json: { error: "翻訳するテキストが入力されていません。" }, status: :unprocessable_content
     end
 
     translated_text = AiTranslator.call(japanese_text)
@@ -68,7 +68,7 @@ class EntriesController < ApplicationController
     content = params[:content]
     
     if title.blank? || content.blank?
-      return render json: { error: "タイトルと本文を入力してください。" }, status: :unprocessable_entity
+      return render json: { error: "タイトルと本文を入力してください。" }, status: :unprocessable_content
     end
 
     # 一時的なエントリーオブジェクトを作成（保存しない）
@@ -95,7 +95,7 @@ class EntriesController < ApplicationController
       if @entry.update(response: feedback)
         render json: { response: @entry.response }, status: :ok
       else
-        render json: { error: "AIからのコメントが保存できませんでした。" }, status: :unprocessable_entity
+        render json: { error: "AIからのコメントが保存できませんでした。" }, status: :unprocessable_content
       end
     else
       if @entry.response.present?

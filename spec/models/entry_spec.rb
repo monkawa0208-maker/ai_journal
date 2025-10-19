@@ -16,8 +16,8 @@ RSpec.describe Entry, type: :model do
     describe 'title' do
       it 'titleが空の場合は無効であること' do
         @entry.title = nil
-        expect(@entry).not_to be_valid
-        expect(@entry.errors[:title]).to be_present
+        @entry.valid?
+        expect(@entry.errors.full_messages).to include('タイトルを入力してください')
       end
 
       it 'titleが100文字以内であれば有効であること' do
@@ -27,8 +27,8 @@ RSpec.describe Entry, type: :model do
 
       it 'titleが101文字以上の場合は無効であること' do
         @entry.title = 'a' * 101
-        expect(@entry).not_to be_valid
-        expect(@entry.errors[:title]).to be_present
+        @entry.valid?
+        expect(@entry.errors.full_messages).to include('タイトルは100文字以内で入力してください')
       end
     end
 
@@ -36,8 +36,8 @@ RSpec.describe Entry, type: :model do
     describe 'content' do
       it 'contentが空の場合は無効であること' do
         @entry.content = nil
-        expect(@entry).not_to be_valid
-        expect(@entry.errors[:content]).to be_present
+        @entry.valid?
+        expect(@entry.errors.full_messages).to include('本文を入力してください')
       end
 
       it 'contentが10,000文字以内であれば有効であること' do
@@ -47,8 +47,8 @@ RSpec.describe Entry, type: :model do
 
       it 'contentが10,001文字以上の場合は無効であること' do
         @entry.content = 'a' * 10_001
-        expect(@entry).not_to be_valid
-        expect(@entry.errors[:content]).to be_present
+        @entry.valid?
+        expect(@entry.errors.full_messages).to include('本文は10000文字以内で入力してください')
       end
     end
 
@@ -56,8 +56,8 @@ RSpec.describe Entry, type: :model do
     describe 'posted_on' do
       it 'posted_onが空の場合は無効であること' do
         @entry.posted_on = nil
-        expect(@entry).not_to be_valid
-        expect(@entry.errors[:posted_on]).to be_present
+        @entry.valid?
+        expect(@entry.errors.full_messages).to include('日付を入力してください')
       end
 
       it '同じユーザーで同じ日付のエントリーは作成できないこと（1日1件ルール）' do
@@ -66,8 +66,8 @@ RSpec.describe Entry, type: :model do
         @entry.user = user
         @entry.posted_on = Date.today
         
-        expect(@entry).not_to be_valid
-        expect(@entry.errors[:posted_on]).to be_present
+        @entry.valid?
+        expect(@entry.errors.full_messages).to include('すでにこの日の日記は作成済みです')
       end
 
       it '異なるユーザーであれば同じ日付のエントリーを作成できること' do
@@ -104,8 +104,8 @@ RSpec.describe Entry, type: :model do
 
       it 'responseが10,001文字以上の場合は無効であること' do
         @entry.response = 'a' * 10_001
-        expect(@entry).not_to be_valid
-        expect(@entry.errors[:response]).to be_present
+        @entry.valid?
+        expect(@entry.errors.full_messages).to include('Responseは10000文字以内で入力してください')
       end
     end
   end

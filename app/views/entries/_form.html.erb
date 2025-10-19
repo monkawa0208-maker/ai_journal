@@ -2,7 +2,7 @@
 
   <% if entry.errors.any? %>
     <div class="form-errors">
-      <h2>入力内容に誤りがあります</h2>
+      <h2>エラー</h2>
       <ul>
         <% entry.errors.full_messages.each do |msg| %>
           <li><%= msg %></li>
@@ -15,14 +15,12 @@
     <%= f.label :posted_on, "日付", class: "form-label" %>
     <%= f.date_field :posted_on,
                      value: entry.posted_on || Date.current,
-                     required: true,
                      class: "form-input" %>
   </div>
 
   <div class="form-field">
     <%= f.label :title, "タイトル", class: "form-label" %>
     <%= f.text_field :title,
-                     required: true,
                      maxlength: 200,
                      autofocus: true,
                      class: "form-input" %>
@@ -33,7 +31,6 @@
     <%= f.label :content, "本文（英語）", class: "form-label" %>
     <%= f.text_area :content,
                     rows: 4,
-                    required: true,
                     maxlength: 30_000,
                     class: "form-textarea",
                     "data-translation-target": "englishText",
