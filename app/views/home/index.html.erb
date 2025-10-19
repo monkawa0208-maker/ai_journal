@@ -1,5 +1,14 @@
 <main class="entries-index">
   <div class="content-wrapper">
+    <div class="home-message">
+      <div class="motivation-card">
+        <div class="motivation-icon">💡</div>
+        <p class="motivation-text">
+          <% weekly_count = @recent_entries.select { |e| e.posted_on >= Date.current - 6 }.size %>
+          <%= motivation_message(@recent_entries, current_user) %></p>
+      </div>
+    </div>
+
     <section class="entry-detail-section">
       <div class="entry-detail-card">
         <% if @recent_entries.present? %>
