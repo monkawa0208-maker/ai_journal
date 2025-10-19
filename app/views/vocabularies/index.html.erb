@@ -38,6 +38,7 @@
     <div class="vocabulary-grid" data-vocabulary-filter-target="grid">
       <% @vocabularies.each do |vocabulary| %>
         <div class="vocabulary-card" 
+             id="vocab-<%= vocabulary.id %>"
              data-controller="vocabulary-card"
              data-vocabulary-card-id-value="<%= vocabulary.id %>"
              data-vocabulary-card-mastered-value="<%= vocabulary.mastered %>"

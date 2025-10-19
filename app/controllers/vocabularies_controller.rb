@@ -1,6 +1,6 @@
 class VocabulariesController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_vocabulary, only: [:show, :edit, :update, :destroy, :toggle_mastered, :toggle_favorited]
+  before_action :set_vocabulary, only: [:edit, :update, :destroy, :toggle_mastered, :toggle_favorited]
 
   # GET /vocabularies
   # 単語一覧ページ
@@ -48,10 +48,6 @@ class VocabulariesController < ApplicationController
     redirect_to vocabularies_path, alert: '復習する単語がありません' if @vocabularies.empty?
   end
 
-  # GET /vocabularies/:id
-  # 単語詳細ページ（必要に応じて実装）
-  def show
-  end
 
   # GET /vocabularies/new
   # 単語追加フォーム
