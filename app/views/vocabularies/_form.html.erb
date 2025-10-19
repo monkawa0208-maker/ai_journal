@@ -1,0 +1,40 @@
+<%= form_with(model: vocabulary, local: true, class: "vocabulary-form") do |f| %>
+  <% if vocabulary.errors.any? %>
+    <div class="error-messages">
+      <h3><%= pluralize(vocabulary.errors.count, "error") %> prohibited this vocabulary from being saved:</h3>
+      <ul>
+        <% vocabulary.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= f.label :word, "英単語" %>
+    <%= f.text_field :word, class: "form-control", placeholder: "例: grateful", required: true %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :meaning, "日本語の意味" %>
+    <%= f.text_area :meaning, class: "form-control", rows: 4, placeholder: "例: 感謝している、ありがたい", required: true %>
+  </div>
+
+  <div class="form-group-checkboxes">
+    <div class="checkbox-wrapper">
+      <%= f.check_box :mastered, class: "form-checkbox" %>
+      <%= f.label :mastered, "✅ 習得済み" %>
+    </div>
+
+    <div class="checkbox-wrapper">
+      <%= f.check_box :favorited, class: "form-checkbox" %>
+      <%= f.label :favorited, "⭐ お気に入り" %>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <%= link_to "キャンセル", vocabularies_path, class: "button secondary" %>
+    <%= f.submit vocabulary.persisted? ? "更新" : "登録", class: "button primary" %>
+  </div>
+<% end %>
+

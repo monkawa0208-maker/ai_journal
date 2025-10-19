@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_10_14_045830) do
+ActiveRecord::Schema[7.1].define(version: 2025_10_17_061741) do
   create_table "active_storage_attachments", charset: "utf8mb3", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -54,6 +54,16 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_14_045830) do
     t.index ["user_id"], name: "index_entries_on_user_id"
   end
 
+  create_table "entry_vocabularies", charset: "utf8mb3", force: :cascade do |t|
+    t.bigint "entry_id", null: false, comment: "日記ID"
+    t.bigint "vocabulary_id", null: false, comment: "単語ID"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["entry_id", "vocabulary_id"], name: "index_entry_vocabularies_on_entry_and_vocabulary", unique: true
+    t.index ["entry_id"], name: "index_entry_vocabularies_on_entry_id"
+    t.index ["vocabulary_id"], name: "index_entry_vocabularies_on_vocabulary_id"
+  end
+
   create_table "users", charset: "utf8mb3", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -67,7 +77,22 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_14_045830) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  create_table "vocabularies", charset: "utf8mb3", force: :cascade do |t|
+    t.string "word", null: false, comment: "英単語"
+    t.text "meaning", null: false, comment: "日本語の意味"
+    t.boolean "mastered", default: false, null: false, comment: "習得済みフラグ"
+    t.boolean "favorited", default: false, null: false, comment: "お気に入りフラグ"
+    t.bigint "user_id", null: false, comment: "ユーザーID"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "word"], name: "index_vocabularies_on_user_id_and_word", unique: true
+    t.index ["user_id"], name: "index_vocabularies_on_user_id"
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "entries", "users"
+  add_foreign_key "entry_vocabularies", "entries"
+  add_foreign_key "entry_vocabularies", "vocabularies"
+  add_foreign_key "vocabularies", "users"
 end
