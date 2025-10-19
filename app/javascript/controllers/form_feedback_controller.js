@@ -64,22 +64,17 @@ export default class extends Controller {
   async getFeedback() {
     console.log("Get feedback function called")
 
-    // フォームからタイトルと本文を取得
+    // フォームから本文を取得
     const form = this.element
     const titleField = form.querySelector('[name="entry[title]"]')
     const contentField = form.querySelector('[name="entry[content]"]')
 
-    const title = titleField?.value.trim()
+    const title = titleField?.value.trim() || ""
     const content = contentField?.value.trim()
 
-    // 入力チェック
+    // 入力チェック（本文のみ必須）
     if (!content) {
       this.showStatus("本文（英語）を入力してください", "error")
-      return
-    }
-
-    if (!title) {
-      this.showStatus("タイトルを入力してください", "error")
       return
     }
 
