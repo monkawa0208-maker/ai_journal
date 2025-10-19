@@ -4,10 +4,13 @@
          data-controller="word-selector"
          data-word-selector-entry-id-value="<%= @entry.id %>">
   <header class="entry-detail__header">
-    <h1><%= h @entry.title %></h1>
-    <p class="entry-detail__meta">日付：<%= @entry.posted_on %></p>
+    <div class="entry-detail__title-row">
+      <h1><%= h @entry.title %></h1>
+      <p class="entry-detail__meta"><%= @entry.posted_on.strftime("%Y年%m月%d日") %></p>
+    </div>
   <!-- 既に登録済みの単語を表示 -->
     <div class="entry-vocabularies">
+      <p class="selection-hint">💡 単語を選択してMyDictionaryに登録できます</p>
       <h3>この日記で登録した単語:</h3>
       <% if @entry.vocabularies.any? %>
       <div class="vocabulary-tags">
@@ -21,19 +24,14 @@
     </div>
   </header>
 
-  
-
   <section class="entry-detail__section">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+    <div class="section-header-with-hint">
       <h2>本文（英語）</h2>
-      
     </div>
     <div class="entry-detail__body word-selectable">
       <%= simple_format(h(@entry.content)) %>
     </div>
   </section>
-
-
 
   <section class="entry-detail__section ai-feedback" data-controller="ai-feedback">
     <h2>AIフィードバック</h2>
@@ -58,14 +56,16 @@
 
   <% if @entry.content_ja.present? %>
     <section class="entry-detail__section japanese-section">
-      <h2>📝 日本語原文</h2>
-      <div class="entry-detail__body"><%= simple_format(h(@entry.content_ja)) %></div>
+      <h2>日本語原文</h2>
+      <div class="entry-detail__body">
+        <%= simple_format(h(@entry.content_ja)) %>
+      </div>
     </section>
   <% end %>
 
   <% if @entry.ai_translate.present? %>
     <section class="entry-detail__section ai-translation-section">
-      <h2>✨ AI翻訳結果</h2>
+      <h2>AI翻訳結果</h2>
       <div class="ai-translation-content">
         <%= raw @entry.ai_translate
           .gsub(/# 翻訳後の文章/, '<strong class="translation-section-title">📝 翻訳後の文章</strong>')
@@ -76,7 +76,7 @@
     </section>
   <% end %>
 
-    <% if @entry.image.attached? %>
+  <% if @entry.image.attached? %>
     <section class="entry-detail__section">
       <h2>Photo of the day</h2>
       <% if @entry.image.variable? %>

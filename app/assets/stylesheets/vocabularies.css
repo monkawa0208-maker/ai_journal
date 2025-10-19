@@ -305,15 +305,41 @@ body.vocabularies-index {
 .word-selectable {
   cursor: text;
   user-select: text;
+  position: relative;
 }
 
-.word-selectable::selection {
-  background: #ffeb3b;
+/* 単語ラッパー */
+.word-wrapper {
+  transition: all 0.2s ease;
+  cursor: pointer;
+  display: inline;
+}
+
+/* マウスオーバー時のハイライト */
+.word-wrapper.word-hover {
+  background: #dbeafe;
+  color: #1e40af;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+}
+
+/* 選択時のスタイル */
+.word-selectable::selection,
+.ai-feedback-content::selection,
+.ai-translation-content::selection {
+  background: #bfdbfe;
+  color: #1e3a8a;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 /* フォーム内のテキストエリアでも単語選択可能 */
 .form-textarea::selection {
-  background: #ffeb3b;
+  background: #bfdbfe;
+  color: #1e3a8a;
+  font-weight: 700;
 }
 
 .form-subtitle-hint {

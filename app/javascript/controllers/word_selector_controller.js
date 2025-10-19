@@ -8,11 +8,82 @@ export default class extends Controller {
     // テキスト選択イベントを設定
     this.boundHandleTextSelection = this.handleTextSelection.bind(this)
     document.addEventListener('mouseup', this.boundHandleTextSelection)
+
+    // 単語選択可能エリアを取得してマウスオーバーイベントを追加
+    this.setupWordHighlight()
   }
 
   disconnect() {
     if (this.boundHandleTextSelection) {
       document.removeEventListener('mouseup', this.boundHandleTextSelection)
+    }
+    if (this.selectableAreas) {
+      this.selectableAreas.forEach(area => {
+        area.removeEventListener('mouseover', this.boundHandleMouseOver)
+        area.removeEventListener('mouseout', this.boundHandleMouseOut)
+      })
+    }
+  }
+
+  setupWordHighlight() {
+    // ハイライト対象のエリアをすべて取得
+    this.selectableAreas = this.element.querySelectorAll('.word-selectable, .ai-feedback-content, .ai-translation-content')
+    if (!this.selectableAreas || this.selectableAreas.length === 0) return
+
+    // マウスイベントをバインド
+    this.boundHandleMouseOver = this.handleMouseOver.bind(this)
+    this.boundHandleMouseOut = this.handleMouseOut.bind(this)
+
+    // 各エリアに対して処理
+    this.selectableAreas.forEach(area => {
+      // テキストコンテンツを単語ごとにspanでラップ
+      this.wrapWordsInSpans(area)
+
+      // イベントリスナーを追加
+      area.addEventListener('mouseover', this.boundHandleMouseOver)
+      area.addEventListener('mouseout', this.boundHandleMouseOut)
+    })
+  }
+
+  wrapWordsInSpans(container) {
+    // 既にラップされている場合はスキップ
+    if (container.querySelector('.word-wrapper')) return
+
+    // すべてのテキストを含む要素を処理
+    const walkNode = (node) => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const text = node.textContent
+        if (text.trim() && /[a-zA-Z]/.test(text)) {
+          // 英単語を含むテキストノードを処理
+          const span = document.createElement('span')
+          span.innerHTML = text.replace(/([a-zA-Z'-]+)/g, '<span class="word-wrapper">$1</span>')
+          node.parentNode.replaceChild(span, node)
+        }
+      } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName !== 'SCRIPT' && node.tagName !== 'STYLE') {
+        // 子ノードを処理（strong, brタグなども対応）
+        const children = Array.from(node.childNodes)
+        children.forEach(child => walkNode(child))
+      }
+    }
+
+    walkNode(container)
+  }
+
+  handleMouseOver(event) {
+    const target = event.target
+
+    // word-wrapperクラスを持つspan要素の場合のみハイライト
+    if (target.classList && target.classList.contains('word-wrapper')) {
+      target.classList.add('word-hover')
+    }
+  }
+
+  handleMouseOut(event) {
+    const target = event.target
+
+    // word-wrapperクラスを持つspan要素からホバーを解除
+    if (target.classList && target.classList.contains('word-wrapper')) {
+      target.classList.remove('word-hover')
     }
   }
 
