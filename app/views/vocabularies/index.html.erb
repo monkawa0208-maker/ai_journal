@@ -38,22 +38,14 @@
     <div class="vocabulary-grid" data-vocabulary-filter-target="grid">
       <% @vocabularies.each do |vocabulary| %>
         <div class="vocabulary-card" 
-             data-vocabulary-id="<%= vocabulary.id %>"
-             data-word="<%= vocabulary.word %>"
-             data-mastered="<%= vocabulary.mastered %>"
-             data-favorited="<%= vocabulary.favorited %>">
+             data-controller="vocabulary-card"
+             data-vocabulary-card-id-value="<%= vocabulary.id %>"
+             data-vocabulary-card-mastered-value="<%= vocabulary.mastered %>"
+             data-vocabulary-card-favorited-value="<%= vocabulary.favorited %>">
           
           <!-- 単語と意味 -->
           <div class="card-header">
             <h3 class="word"><%= vocabulary.word %></h3>
-            <div class="card-badges">
-              <% if vocabulary.mastered %>
-                <span class="badge badge-mastered">✅ 習得済み</span>
-              <% end %>
-              <% if vocabulary.favorited %>
-                <span class="badge badge-favorited">⭐ お気に入り</span>
-              <% end %>
-            </div>
           </div>
 
           <p class="meaning"><%= vocabulary.meaning %></p>
@@ -80,6 +72,28 @@
               <p class="entries-label no-entries">📝 日記に紐づいていません</p>
             </div>
           <% end %>
+
+          <!-- ステータスボタン -->
+          <div class="card-status-actions">
+            <button type="button"
+                    class="btn-status btn-mastered"
+                    data-action="click->vocabulary-card#toggleMastered"
+                    data-vocabulary-card-target="masteredButton">
+              <span data-vocabulary-card-target="masteredIcon">
+                <%= vocabulary.mastered ? '✅' : '○' %>
+              </span>
+              習得済み
+            </button>
+            <button type="button"
+                    class="btn-status btn-favorited"
+                    data-action="click->vocabulary-card#toggleFavorited"
+                    data-vocabulary-card-target="favoritedButton">
+              <span data-vocabulary-card-target="favoritedIcon">
+                <%= vocabulary.favorited ? '⭐' : '☆' %>
+              </span>
+              お気に入り
+            </button>
+          </div>
 
           <!-- アクションボタン -->
           <div class="card-actions">

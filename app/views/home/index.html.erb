@@ -1,0 +1,58 @@
+<main class="entries-index">
+  <div class="content-wrapper">
+    <section class="entry-detail-section">
+      <div class="entry-detail-card">
+        <% if @recent_entries.present? %>
+          <h2 class="detail-section-title">最近の投稿</h2>
+          
+          <div class="recent-entries-list">
+            <% @recent_entries.each do |entry| %>
+              <%= link_to entry_path(entry), class: "recent-entry-item-link" do %>
+                <article class="recent-entry-item">
+                  <div class="recent-entry-header">
+                    <time class="recent-entry-date" datetime="<%= entry.posted_on.iso8601 %>">
+                      <%= entry.posted_on.strftime("%Y年%m月%d日") %>
+                    </time>
+                    <% if entry.image.attached? %>
+                      <div class="recent-entry-image">
+                        <% if entry.image.variable? %>
+                          <%= image_tag entry.image.variant(resize_to_limit: [150, 150]).processed,
+                                        alt: "#{entry.title.presence || '日記'}の画像",
+                                        class: "recent-entry-thumbnail" %>
+                        <% else %>
+                          <%= image_tag entry.image,
+                                        alt: "#{entry.title.presence || '日記'}の画像",
+                                        class: "recent-entry-thumbnail" %>
+                        <% end %>
+                      </div>
+                    <% end %>
+                  </div>
+                  <h3 class="recent-entry-title"><%= entry.title %></h3>
+                  <div class="recent-entry-content">
+                    <%= simple_format(truncate(entry.content, length: 100, omission: "...")) %>
+                  </div>
+                </article>
+              <% end %>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="empty-detail">
+            <div class="empty-icon">📝</div>
+            <h3>まだ投稿がありません</h3>
+            <p>今日から英語日記を始めましょう！最初の投稿を書いて、英語力を向上させていきましょう。</p>
+            <%= link_to "最初の投稿を書く", new_entry_path, class: "button primary" %>
+          </div>
+        <% end %>
+      </div>
+    </section>
+
+    <section class="calendar-section">
+      <div class="calendar-card">
+        <div id="fullcalendar" 
+             data-controller="calendar"
+             data-calendar-entries-url-value="<%= entries_path(format: :json) %>">
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
