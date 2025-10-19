@@ -19,6 +19,24 @@ export default class extends Controller {
     this.isJapaneseMode = false
     this.currentTranslation = ""
     console.log("Translation controller connected")
+    this.updateTranslateButtonState()
+  }
+
+  // 日本語入力内容が変更されたときにボタンの状態を更新
+  checkJapaneseContent() {
+    this.updateTranslateButtonState()
+  }
+
+  updateTranslateButtonState() {
+    const japaneseText = this.japaneseTextTarget?.value.trim() || ""
+
+    if (japaneseText.length > 0) {
+      // 内容がある場合：青色で有効
+      this.translateButtonTarget.classList.remove("disabled")
+    } else {
+      // 内容がない場合：グレーで視覚的に無効
+      this.translateButtonTarget.classList.add("disabled")
+    }
   }
 
   toggleLanguage() {
@@ -29,6 +47,8 @@ export default class extends Controller {
       this.japaneseSectionTarget.style.display = "block"
       this.toggleButtonTarget.textContent = "✕ 日本語入力を閉じる"
       this.toggleButtonTarget.classList.add("active")
+      // 翻訳ボタンの状態を更新
+      this.updateTranslateButtonState()
     } else {
       // 日本語入力フィールドを非表示
       this.japaneseSectionTarget.style.display = "none"
@@ -44,7 +64,7 @@ export default class extends Controller {
 
     // 入力チェック
     if (!japaneseText) {
-      this.showStatus("翻訳するテキストを入力してください", "error")
+      this.showStatus("日本語の本文を入力してください", "error")
       return
     }
 
@@ -96,6 +116,10 @@ export default class extends Controller {
     if (this.currentTranslation) {
       const englishText = this.extractEnglishText(this.currentTranslation)
       this.englishTextTarget.value = englishText
+
+      // inputイベントを発火させてフィードバックボタンと保存ボタンの状態を更新
+      const event = new Event('input', { bubbles: true })
+      this.englishTextTarget.dispatchEvent(event)
 
       // 日本語入力フィールドを閉じる
       this.isJapaneseMode = false

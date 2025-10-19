@@ -6,27 +6,75 @@ export default class extends Controller {
     "status",
     "resultArea",
     "feedbackText",
-    "responseField"
+    "responseField",
+    "contentField",
+    "submitButton"
   ]
 
   connect() {
     console.log("Form feedback controller connected")
+    this.updateButtonState()
+    this.updateSubmitButtonState()
+  }
+
+  // 入力内容が変更されたときにボタンの状態を更新
+  checkContent() {
+    this.updateButtonState()
+    this.updateSubmitButtonState()
+  }
+
+  // タイトルが変更されたときに保存ボタンの状態を更新
+  checkTitle() {
+    this.updateSubmitButtonState()
+  }
+
+
+  updateButtonState() {
+    const contentField = this.element.querySelector('[name="entry[content]"]')
+    const content = contentField?.value.trim() || ""
+
+    if (content.length > 0) {
+      // 内容がある場合：青色で有効
+      this.buttonTarget.classList.remove("disabled")
+    } else {
+      // 内容がない場合：グレーで視覚的に無効
+      this.buttonTarget.classList.add("disabled")
+    }
+  }
+
+  // 保存ボタンの状態を更新（タイトルと本文の両方が必要）
+  updateSubmitButtonState() {
+    const titleField = this.element.querySelector('[name="entry[title]"]')
+    const contentField = this.element.querySelector('[name="entry[content]"]')
+
+    const title = titleField?.value.trim() || ""
+    const content = contentField?.value.trim() || ""
+
+    if (this.hasSubmitButtonTarget) {
+      if (title.length > 0 && content.length > 0) {
+        // タイトルと本文の両方がある場合：青色で有効
+        this.submitButtonTarget.classList.remove("disabled")
+      } else {
+        // どちらかが空の場合：グレーで視覚的に無効
+        this.submitButtonTarget.classList.add("disabled")
+      }
+    }
   }
 
   async getFeedback() {
     console.log("Get feedback function called")
 
-    // フォームからタイトルと本文を取得
+    // フォームから本文を取得
     const form = this.element
     const titleField = form.querySelector('[name="entry[title]"]')
     const contentField = form.querySelector('[name="entry[content]"]')
 
-    const title = titleField?.value.trim()
+    const title = titleField?.value.trim() || ""
     const content = contentField?.value.trim()
 
-    // 入力チェック
-    if (!title || !content) {
-      this.showStatus("タイトルと本文を入力してください", "error")
+    // 入力チェック（本文のみ必須）
+    if (!content) {
+      this.showStatus("本文（英語）を入力してください", "error")
       return
     }
 

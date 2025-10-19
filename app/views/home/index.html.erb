@@ -1,0 +1,92 @@
+<main class="entries-index">
+  <div class="content-wrapper">
+    <div class="home-message">
+      <div class="motivation-card">
+        <div class="motivation-icon">💡</div>
+        <p class="motivation-text">
+          <% weekly_count = @recent_entries.select { |e| e.posted_on >= Date.current - 6 }.size %>
+          <%= motivation_message(@recent_entries, current_user) %></p>
+      </div>
+    </div>
+
+    <section class="entry-detail-section">
+      <div class="entry-detail-card">
+        <% if @recent_entries.present? %>
+          <h2 class="detail-section-title">最近投稿した日記</h2>
+          <div class="recent-entries-list">
+            <% @recent_entries.each do |entry| %>
+              <%= link_to entry_path(entry), class: "recent-entry-item-link" do %>
+                <article class="recent-entry-item">
+                  <div class="recent-entry-header">
+                    <div class="recent-entry-title-left">
+                      <time class="recent-entry-date" datetime="<%= entry.posted_on.iso8601 %>">
+                        <%= entry.posted_on.strftime("%Y年%m月%d日") %>
+                      </time>
+                      <h3 class="recent-entry-title"><%= truncate(entry.title, length: 80, omission: "...") %></h3>
+                    </div>
+                    <% if entry.image.attached? %>
+                      <div class="recent-entry-title-right">
+                        <div class="recent-entry-image">
+                          <% if entry.image.variable? %>
+                            <%= image_tag entry.image.variant(resize_to_limit: [150, 150]).processed,
+                                          alt: "#{entry.title.presence || '日記'}の画像",
+                                          class: "recent-entry-thumbnail" %>
+                          <% else %>
+                            <%= image_tag entry.image,
+                                          alt: "#{entry.title.presence || '日記'}の画像",
+                                          class: "recent-entry-thumbnail" %>
+                          <% end %>
+                        </div>
+                      </div>
+                    <% end %>
+                  </div>
+                  <div class="recent-entry-content">
+                    <%= simple_format(truncate(entry.content, length: 200, omission: "...")) %>
+                  </div>
+                </article>
+              <% end %>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="empty-detail">
+            <div class="empty-icon">📝</div>
+            <h3>まだ投稿がありません</h3>
+            <p>今日から英語日記を始めましょう！最初の投稿を書いて、英語力を向上させていきましょう。</p>
+            <%= link_to "最初の投稿を書く", new_entry_path, class: "button primary" %>
+          </div>
+        <% end %>
+      </div>
+    </section>
+    <section class="recent-vocabularies-section">
+      <div class="recent-vocabularies-card">
+        <h2 class="detail-section-title">最近登録した単語</h2>
+        <% if @recent_vocabularies.present? %>
+          <ul class="recent-vocabularies-list">
+            <% @recent_vocabularies.each do |vocabulary| %>
+              <li class="recent-vocabulary-item">
+                <span class="recent-vocabulary-word"><%= link_to vocabulary.word, edit_vocabulary_path(vocabulary), class: "recent-vocabulary-link" %></span>
+                <span class="recent-vocabulary-meaning"><%= link_to vocabulary.meaning, edit_vocabulary_path(vocabulary), class: "recent-vocabulary-link" %></span>
+                <span class="entry-used-in-recent-vocabulary"> 使用した日記:　<%= link_to "#{truncate(vocabulary.entries.first.title, length: 30)}（#{vocabulary.entries.first.posted_on.strftime("%Y年%m月%d日")}）", entry_path(vocabulary.entries.first), class: "entry-used-in-recent-vocabulary-link"  %> </span>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <div class="empty-vocabularies">
+            <div class="empty-icon">📚</div>
+            <h3>新しく覚えた英単語を記録しよう！</h3>
+            <%= link_to "単語を追加", new_vocabulary_path, class: "button secondary" %>
+          </div>
+        <% end %>
+      </div>
+    </section>
+
+    <section class="calendar-section">
+      <div class="calendar-card">
+        <div id="fullcalendar" 
+             data-controller="calendar"
+             data-calendar-entries-url-value="<%= entries_path(format: :json) %>">
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
