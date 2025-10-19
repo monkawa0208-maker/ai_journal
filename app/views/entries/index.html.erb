@@ -1,9 +1,47 @@
-<main class="entries-index">
+<main class="entries-index" data-controller="entry-tabs">
   <div class="content-wrapper">
-    <section class="entry-detail-section">
+    <!-- タブナビゲーション -->
+    <div class="entry-tabs-container">
+      <button type="button" 
+              class="entry-tab-button active" 
+              data-entry-tabs-target="tabButton"
+              data-action="click->entry-tabs#switchTab"
+              data-tab="entries">
+        一覧表示
+      </button>
+      <button type="button" 
+              class="entry-tab-button" 
+              data-entry-tabs-target="tabButton"
+              data-action="click->entry-tabs#switchTab"
+              data-tab="calendar">
+        カレンダー
+      </button>
+    </div>
+
+    <section class="entry-detail-section tab-content" data-entry-tabs-target="tabContent" data-tab="entries">
       <div class="entry-detail-card">
+        <!-- 検索バー -->
+        <div class="entry-search">
+          <%= form_with url: entries_path, method: :get, local: true, class: "entry-search-form" do |f| %>
+            <%= f.text_field :search, 
+                             value: params[:search],
+                             placeholder: "タイトルまたは本文で検索...",
+                             class: "entry-search-input" %>
+            <%= button_tag type: "submit", class: "entry-search-button" do %>
+              🔍
+            <% end %>
+            <% if params[:search].present? %>
+              <%= link_to "クリア", entries_path, class: "entry-search-clear" %>
+            <% end %>
+          <% end %>
+        </div>
+
         <% if @recent_entries.present? %>
-          <h2 class="detail-section-title">最近の投稿</h2>
+          <h2 class="detail-section-title">
+            <% if params[:search].present? %>
+              検索結果（<%= @recent_entries.count %>件）
+            <% end %>
+          </h2>
           
           <div class="recent-entries-list">
             <% @recent_entries.each do |entry| %>
@@ -37,16 +75,23 @@
           </div>
         <% else %>
           <div class="empty-detail">
-            <div class="empty-icon">📝</div>
-            <h3>まだ投稿がありません</h3>
-            <p>今日から英語日記を始めましょう！最初の投稿を書いて、英語力を向上させていきましょう。</p>
-            <%= link_to "最初の投稿を書く", new_entry_path, class: "button primary" %>
+            <% if params[:search].present? %>
+              <div class="empty-icon">🔍</div>
+              <h3>検索結果が見つかりませんでした</h3>
+              <p>「<%= params[:search] %>」に一致する日記はありません。</p>
+              <%= link_to "すべての日記を表示", entries_path, class: "button primary" %>
+            <% else %>
+              <div class="empty-icon">📝</div>
+              <h3>まだ投稿がありません</h3>
+              <p>今日から英語日記を始めましょう！最初の投稿を書いて、英語力を向上させていきましょう。</p>
+              <%= link_to "最初の投稿を書く", new_entry_path, class: "button primary" %>
+            <% end %>
           </div>
         <% end %>
       </div>
     </section>
 
-    <section class="calendar-section">
+    <section class="calendar-section tab-content hidden" data-entry-tabs-target="tabContent" data-tab="calendar">
       <div class="calendar-card">
         <div id="fullcalendar" 
              data-controller="calendar"

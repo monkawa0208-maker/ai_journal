@@ -18,23 +18,6 @@ body.vocabularies-index {
   padding: 1.5rem;
 }
 
-.vocabularies-header {
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
-
-.vocabularies-header h1 {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #1f2937;
-  margin-bottom: 0.5rem;
-}
-
-.vocabulary-count {
-  color: #6b7280;
-  font-size: 0.9rem;
-}
-
 /* 検索バー */
 .vocabulary-search {
   position: relative;
@@ -113,6 +96,17 @@ body.vocabularies-index {
 .vocabulary-actions .button {
   padding: 0.75rem 1.5rem;
   font-size: 1rem;
+}
+
+/* 単語ヒット数 */
+.vocabulary-count-container {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.vocabulary-count {
+  color: #6b7280;
+  font-size: 0.9rem;
 }
 
 /* 単語カードグリッド */
@@ -506,10 +500,6 @@ body.vocabularies-index {
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
-}
-
-.flashcard-header h1 {
-  margin-bottom: 1.5rem;
 }
 
 /* モード切り替え */

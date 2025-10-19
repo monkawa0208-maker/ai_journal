@@ -1,10 +1,6 @@
 <% content_for :body_class, 'vocabularies-index' %>
 
 <div class="vocabularies-container" data-controller="vocabulary-filter">
-  <header class="vocabularies-header">
-    <h1>📚 My Dictionary</h1>
-    <p class="vocabulary-count">登録単語数: <%= @vocabularies.total_count %></p>
-  </header>
 
   <!-- 検索バー -->
   <div class="vocabulary-search">
@@ -35,6 +31,9 @@
 
   <!-- 単語カードグリッド -->
   <% if @vocabularies.any? %>
+    <div class="vocabulary-count-container">
+      <div class="vocabulary-count">登録単語数: <%= @vocabularies.total_count %></div>
+    </div>
     <div class="vocabulary-grid" data-vocabulary-filter-target="grid">
       <% @vocabularies.each do |vocabulary| %>
         <div class="vocabulary-card" 

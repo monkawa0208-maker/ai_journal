@@ -10,11 +10,26 @@ export default class extends Controller {
 
   connect() {
     this.initializeCalendar()
+
+    // カスタムイベントリスナーを追加
+    this.resizeHandler = this.handleResize.bind(this)
+    this.element.addEventListener("calendar:resize", this.resizeHandler)
   }
 
   disconnect() {
     if (this.calendar) {
       this.calendar.destroy()
+    }
+
+    // イベントリスナーをクリーンアップ
+    if (this.resizeHandler) {
+      this.element.removeEventListener("calendar:resize", this.resizeHandler)
+    }
+  }
+
+  handleResize() {
+    if (this.calendar) {
+      this.calendar.updateSize()
     }
   }
 

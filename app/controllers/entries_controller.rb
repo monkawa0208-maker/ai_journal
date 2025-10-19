@@ -4,11 +4,17 @@ class EntriesController < ApplicationController
   before_action :set_entry, only: %i[show edit update destroy generate_feedback]
 
   def index
-    # 最新の投稿5件を取得（Recent Entryセクション用）
-    @recent_entries = current_user.entries.order(posted_on: :desc).limit(5)
+    # 全投稿を取得
+    @entries = current_user.entries.order(posted_on: :desc)
     
-    # 全投稿を取得（カレンダー表示用）
-    @entries = current_user.entries.order(created_at: :desc)
+    # 検索パラメータがある場合
+    if params[:search].present?
+      search_term = "%#{params[:search]}%"
+      @entries = @entries.where("title LIKE ? OR content LIKE ?", search_term, search_term)
+    end
+    
+    # Recent Entryセクション用（検索結果も反映）
+    @recent_entries = @entries
     
     respond_to do |format|
       format.html
