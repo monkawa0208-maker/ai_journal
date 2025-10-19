@@ -6,6 +6,7 @@ ja:
     models:
       entry: "日記"
       user: "ユーザー"
+      vocabulary: "単語"
     attributes:
       entry:
         title: "タイトル"
@@ -17,6 +18,11 @@ ja:
         password: "パスワード"
         password_confirmation: "パスワード（確認）"
         current_password: "現在のパスワード"
+      vocabulary:
+        word: "英単語"
+        meaning: "日本語の意味"
+        mastered: "習得済み"
+        favorited: "お気に入り"
     errors:
       models:
         entry:

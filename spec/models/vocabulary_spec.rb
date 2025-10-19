@@ -27,28 +27,28 @@ RSpec.describe Vocabulary, type: :model do
 
     it 'wordが必須' do
       vocabulary = build(:vocabulary, user: user, word: nil)
-      expect(vocabulary).not_to be_valid
-      expect(vocabulary.errors[:word]).to be_present
+      vocabulary.valid?
+      expect(vocabulary.errors.full_messages).to include('英単語を入力してください')
     end
 
     it 'meaningが必須' do
       vocabulary = build(:vocabulary, user: user, meaning: nil)
-      expect(vocabulary).not_to be_valid
-      expect(vocabulary.errors[:meaning]).to be_present
+      vocabulary.valid?
+      expect(vocabulary.errors.full_messages).to include('日本語の意味を入力してください')
     end
 
     it 'wordが255文字以下' do
       vocabulary = build(:vocabulary, user: user, word: 'a' * 256)
-      expect(vocabulary).not_to be_valid
-      expect(vocabulary.errors[:word]).to be_present
+      vocabulary.valid?
+      expect(vocabulary.errors.full_messages).to include('英単語は255文字以内で入力してください')
     end
     
     context 'uniqueness' do
       it '同一ユーザーが同じ単語を重複登録できない' do
         create(:vocabulary, user: user, word: 'grateful')
         duplicate_vocabulary = build(:vocabulary, user: user, word: 'grateful')
-        expect(duplicate_vocabulary).not_to be_valid
-        expect(duplicate_vocabulary.errors[:word]).to include('は既に登録されています')
+        duplicate_vocabulary.valid?
+        expect(duplicate_vocabulary.errors.full_messages).to include('英単語は既に登録されています')
       end
 
       it '異なるユーザーは同じ単語を登録できる' do

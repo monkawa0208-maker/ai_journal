@@ -16,8 +16,8 @@ RSpec.describe User, type: :model do
     describe 'nickname' do
       it 'nicknameが空の場合は無効であること' do
         @user.nickname = nil
-        expect(@user).not_to be_valid
-        expect(@user.errors[:nickname]).to be_present
+        @user.valid?
+        expect(@user.errors.full_messages).to include('ニックネームを入力してください')
       end
 
       it 'nicknameが30文字以内であれば有効であること' do
@@ -27,8 +27,8 @@ RSpec.describe User, type: :model do
 
       it 'nicknameが31文字以上の場合は無効であること' do
         @user.nickname = 'a' * 31
-        expect(@user).not_to be_valid
-        expect(@user.errors[:nickname]).to be_present
+        @user.valid?
+        expect(@user.errors.full_messages).to include('ニックネームは30文字以内で入力してください')
       end
     end
 
@@ -36,21 +36,21 @@ RSpec.describe User, type: :model do
     describe 'email' do
       it 'emailが空の場合は無効であること' do
         @user.email = nil
-        expect(@user).not_to be_valid
-        expect(@user.errors[:email]).to be_present
+        @user.valid?
+        expect(@user.errors.full_messages).to include('メールアドレスを入力してください')
       end
 
       it '重複したemailの場合は無効であること' do
         FactoryBot.create(:user, email: 'test@example.com')
         @user.email = 'test@example.com'
-        expect(@user).not_to be_valid
-        expect(@user.errors[:email]).to be_present
+        @user.valid?
+        expect(@user.errors.full_messages).to include('メールアドレスはすでに存在します')
       end
 
       it '無効な形式のemailの場合は無効であること' do
         @user.email = 'invalid_email'
-        expect(@user).not_to be_valid
-        expect(@user.errors[:email]).to be_present
+        @user.valid?
+        expect(@user.errors.full_messages).to include('メールアドレスは不正な値です')
       end
     end
 
@@ -59,22 +59,22 @@ RSpec.describe User, type: :model do
       it 'passwordが空の場合は無効であること' do
         @user.password = nil
         @user.password_confirmation = nil
-        expect(@user).not_to be_valid
-        expect(@user.errors[:password]).to be_present
+        @user.valid?
+        expect(@user.errors.full_messages).to include('パスワードを入力してください')
       end
 
       it 'passwordが6文字未満の場合は無効であること' do
         @user.password = '12345'
         @user.password_confirmation = '12345'
-        expect(@user).not_to be_valid
-        expect(@user.errors[:password]).to be_present
+        @user.valid?
+        expect(@user.errors.full_messages).to include('パスワードは6文字以上で入力してください')
       end
 
       it 'passwordとpassword_confirmationが一致しない場合は無効であること' do
         @user.password = 'password123'
         @user.password_confirmation = 'different'
-        expect(@user).not_to be_valid
-        expect(@user.errors[:password_confirmation]).to be_present
+        @user.valid?
+        expect(@user.errors.full_messages).to include('パスワード（確認）とパスワードの入力が一致しません')
       end
     end
   end
