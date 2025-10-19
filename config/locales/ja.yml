@@ -1,6 +1,3 @@
-# rails-i18nが標準的なRailsとActiveRecordの翻訳を提供するため、
-# アプリ固有のカスタマイズのみここに記述します。
-
 ja:
   activerecord:
     models:
