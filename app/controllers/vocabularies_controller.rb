@@ -39,11 +39,6 @@ class VocabulariesController < ApplicationController
   # フラッシュカード復習ページ
   def flashcard
     @vocabularies = current_user.vocabularies.recent
-    
-    # フィルタリング（未習得のみなど）
-    if params[:filter] == 'unmastered'
-      @vocabularies = @vocabularies.unmastered
-    end
 
     redirect_to vocabularies_path, alert: '復習する単語がありません' if @vocabularies.empty?
   end

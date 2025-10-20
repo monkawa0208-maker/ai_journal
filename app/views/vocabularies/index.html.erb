@@ -45,10 +45,10 @@
           
           <!-- 単語と意味 -->
           <div class="card-header">
-            <h3 class="word"><%= vocabulary.word %></h3>
+            <h3 class="word"><%= link_to vocabulary.word, edit_vocabulary_path(vocabulary) %></h3>
           </div>
 
-          <p class="meaning"><%= vocabulary.meaning %></p>
+          <p class="meaning"><%= link_to vocabulary.meaning, edit_vocabulary_path(vocabulary) %></p>
 
           <!-- 使用した日記リンク -->
           <% if vocabulary.entries.any? %>
@@ -69,7 +69,7 @@
             </div>
           <% else %>
             <div class="card-entries">
-              <p class="entries-label no-entries">📝 日記に紐づいていません</p>
+              <p class="entries-label no-entries">📝 日記に紐づいていません<br></p>
             </div>
           <% end %>
 
@@ -93,14 +93,6 @@
               </span>
               お気に入り
             </button>
-          </div>
-
-          <!-- アクションボタン -->
-          <div class="card-actions">
-            <%= link_to "編集", edit_vocabulary_path(vocabulary), class: "btn-edit" %>
-            <%= link_to "削除", vocabulary_path(vocabulary), 
-                        data: { turbo_method: :delete, turbo_confirm: "本当に削除しますか？" },
-                        class: "btn-delete" %>
           </div>
         </div>
       <% end %>

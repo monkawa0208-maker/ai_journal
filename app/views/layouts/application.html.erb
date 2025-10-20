@@ -35,7 +35,7 @@
             <div class="header-actions">
               <%= link_to '登録情報の編集', edit_user_registration_path, class: 'login-btn' %>
               <%= link_to 'ログアウト', destroy_user_session_path, class: 'logout-btn', data: { turbo_method: :delete } %>
-              <%= link_to "NEW POST", new_entry_path, class: "button new-post" %>
+              <%= link_to "新規日記作成", new_entry_path, class: "button new-post" %>
             </div>
           <% else %>
             <div class="header-actions">
