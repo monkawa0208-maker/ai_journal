@@ -5,7 +5,10 @@ class EntriesController < ApplicationController
 
   def index
     # 全投稿を取得
-    @entries = current_user.entries.order(posted_on: :desc)
+    # Active Storage画像のN+1を防ぐためwith_attached_imageを追加
+    @entries = current_user.entries
+                           .with_attached_image
+                           .order(posted_on: :desc)
     
     # 検索パラメータがある場合
     if params[:search].present?
@@ -151,7 +154,10 @@ class EntriesController < ApplicationController
   private
 
   def set_entry
-    @entry = current_user.entries.includes(:vocabularies).find(params[:id])
+    @entry = current_user.entries
+                         .includes(:vocabularies)
+                         .with_attached_image
+                         .find(params[:id])
   end
 
   def entry_params

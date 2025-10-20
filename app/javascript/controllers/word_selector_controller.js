@@ -291,17 +291,10 @@ export default class extends Controller {
         <div class="vocabulary-tags"></div>
       `
 
-      // ヘッダー内に挿入（スティッキーヘッダーの中）
+      // show画面のヘッダー内に挿入
       const header = this.element.querySelector('.entry-detail__header')
       if (header) {
-        // 詳細ページの場合、ヘッダー内に挿入
         header.appendChild(vocabulariesDiv)
-      } else {
-        // 編集ページの場合、フォームの後に挿入
-        const formContainer = this.element.querySelector('.form-container')
-        if (formContainer) {
-          formContainer.appendChild(vocabulariesDiv)
-        }
       }
     }
 
