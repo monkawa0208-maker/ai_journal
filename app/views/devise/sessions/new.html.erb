@@ -1,6 +1,6 @@
 <div class="contents row">
   <div class="container">
-    <h2>Log in</h2>
+    <h2>ログイン</h2>
     
     <% if notice %>
       <div class="alert alert-success">
@@ -26,8 +26,15 @@
       </div>
 
       <div class="actions">
-        <%= f.submit "Log in" %>
+        <%= f.submit "ログイン" %>
       </div>
     <% end %>
+    
+    <div class="auth-links">
+      <div class="divider">
+        <span>または</span>
+      </div>
+      <%= link_to "新規登録", new_user_registration_path, class: "btn-signup" %>
+    </div>
   </div>
 </div>

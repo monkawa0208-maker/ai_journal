@@ -29,9 +29,6 @@
 
       <div class="field">
         <%= f.label :password %>
-        <% if @minimum_password_length %>
-          <em>(<%= @minimum_password_length %> 文字以上)</em>
-        <% end %><br />
         <%= f.password_field :password, autocomplete: "off" %>
       </div>
 
@@ -41,8 +38,15 @@
       </div>
 
       <div class="actions">
-        <%= f.submit "Sign up" %>
+        <%= f.submit "新規登録" %>
       </div>
     <% end %>
+    
+    <div class="auth-links">
+      <div class="divider">
+        <span>アカウントをお持ちの方</span>
+      </div>
+      <%= link_to "ログイン", new_user_session_path, class: "btn-login" %>
+    </div>
   </div>
 </div>

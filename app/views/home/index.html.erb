@@ -66,7 +66,11 @@
               <li class="recent-vocabulary-item">
                 <span class="recent-vocabulary-word"><%= link_to vocabulary.word, edit_vocabulary_path(vocabulary), class: "recent-vocabulary-link" %></span>
                 <span class="recent-vocabulary-meaning"><%= link_to vocabulary.meaning, edit_vocabulary_path(vocabulary), class: "recent-vocabulary-link" %></span>
-                <span class="entry-used-in-recent-vocabulary"> 使用した日記:　<%= link_to "#{truncate(vocabulary.entries.first.title, length: 30)}（#{vocabulary.entries.first.posted_on.strftime("%Y年%m月%d日")}）", entry_path(vocabulary.entries.first), class: "entry-used-in-recent-vocabulary-link"  %> </span>
+                <% if vocabulary.entries.first.present? %>
+                  <span class="entry-used-in-recent-vocabulary"> 使用した日記:　<%= link_to "#{truncate(vocabulary.entries.first.title, length: 30)}（#{vocabulary.entries.first.posted_on.strftime("%Y年%m月%d日")}）", entry_path(vocabulary.entries.first), class: "entry-used-in-recent-vocabulary-link"  %> </span>
+                <% else %>
+                  <span class="entry-used-in-recent-vocabulary"> 使用した日記: なし </span>
+                <% end %>
               </li>
             <% end %>
           </ul>

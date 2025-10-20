@@ -1,66 +1,13 @@
 <% content_for :body_class, 'entries-form' %>
 
-<main class="form-page" 
-      data-controller="word-selector"
-      data-word-selector-entry-id-value="<%= @entry.id %>">
+<main class="form-page">
   <div class="form-container">
     <header class="form-header">
       <h1 class="form-title">投稿を編集</h1>
       <p class="form-subtitle">内容を修正して、より良い英語日記にしましょう</p>
-      <p class="form-subtitle-hint">💡 英語本文のダブルクリックを選択すると、MyDictionaryに登録できます。熟語を登録する場合は該当箇所を範囲選択しましょう。</p>
     </header>
 
     <%= render "form", entry: @entry %>
     
-    <!-- 登録済み単語の表示 -->
-    <% if @entry.vocabularies.any? %>
-      <div class="entry-vocabularies" style="margin-top: 2rem;">
-        <h3>この日記で登録した単語:</h3>
-        <div class="vocabulary-tags">
-          <% @entry.vocabularies.each do |vocab| %>
-            <%= link_to vocab.word, edit_vocabulary_path(vocab), class: "vocabulary-tag" %>
-          <% end %>
-        </div>
-      </div>
-    <% end %>
-  </div>
 
-  <!-- 単語登録モーダル -->
-  <div class="modal" data-word-selector-target="modal">
-  <div class="modal-content">
-    <span class="modal-close" data-action="click->word-selector#closeModal">&times;</span>
-    <h2>単語を登録</h2>
-    
-    <form data-word-selector-target="form" data-action="submit->word-selector#submitWord">
-      <div class="form-group">
-        <label>英単語</label>
-        <input type="text" 
-               data-word-selector-target="wordInput" 
-               class="form-control"
-               placeholder="例: grateful"
-               required>
-      </div>
-      <div class="form-group">
-        <label>日本語の意味</label>
-        <textarea data-word-selector-target="meaningInput" 
-                  class="form-control" 
-                  rows="3" 
-                  placeholder="単語の意味を入力してください..."
-                  required></textarea>
-      </div>
-      <div class="form-actions">
-        <button type="button" 
-                class="button secondary" 
-                data-action="click->word-selector#closeModal">
-          キャンセル
-        </button>
-        <button type="submit" 
-                class="button primary"
-                data-word-selector-target="submitButton">
-          登録
-        </button>
-      </div>
-    </form>
-  </div>
-  </div>
 </main>
