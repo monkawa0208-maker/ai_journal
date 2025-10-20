@@ -147,62 +147,85 @@
 
 @media (max-width: 768px) {
   .app-header .header-container {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 0.75rem;
-  }
-
-  .app-header .header-logo {
-    text-align: center;
+    padding: 0.5rem 0.75rem;
+    gap: 0.5rem;
+    flex-wrap: wrap;
   }
 
   .app-header .header-logo h1 {
-    font-size: 1.5rem;
+    font-size: 1.125rem;
   }
 
   .app-header .header-nav {
-    justify-content: center;
+    order: 3;
     width: 100%;
+    justify-content: center;
+    gap: 0.25rem;
   }
 
   .app-header .header-nav .nav-link {
+    padding: 0.375rem 0.625rem;
+    font-size: 0.8125rem;
     flex: 1;
     text-align: center;
   }
 
   .app-header .header-user {
-    flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.5rem;
+    flex-wrap: wrap;
   }
 
   .app-header .header-actions {
-    width: 100%;
-    flex-direction: column;
+    gap: 0.5rem;
   }
 
   .app-header .user-info {
-    justify-content: center;
-    gap: 0.25rem;
-    padding: 0.75rem 1rem;
+    padding: 0.375rem 0.75rem;
+    gap: 0.375rem;
   }
 
-  .app-header .user-greeting,
+  .app-header .user-greeting {
+    display: none;
+  }
+
   .app-header .user-name {
-    font-size: 0.85rem;
+    font-size: 0.8125rem;
   }
 
   .app-header .logout-btn,
   .app-header .login-btn,
   .app-header .signup-btn {
-    width: 100%;
-    text-align: center;
-    padding: 0.625rem 1.25rem;
-    font-size: 0.85rem;
+    padding: 0.375rem 0.875rem;
+    font-size: 0.8125rem;
   }
 }
 
 @media (max-width: 480px) {
-  .app-header .header-user {
-    width: 100%;
+  .app-header .header-container {
+    padding: 0.5rem;
+  }
+
+  .app-header .header-logo h1 {
+    font-size: 1rem;
+  }
+
+  .app-header .header-nav .nav-link {
+    padding: 0.3125rem 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .app-header .user-info {
+    padding: 0.3125rem 0.625rem;
+  }
+
+  .app-header .user-name {
+    font-size: 0.75rem;
+  }
+
+  .app-header .logout-btn,
+  .app-header .login-btn,
+  .app-header .signup-btn {
+    padding: 0.3125rem 0.75rem;
+    font-size: 0.75rem;
   }
 }
