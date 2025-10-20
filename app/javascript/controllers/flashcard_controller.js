@@ -13,16 +13,21 @@ export default class extends Controller {
     "favoritedText",
     "prevBtn",
     "nextBtn",
-    "modeBtn"
+    "modeBtn",
+    "filterBtn"
   ]
   static values = { vocabularies: Array }
 
   connect() {
     this.currentIndex = 0
     this.mode = 'en-ja' // 英→日モード
+    this.filter = 'all' // all, unmastered
     this.isFlipped = false
+    this.allVocabularies = this.vocabulariesValue // 元のデータを保持
+    this.filteredVocabularies = this.allVocabularies // 表示用データ
 
     if (this.vocabulariesValue.length > 0) {
+      this.applyFilter()
       this.updateCard()
       this.updateButtons()
     }
@@ -42,6 +47,35 @@ export default class extends Controller {
     this.updateCard()
   }
 
+  switchFilter(event) {
+    const button = event.currentTarget
+    const newFilter = button.dataset.filter
+
+    // フィルタボタンのアクティブ状態を更新
+    this.filterBtnTargets.forEach(btn => btn.classList.remove('active'))
+    button.classList.add('active')
+
+    this.filter = newFilter
+    this.currentIndex = 0
+    this.isFlipped = false
+    this.cardTarget.classList.remove('flipped')
+
+    this.applyFilter()
+
+    if (this.filteredVocabularies.length > 0) {
+      this.updateCard()
+      this.updateButtons()
+    }
+  }
+
+  applyFilter() {
+    if (this.filter === 'unmastered') {
+      this.filteredVocabularies = this.allVocabularies.filter(v => !v.mastered)
+    } else {
+      this.filteredVocabularies = this.allVocabularies
+    }
+  }
+
   flipCard() {
     this.isFlipped = !this.isFlipped
     if (this.isFlipped) {
@@ -52,7 +86,7 @@ export default class extends Controller {
   }
 
   nextCard() {
-    if (this.currentIndex < this.vocabulariesValue.length - 1) {
+    if (this.currentIndex < this.filteredVocabularies.length - 1) {
       this.currentIndex++
       this.isFlipped = false
       this.cardTarget.classList.remove('flipped')
@@ -72,7 +106,7 @@ export default class extends Controller {
   }
 
   updateCard() {
-    const vocabulary = this.vocabulariesValue[this.currentIndex]
+    const vocabulary = this.filteredVocabularies[this.currentIndex]
 
     if (this.mode === 'en-ja') {
       // 英→日モード
@@ -86,7 +120,7 @@ export default class extends Controller {
 
     // 進捗表示を更新
     this.currentIndexTarget.textContent = this.currentIndex + 1
-    this.totalCountTarget.textContent = this.vocabulariesValue.length
+    this.totalCountTarget.textContent = this.filteredVocabularies.length
 
     // 習得済みボタンの表示を更新
     this.updateMasteredButton(vocabulary.mastered)
@@ -104,7 +138,7 @@ export default class extends Controller {
     }
 
     // 次へボタンの状態
-    if (this.currentIndex === this.vocabulariesValue.length - 1) {
+    if (this.currentIndex === this.filteredVocabularies.length - 1) {
       this.nextBtnTarget.disabled = true
     } else {
       this.nextBtnTarget.disabled = false
@@ -132,7 +166,7 @@ export default class extends Controller {
   }
 
   async toggleMastered() {
-    const vocabulary = this.vocabulariesValue[this.currentIndex]
+    const vocabulary = this.filteredVocabularies[this.currentIndex]
     const vocabularyId = vocabulary.id
 
     try {
@@ -149,11 +183,30 @@ export default class extends Controller {
       const data = await response.json()
 
       if (response.ok && data.success) {
-        // ローカルのデータを更新
-        this.vocabulariesValue[this.currentIndex].mastered = data.mastered
+        // allVocabularies内の該当データを更新
+        const allIndex = this.allVocabularies.findIndex(v => v.id === vocabularyId)
+        if (allIndex !== -1) {
+          this.allVocabularies[allIndex].mastered = data.mastered
+        }
+
+        // filteredVocabularies内の該当データを更新
+        this.filteredVocabularies[this.currentIndex].mastered = data.mastered
 
         // ボタンの表示を更新
         this.updateMasteredButton(data.mastered)
+
+        // フィルタが変わった場合、再適用
+        this.applyFilter()
+
+        // 現在のインデックスが範囲外になった場合の処理
+        if (this.currentIndex >= this.filteredVocabularies.length) {
+          this.currentIndex = Math.max(0, this.filteredVocabularies.length - 1)
+        }
+
+        if (this.filteredVocabularies.length > 0) {
+          this.updateCard()
+          this.updateButtons()
+        }
       } else {
         console.error('習得済みフラグの更新に失敗しました:', data.error)
         alert('更新に失敗しました')
@@ -165,7 +218,7 @@ export default class extends Controller {
   }
 
   async toggleFavorited() {
-    const vocabulary = this.vocabulariesValue[this.currentIndex]
+    const vocabulary = this.filteredVocabularies[this.currentIndex]
     const vocabularyId = vocabulary.id
 
     try {
@@ -182,8 +235,14 @@ export default class extends Controller {
       const data = await response.json()
 
       if (response.ok && data.success) {
-        // ローカルのデータを更新
-        this.vocabulariesValue[this.currentIndex].favorited = data.favorited
+        // allVocabularies内の該当データを更新
+        const allIndex = this.allVocabularies.findIndex(v => v.id === vocabularyId)
+        if (allIndex !== -1) {
+          this.allVocabularies[allIndex].favorited = data.favorited
+        }
+
+        // filteredVocabularies内の該当データを更新
+        this.filteredVocabularies[this.currentIndex].favorited = data.favorited
 
         // ボタンの表示を更新
         this.updateFavoritedButton(data.favorited)

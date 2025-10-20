@@ -142,19 +142,32 @@ body.vocabularies-index {
   margin: 0;
 }
 
+.word a,
+.meaning a {
+  color: #1f2937;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.word a:hover,
+.meaning a:hover {
+  color: #2563eb;
+}
+
 .meaning {
   color: #4b5563;
   line-height: 1.5;
-  margin-bottom: 0.875rem;
+  margin-bottom: 0.5rem;
   min-height: 2rem;
   font-size: 0.9rem;
 }
 
 /* 日記リンク */
 .card-entries {
-  margin-bottom: 0.875rem;
-  padding-top: 0.75rem;
+  margin-bottom: 0.5rem;
+  padding-top: 0.5rem;
   border-top: 1px solid #f3f4f6;
+  min-height: 60px;
 }
 
 .entries-label {
@@ -502,6 +515,11 @@ body.vocabularies-index {
   text-align: center;
 }
 
+/* ヘッダー */
+.flashcard-header {
+  margin-bottom: 1rem;
+}
+
 /* モード切り替え */
 .flashcard-mode {
   display: inline-flex;
@@ -525,11 +543,39 @@ body.vocabularies-index {
   border-color: #2563eb;
 }
 
+/* フィルタ切り替え */
+.flashcard-filter {
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.flashcard-filter .filter-btn {
+  padding: 0.5rem 1.25rem;
+  border: 2px solid #ddd;
+  background: white;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+.flashcard-filter .filter-btn:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.flashcard-filter .filter-btn.active {
+  background: #10b981;
+  color: white;
+  border-color: #10b981;
+}
+
 /* 進捗表示 */
 .flashcard-progress {
   font-size: 1.2rem;
   color: #666;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 /* フラッシュカードステージ */
@@ -819,6 +865,18 @@ body.vocabularies-index {
 
   .btn-status {
     width: 100%;
+  }
+
+  .flashcard-mode,
+  .flashcard-filter {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .mode-btn,
+  .flashcard-filter .filter-btn {
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
   }
 
   .flashcard {

@@ -21,6 +21,22 @@
       </button>
     </div>
 
+    <!-- フィルタ切り替え -->
+    <div class="flashcard-filter">
+      <button class="filter-btn active" 
+              data-flashcard-target="filterBtn"
+              data-filter="all"
+              data-action="click->flashcard#switchFilter">
+        すべて
+      </button>
+      <button class="filter-btn" 
+              data-flashcard-target="filterBtn"
+              data-filter="unmastered"
+              data-action="click->flashcard#switchFilter">
+        未習得のみ
+      </button>
+    </div>
+
     <!-- 進捗表示 -->
     <p class="flashcard-progress">
       <span data-flashcard-target="currentIndex">1</span> / 
