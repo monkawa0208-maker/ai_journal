@@ -33,7 +33,8 @@ class ApplicationController < ActionController::Base
     if success
       render json: data, status: status
     else
-      render json: { error: error }, status: :internal_server_error
+      error_message = error&.include?('Translation') ? error : "フィードバック生成に失敗しました。"
+      render json: { error: error_message }, status: :internal_server_error
     end
   end
 

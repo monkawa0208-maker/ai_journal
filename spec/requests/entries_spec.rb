@@ -56,14 +56,10 @@ RSpec.describe "Entries", type: :request do
 
     it "他のユーザーのエントリーにはアクセスできないこと" do
       # current_user.entriesスコープで検索されるため、RecordNotFoundが発生する
+      # ErrorHandlingモジュールがHTMLリクエストの場合にリダイレクトする
       get entry_path(@other_entry)
-      # ここではリダイレクトまたはエラーページが表示される可能性があるため、
-      # ステータスコードをチェックするか、例外をキャッチする
-      # Railsのデフォルト動作では、RecordNotFoundは404になる
-      expect(response).to have_http_status(:not_found)
-    rescue ActiveRecord::RecordNotFound
-      # 例外が発生した場合もテストはパス
-      expect(true).to be true
+      expect(response).to have_http_status(:redirect)
+      expect(response).to redirect_to(root_path)
     end
   end
 

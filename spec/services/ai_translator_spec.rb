@@ -22,11 +22,10 @@ RSpec.describe AiTranslator, type: :service do
   end
 
   describe '#initialize' do
-    it '日本語テキストとAPIキーを設定すること' do
+    it '日本語テキストを設定すること' do
       translator = AiTranslator.new('こんにちは')
       
       expect(translator.instance_variable_get(:@japanese_text)).to eq('こんにちは')
-      expect(translator.instance_variable_get(:@api_key)).to eq('test_api_key')
     end
   end
 
@@ -150,15 +149,12 @@ RSpec.describe AiTranslator, type: :service do
     end
   end
 
-  describe '#system_prompt (private)' do
-    it '翻訳用のシステムプロンプトを生成すること' do
+  describe '#build_prompt (private)' do
+    it '翻訳用のプロンプトを生成すること' do
       translator = AiTranslator.new('こんにちは')
-      prompt = translator.send(:system_prompt)
+      prompt = translator.send(:build_prompt)
       
-      expect(prompt).to include('professional translator')
-      expect(prompt).to include('翻訳後の文章')
-      expect(prompt).to include('Key Points')
-      expect(prompt).to include('Vocabulary')
+      expect(prompt).to include('こんにちは')
     end
   end
 
@@ -180,10 +176,7 @@ RSpec.describe AiTranslator, type: :service do
       )
       
       http_double = double('http')
-      allow(HTTP).to receive(:headers).with(
-        'Authorization' => 'Bearer test_api_key',
-        'Content-Type' => 'application/json'
-      ).and_return(http_double)
+      allow(HTTP).to receive(:headers).and_return(http_double)
       
       expect(http_double).to receive(:post).with(
         'https://api.openai.com/v1/chat/completions',

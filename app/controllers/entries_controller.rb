@@ -83,14 +83,12 @@ class EntriesController < ApplicationController
   end
 
   def preview_feedback
+    title = params[:title]
     content = params[:content]
     
-    if content.blank?
-      return render json: { error: "本文（英語）を入力してください。" }, status: :unprocessable_content
+    if title.blank? || content.blank?
+      return render json: { error: "タイトルと本文を入力してください。" }, status: :unprocessable_content
     end
-
-    # タイトルがない場合はデフォルト値を使用
-    title = params[:title].presence || "Untitled"
 
     # 一時的なエントリーオブジェクトを作成（保存しない）
     temp_entry = current_user.entries.build(
@@ -117,8 +115,8 @@ class EntriesController < ApplicationController
       if result[:success] && @entry.update(response: result[:data])
         render json: { response: @entry.response }, status: :ok
       else
-        error_message = result[:error] || "AIからのコメントが保存できませんでした。"
-        render json: { error: error_message }, status: :unprocessable_content
+        error_message = result[:error] ? "AIからのコメント生成に失敗しました。" : "AIからのコメントが保存できませんでした。"
+        render json: { error: error_message }, status: :internal_server_error
       end
     else
       if @entry.response.present?
@@ -130,7 +128,7 @@ class EntriesController < ApplicationController
       if result[:success] && @entry.update(response: result[:data])
         redirect_with_message(@entry, "AIからのコメントを追加しました。")
       else
-        error_message = result[:error] || "AIからのコメント保存に失敗しました。"
+        error_message = "AIからのコメント生成に失敗しました。"
         redirect_with_message(@entry, error_message, type: :alert)
       end
     end

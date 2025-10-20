@@ -15,4 +15,13 @@ class Vocabulary < ApplicationRecord
   scope :unmastered, -> { where(mastered: false) }
   scope :favorited, -> { where(favorited: true) }
   scope :search_by_word, ->(keyword) { where('word LIKE ?', "%#{keyword}%") if keyword.present? }
+
+  # インスタンスメソッド
+  def toggle_mastered!
+    update!(mastered: !mastered)
+  end
+
+  def toggle_favorited!
+    update!(favorited: !favorited)
+  end
 end

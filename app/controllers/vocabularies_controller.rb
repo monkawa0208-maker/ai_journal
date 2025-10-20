@@ -67,10 +67,10 @@ class VocabulariesController < ApplicationController
     if result[:success]
       # 日記との関連付け
       if params[:entry_id].present?
-        entry_result = EntryService.new(current_user, {}, result[:vocabulary]).add_vocabulary(
-          word: result[:vocabulary].word,
-          meaning: result[:vocabulary].meaning
-        )
+        entry = current_user.entries.find_by(id: params[:entry_id])
+        if entry
+          result[:vocabulary].entries << entry unless result[:vocabulary].entries.include?(entry)
+        end
       end
 
       redirect_with_message(vocabularies_path, result[:message])

@@ -48,6 +48,25 @@ RSpec.configure do |config|
 
   # Deviseのテストヘルパーを使用できるようにする
   config.include Devise::Test::IntegrationHelpers, type: :request
+  config.include Devise::Test::IntegrationHelpers, type: :system
+  
+  # Capybaraの設定
+  # ブラウザを開いてテストを実行する場合
+  config.before(:each, type: :system) do
+    if ENV['HEADLESS'] == 'false'
+      driven_by :selenium_chrome
+    else
+      driven_by :rack_test
+    end
+  end
+  
+  config.before(:each, type: :system, js: true) do
+    if ENV['HEADLESS'] == 'false'
+      driven_by :selenium_chrome
+    else
+      driven_by :selenium_chrome_headless
+    end
+  end
 
   # You can uncomment this line to turn off ActiveRecord support entirely.
   # config.use_active_record = false

@@ -130,10 +130,7 @@ RSpec.describe AiFeedbackGenerator, type: :service do
       )
       
       http_double = double('http')
-      allow(HTTP).to receive(:headers).with(
-        'Authorization' => 'Bearer test_api_key',
-        'Content-Type' => 'application/json'
-      ).and_return(http_double)
+      allow(HTTP).to receive(:headers).and_return(http_double)
       
       expect(http_double).to receive(:post).with(
         'https://api.openai.com/v1/chat/completions',

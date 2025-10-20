@@ -66,12 +66,11 @@ class EntryService
   def destroy_entry
     return { success: false, message: "エントリーが見つかりません。" } unless @entry
 
-    entry_title = @entry.title
     @entry.destroy
 
     {
       success: true,
-      message: "日記「#{entry_title}」を削除しました。"
+      message: "日記を削除しました。"
     }
   end
 
