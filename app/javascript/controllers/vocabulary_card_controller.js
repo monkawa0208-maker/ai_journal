@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { ControllerUtils } from "./utils"
 
 export default class extends Controller {
   static targets = ["masteredButton", "masteredIcon", "favoritedButton", "favoritedIcon"]
@@ -15,50 +16,30 @@ export default class extends Controller {
 
   async toggleMastered() {
     try {
-      const response = await fetch(`/vocabularies/${this.idValue}/toggle_mastered`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': this.getCsrfToken()
-        }
-      })
-
-      const data = await response.json()
-
-      if (response.ok) {
+      const { success, data, error } = await ControllerUtils.makeRequest(`/vocabularies/${this.idValue}/toggle_mastered`, { method: 'PATCH' })
+      if (success) {
         this.masteredValue = data.mastered
         this.masteredIconTarget.textContent = data.mastered ? '✅' : '○'
         this.updateButtonStyles()
       } else {
-        alert('エラーが発生しました: ' + data.error)
+        alert('エラーが発生しました: ' + (error || ''))
       }
-    } catch (error) {
-      console.error('Error toggling mastered:', error)
+    } catch (_) {
       alert('エラーが発生しました')
     }
   }
 
   async toggleFavorited() {
     try {
-      const response = await fetch(`/vocabularies/${this.idValue}/toggle_favorited`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': this.getCsrfToken()
-        }
-      })
-
-      const data = await response.json()
-
-      if (response.ok) {
+      const { success, data, error } = await ControllerUtils.makeRequest(`/vocabularies/${this.idValue}/toggle_favorited`, { method: 'PATCH' })
+      if (success) {
         this.favoritedValue = data.favorited
         this.favoritedIconTarget.textContent = data.favorited ? '⭐' : '☆'
         this.updateButtonStyles()
       } else {
-        alert('エラーが発生しました: ' + data.error)
+        alert('エラーが発生しました: ' + (error || ''))
       }
-    } catch (error) {
-      console.error('Error toggling favorited:', error)
+    } catch (_) {
       alert('エラーが発生しました')
     }
   }
@@ -79,8 +60,6 @@ export default class extends Controller {
     }
   }
 
-  getCsrfToken() {
-    return document.querySelector('meta[name="csrf-token"]')?.content || ''
-  }
+  // CSRF取得はControllerUtilsに統一
 }
 

@@ -9,6 +9,10 @@ export default class extends Controller {
   }
 
   connect() {
+    if (!this.hasEntriesUrlValue || !this.entriesUrlValue) {
+      console.error('Calendar: entriesUrl is not provided')
+      return
+    }
     this.initializeCalendar()
 
     // カスタムイベントリスナーを追加

@@ -29,27 +29,42 @@ class EntriesController < ApplicationController
   end
 
   def create
-    @entry = current_user.entries.new(entry_params)
-    if @entry.save
-      redirect_to @entry, notice: "日記を投稿しました。"
+    result = EntryService.create_entry(
+      user: current_user,
+      entry_params: entry_params
+    )
+
+    if result[:success]
+      redirect_with_message(result[:entry], result[:message])
     else
-      render :new, status: :unprocessable_content
+      @entry = result[:entry]
+      handle_validation_errors(@entry, :new) do
+        set_flash_message(:alert, result[:message])
+      end
     end
   end
 
   def edit; end
 
   def update
-    if @entry.update(entry_params)
-      redirect_to @entry, notice: "日記を更新しました。"
+    result = EntryService.update_entry(
+      entry: @entry,
+      entry_params: entry_params
+    )
+
+    if result[:success]
+      redirect_with_message(result[:entry], result[:message])
     else
-      render :edit, status: :unprocessable_content
+      @entry = result[:entry]
+      handle_validation_errors(@entry, :edit) do
+        set_flash_message(:alert, result[:message])
+      end
     end
   end
 
   def destroy
-    @entry.destroy
-    redirect_to entries_path, notice: "日記を削除しました。"
+    result = EntryService.destroy_entry(entry: @entry)
+    redirect_with_message(entries_path, result[:message])
   end
 
   def translate
@@ -59,14 +74,12 @@ class EntriesController < ApplicationController
       return render json: { error: "翻訳するテキストが入力されていません。" }, status: :unprocessable_content
     end
 
-    translated_text = AiTranslator.call(japanese_text)
-    render json: { translation: translated_text }, status: :ok
-  rescue AiTranslator::TranslationError => e
-    Rails.logger.error("[EntriesController#translate] #{e.class}: #{e.message}")
-    render json: { error: e.message }, status: :internal_server_error
-  rescue StandardError => e
-    Rails.logger.error("[EntriesController#translate] #{e.class}: #{e.message}")
-    render json: { error: "翻訳処理中にエラーが発生しました。" }, status: :internal_server_error
+    result = handle_ai_service_call(AiTranslator, japanese_text)
+    render_json_response(
+      success: result[:success],
+      data: result[:success] ? { translation: result[:data] } : nil,
+      error: result[:error]
+    )
   end
 
   def preview_feedback
@@ -86,11 +99,12 @@ class EntriesController < ApplicationController
       posted_on: Date.current
     )
 
-    feedback = AiFeedbackGenerator.call(temp_entry)
-    render json: { response: feedback }, status: :ok
-  rescue StandardError => e
-    Rails.logger.error("[EntriesController#preview_feedback] #{e.class}: #{e.message}")
-    render json: { error: "フィードバック生成に失敗しました。" }, status: :internal_server_error
+    result = handle_ai_service_call(AiFeedbackGenerator, temp_entry)
+    render_json_response(
+      success: result[:success],
+      data: result[:success] ? { response: result[:data] } : nil,
+      error: result[:error]
+    )
   end
 
   def generate_feedback
@@ -99,31 +113,26 @@ class EntriesController < ApplicationController
         return render json: { response: @entry.response }, status: :ok
       end
 
-      feedback = AiFeedbackGenerator.call(@entry)
-      if @entry.update(response: feedback)
+      result = handle_ai_service_call(AiFeedbackGenerator, @entry)
+      if result[:success] && @entry.update(response: result[:data])
         render json: { response: @entry.response }, status: :ok
       else
-        render json: { error: "AIからのコメントが保存できませんでした。" }, status: :unprocessable_content
+        error_message = result[:error] || "AIからのコメントが保存できませんでした。"
+        render json: { error: error_message }, status: :unprocessable_content
       end
     else
       if @entry.response.present?
-        redirect_to @entry, notice: "AIからのコメントは既に生成済みです。"
+        redirect_with_message(@entry, "AIからのコメントは既に生成済みです。")
         return
       end
 
-      feedback = AiFeedbackGenerator.call(@entry)
-      if @entry.update(response: feedback)
-        redirect_to @entry, notice: "AIからのコメントを追加しました。"
+      result = handle_ai_service_call(AiFeedbackGenerator, @entry)
+      if result[:success] && @entry.update(response: result[:data])
+        redirect_with_message(@entry, "AIからのコメントを追加しました。")
       else
-        redirect_to @entry, alert: "AIからのコメント保存に失敗しました。"
+        error_message = result[:error] || "AIからのコメント保存に失敗しました。"
+        redirect_with_message(@entry, error_message, type: :alert)
       end
-    end
-  rescue StandardError => e
-    Rails.logger.error("[EntriesController#generate_feedback] #{e.class}: #{e.message}")
-    if request.format.json?
-      render json: { error: "AIからのコメント生成に失敗しました。" }, status: :internal_server_error
-    else
-      redirect_to @entry, alert: "AIからのコメント生成に失敗しました。"
     end
   end
 

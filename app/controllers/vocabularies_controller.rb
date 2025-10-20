@@ -59,18 +59,26 @@ class VocabulariesController < ApplicationController
   # POST /vocabularies
   # 単語登録（通常フォーム）
   def create
-    @vocabulary = current_user.vocabularies.build(vocabulary_params)
+    result = VocabularyService.create_vocabulary(
+      user: current_user,
+      vocabulary_params: vocabulary_params
+    )
 
-    if @vocabulary.save
+    if result[:success]
       # 日記との関連付け
       if params[:entry_id].present?
-        entry = current_user.entries.find(params[:entry_id])
-        @vocabulary.entries << entry unless @vocabulary.entries.include?(entry)
+        entry_result = EntryService.new(current_user, {}, result[:vocabulary]).add_vocabulary(
+          word: result[:vocabulary].word,
+          meaning: result[:vocabulary].meaning
+        )
       end
 
-      redirect_to vocabularies_path, notice: '単語を登録しました'
+      redirect_with_message(vocabularies_path, result[:message])
     else
-      render :new, status: :unprocessable_content
+      @vocabulary = result[:vocabulary]
+      handle_validation_errors(@vocabulary, :new) do
+        set_flash_message(:alert, result[:message])
+      end
     end
   end
 
@@ -86,41 +94,23 @@ class VocabulariesController < ApplicationController
       return
     end
 
-    # 既存の単語を検索、なければ新規作成
-    @vocabulary = current_user.vocabularies.find_or_initialize_by(word: word)
-    
-    is_new = @vocabulary.new_record?
-    
-    if @vocabulary.new_record?
-      # 新規登録の場合
-      @vocabulary.meaning = meaning
-      unless @vocabulary.save
-        render json: { error: @vocabulary.errors.full_messages.join(', ') }, status: :unprocessable_content
-        return
-      end
+    result = VocabularyService.add_from_entry(
+      user: current_user,
+      word: word,
+      meaning: meaning,
+      entry_id: entry_id
+    )
+
+    if result[:success]
+      render json: { 
+        success: true, 
+        vocabulary: result[:vocabulary].as_json(include: :entries),
+        is_new: result[:is_new],
+        message: result[:message]
+      }
     else
-      # 既存の単語の場合は意味を更新
-      @vocabulary.meaning = meaning
-      unless @vocabulary.save
-        render json: { error: @vocabulary.errors.full_messages.join(', ') }, status: :unprocessable_content
-        return
-      end
+      render json: { error: result[:error] }, status: :unprocessable_content
     end
-
-    # 日記との関連付け（entry_idがある場合のみ）
-    if entry_id.present?
-      entry = current_user.entries.find(entry_id)
-      unless @vocabulary.entries.include?(entry)
-        @vocabulary.entries << entry
-      end
-    end
-
-    render json: { 
-      success: true, 
-      vocabulary: @vocabulary.as_json(include: :entries),
-      is_new: is_new,
-      message: is_new ? '単語を登録しました' : '単語を更新しました'
-    }
   rescue ActiveRecord::RecordNotFound
     render json: { error: '日記が見つかりません' }, status: :not_found
   end
@@ -150,19 +140,33 @@ class VocabulariesController < ApplicationController
   # PATCH /vocabularies/:id/toggle_mastered (Ajax)
   # 習得済みフラグをトグル
   def toggle_mastered
-    @vocabulary.toggle_mastered!
-    render json: { success: true, mastered: @vocabulary.mastered }
-  rescue => e
-    render json: { error: e.message }, status: :unprocessable_content
+    result = VocabularyService.toggle_mastered(vocabulary: @vocabulary)
+    
+    if result[:success]
+      render json: { 
+        success: true, 
+        mastered: result[:mastered],
+        message: result[:message]
+      }
+    else
+      render json: { error: result[:error] }, status: :unprocessable_content
+    end
   end
 
   # PATCH /vocabularies/:id/toggle_favorited (Ajax)
   # お気に入りフラグをトグル
   def toggle_favorited
-    @vocabulary.toggle_favorited!
-    render json: { success: true, favorited: @vocabulary.favorited }
-  rescue => e
-    render json: { error: e.message }, status: :unprocessable_content
+    result = VocabularyService.toggle_favorited(vocabulary: @vocabulary)
+    
+    if result[:success]
+      render json: { 
+        success: true, 
+        favorited: result[:favorited],
+        message: result[:message]
+      }
+    else
+      render json: { error: result[:error] }, status: :unprocessable_content
+    end
   end
 
   private

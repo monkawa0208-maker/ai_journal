@@ -3,9 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["tabButton", "tabContent"]
 
-  connect() {
-    console.log("Entry tabs controller connected")
-  }
+  connect() { }
 
   switchTab(event) {
     const clickedButton = event.currentTarget

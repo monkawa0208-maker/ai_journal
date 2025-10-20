@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { ControllerUtils } from "./utils"
 
 export default class extends Controller {
   static targets = [
@@ -30,13 +31,9 @@ export default class extends Controller {
   updateTranslateButtonState() {
     const japaneseText = this.japaneseTextTarget?.value.trim() || ""
 
-    if (japaneseText.length > 0) {
-      // 内容がある場合：青色で有効
-      this.translateButtonTarget.classList.remove("disabled")
-    } else {
-      // 内容がない場合：グレーで視覚的に無効
-      this.translateButtonTarget.classList.add("disabled")
-    }
+    const isActive = japaneseText.length > 0
+    this.translateButtonTarget.classList.toggle("disabled", !isActive)
+    this.translateButtonTarget.disabled = !isActive
   }
 
   toggleLanguage() {
@@ -68,46 +65,31 @@ export default class extends Controller {
       return
     }
 
-    // ボタンを無効化して翻訳中を表示
-    this.translateButtonTarget.disabled = true
-    this.translateButtonTarget.textContent = "⏳ 翻訳中..."
-    this.showStatus("AI翻訳を実行中...", "loading")
+    ControllerUtils.setLoadingState(this.translateButtonTarget, true, "⏳ 翻訳中...")
+    ControllerUtils.showStatus(this.statusTarget, "AI翻訳を実行中...", "loading", "translate-status")
 
     try {
       console.log("Sending translation request...")
-      const response = await fetch("/entries/translate", {
+      const { success, data, error } = await ControllerUtils.makeRequest("/entries/translate", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-Token": this.getCsrfToken()
-        },
         body: JSON.stringify({ text: japaneseText })
       })
 
-      console.log("Response status:", response.status)
-      const data = await response.json()
-      console.log("Response data:", data)
-
-      if (response.ok) {
+      if (success) {
         // 翻訳成功 - 結果を保存して表示エリアに表示
         this.currentTranslation = data.translation
         this.displayFormattedTranslation(data.translation)
         this.translationResultTarget.style.display = "block"
         this.aiTranslateFieldTarget.value = data.translation
-        this.showStatus("✅ 翻訳完了！内容を確認してください", "success")
+        ControllerUtils.showStatus(this.statusTarget, "✅ 翻訳完了！内容を確認してください", "success", "translate-status")
       } else {
         // エラー処理
-        console.error("Translation failed:", data)
-        this.showStatus(`❌ ${data.error || "翻訳に失敗しました"}`, "error")
+        ControllerUtils.showStatus(this.statusTarget, `❌ ${error || "翻訳に失敗しました"}`, "error", "translate-status")
       }
     } catch (error) {
-      console.error("Translation error:", error)
-      console.error("Error details:", error.message, error.stack)
-      this.showStatus("❌ ネットワークエラーが発生しました", "error")
+      ControllerUtils.showStatus(this.statusTarget, "❌ ネットワークエラーが発生しました", "error", "translate-status")
     } finally {
-      // ボタンを再有効化
-      this.translateButtonTarget.disabled = false
-      this.translateButtonTarget.textContent = "🌐 英語に翻訳"
+      ControllerUtils.setLoadingState(this.translateButtonTarget, false, undefined, "🌐 英語に翻訳")
     }
   }
 
@@ -134,11 +116,7 @@ export default class extends Controller {
 
   displayFormattedTranslation(fullResponse) {
     // AIの回答を見やすく整形して表示
-    const formatted = fullResponse
-      .replace(/# 翻訳後の文章/g, '<strong class="translation-section-title">📝 翻訳後の文章</strong>')
-      .replace(/# Key Points/g, '<strong class="translation-section-title">💡 Key Points</strong>')
-      .replace(/# Vocabulary/g, '<strong class="translation-section-title">📚 Vocabulary</strong>')
-      .replace(/\n/g, '<br>')
+    const formatted = ControllerUtils.formatTranslation(fullResponse)
 
     this.translationTextTarget.innerHTML = formatted
   }
@@ -166,21 +144,6 @@ export default class extends Controller {
     return englishText || fullResponse.trim()
   }
 
-  showStatus(message, type) {
-    this.statusTarget.textContent = message
-    this.statusTarget.className = `translate-status ${type}`
-
-    // 成功/エラーメッセージは5秒後に自動消去
-    if (type === "success" || type === "error") {
-      setTimeout(() => {
-        this.statusTarget.textContent = ""
-        this.statusTarget.className = "translate-status"
-      }, 5000)
-    }
-  }
-
-  getCsrfToken() {
-    return document.querySelector('meta[name="csrf-token"]')?.content || ""
-  }
+  // status表示・CSRF取得はControllerUtilsに統一
 }
 

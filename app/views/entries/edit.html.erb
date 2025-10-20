@@ -7,7 +7,7 @@
     <header class="form-header">
       <h1 class="form-title">投稿を編集</h1>
       <p class="form-subtitle">内容を修正して、より良い英語日記にしましょう</p>
-      <p class="form-subtitle-hint">💡 英語本文の単語を選択すると、MyDictionaryに登録できます</p>
+      <p class="form-subtitle-hint">💡 英語本文のダブルクリックを選択すると、MyDictionaryに登録できます。熟語を登録する場合は該当箇所を範囲選択しましょう。</p>
     </header>
 
     <%= render "form", entry: @entry %>
@@ -18,7 +18,7 @@
         <h3>この日記で登録した単語:</h3>
         <div class="vocabulary-tags">
           <% @entry.vocabularies.each do |vocab| %>
-            <%= link_to vocab.word, vocabularies_path(anchor: "vocab-#{vocab.id}"), class: "vocabulary-tag" %>
+            <%= link_to vocab.word, edit_vocabulary_path(vocab), class: "vocabulary-tag" %>
           <% end %>
         </div>
       </div>

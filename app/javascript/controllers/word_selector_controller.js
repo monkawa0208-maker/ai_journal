@@ -54,10 +54,21 @@ export default class extends Controller {
       if (node.nodeType === Node.TEXT_NODE) {
         const text = node.textContent
         if (text.trim() && /[a-zA-Z]/.test(text)) {
-          // 英単語を含むテキストノードを処理
-          const span = document.createElement('span')
-          span.innerHTML = text.replace(/([a-zA-Z'-]+)/g, '<span class="word-wrapper">$1</span>')
-          node.parentNode.replaceChild(span, node)
+          // 英単語を含むテキストノードを安全に分割してDOMを再構築
+          const fragment = document.createDocumentFragment()
+          const parts = text.split(/([a-zA-Z'-]+)/)
+          parts.forEach(part => {
+            if (!part) return
+            if (/^[a-zA-Z'-]+$/.test(part)) {
+              const wordSpan = document.createElement('span')
+              wordSpan.className = 'word-wrapper'
+              wordSpan.textContent = part
+              fragment.appendChild(wordSpan)
+            } else {
+              fragment.appendChild(document.createTextNode(part))
+            }
+          })
+          node.parentNode.replaceChild(fragment, node)
         }
       } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName !== 'SCRIPT' && node.tagName !== 'STYLE') {
         // 子ノードを処理（strong, brタグなども対応）

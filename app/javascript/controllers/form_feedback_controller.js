@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { ControllerUtils } from "./utils"
 
 export default class extends Controller {
   static targets = [
@@ -33,13 +34,9 @@ export default class extends Controller {
     const contentField = this.element.querySelector('[name="entry[content]"]')
     const content = contentField?.value.trim() || ""
 
-    if (content.length > 0) {
-      // 内容がある場合：青色で有効
-      this.buttonTarget.classList.remove("disabled")
-    } else {
-      // 内容がない場合：グレーで視覚的に無効
-      this.buttonTarget.classList.add("disabled")
-    }
+    const isActive = content.length > 0
+    this.buttonTarget.classList.toggle("disabled", !isActive)
+    this.buttonTarget.disabled = !isActive
   }
 
   // 保存ボタンの状態を更新（タイトルと本文の両方が必要）
@@ -51,13 +48,9 @@ export default class extends Controller {
     const content = contentField?.value.trim() || ""
 
     if (this.hasSubmitButtonTarget) {
-      if (title.length > 0 && content.length > 0) {
-        // タイトルと本文の両方がある場合：青色で有効
-        this.submitButtonTarget.classList.remove("disabled")
-      } else {
-        // どちらかが空の場合：グレーで視覚的に無効
-        this.submitButtonTarget.classList.add("disabled")
-      }
+      const canSubmit = title.length > 0 && content.length > 0
+      this.submitButtonTarget.classList.toggle("disabled", !canSubmit)
+      this.submitButtonTarget.disabled = !canSubmit
     }
   }
 
@@ -78,78 +71,40 @@ export default class extends Controller {
       return
     }
 
-    // ボタンを無効化してローディング表示
-    this.buttonTarget.disabled = true
-    this.buttonTarget.textContent = "⏳ AI分析中..."
-    this.showStatus("AIがフィードバックを生成中...", "loading")
+    ControllerUtils.setLoadingState(this.buttonTarget, true, "⏳ AI分析中...")
+    ControllerUtils.showStatus(this.statusTarget, "AIがフィードバックを生成中...", "loading", "feedback-preview-status")
 
     try {
       console.log("Sending feedback request...")
-      const response = await fetch("/entries/preview_feedback", {
+      const { success, data, error } = await ControllerUtils.makeRequest("/entries/preview_feedback", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-Token": this.getCsrfToken()
-        },
-        body: JSON.stringify({
-          title: title,
-          content: content
-        })
+        body: JSON.stringify({ title, content })
       })
 
-      console.log("Response status:", response.status)
-      const data = await response.json()
-      console.log("Response data:", data)
-
-      if (response.ok) {
+      if (success) {
         // フィードバック取得成功 - 装飾して表示
         this.displayFormattedFeedback(data.response)
         this.responseFieldTarget.value = data.response
         this.resultAreaTarget.style.display = "block"
-        this.showStatus("✅ フィードバック取得完了！", "success")
+        ControllerUtils.showStatus(this.statusTarget, "✅ フィードバック取得完了！", "success", "feedback-preview-status")
       } else {
         // エラー処理
-        console.error("Feedback generation failed:", data)
-        this.showStatus(`❌ ${data.error || "フィードバック生成に失敗しました"}`, "error")
+        ControllerUtils.showStatus(this.statusTarget, `❌ ${error || "フィードバック生成に失敗しました"}`, "error", "feedback-preview-status")
       }
     } catch (error) {
-      console.error("Feedback error:", error)
-      console.error("Error details:", error.message, error.stack)
-      this.showStatus("❌ ネットワークエラーが発生しました", "error")
+      ControllerUtils.showStatus(this.statusTarget, "❌ ネットワークエラーが発生しました", "error", "feedback-preview-status")
     } finally {
-      // ボタンを再有効化
-      this.buttonTarget.disabled = false
-      this.buttonTarget.textContent = "🤖 AIフィードバックをもらう"
+      ControllerUtils.setLoadingState(this.buttonTarget, false, undefined, "🤖 AIフィードバックをもらう")
     }
   }
 
   displayFormattedFeedback(feedbackText) {
     // AIフィードバックを見やすく整形して表示
-    const formatted = feedbackText
-      .replace(/# 英文アドバイス/g, '<strong class="feedback-section-title">✏️ 英文アドバイス</strong>')
-      .replace(/# 修正後の文章/g, '<strong class="feedback-section-title">✨ 修正後の文章</strong>')
-      .replace(/# より良い表現/g, '<strong class="feedback-section-title">🌟 より良い表現</strong>')
-      .replace(/# コメント/g, '<strong class="feedback-section-title">💬 コメント</strong>')
-      .replace(/\n/g, '<br>')
+    const formatted = ControllerUtils.formatFeedback(feedbackText)
 
     this.feedbackTextTarget.innerHTML = formatted
   }
 
-  showStatus(message, type) {
-    this.statusTarget.textContent = message
-    this.statusTarget.className = `feedback-preview-status ${type}`
-
-    // 成功/エラーメッセージは5秒後に自動消去
-    if (type === "success" || type === "error") {
-      setTimeout(() => {
-        this.statusTarget.textContent = ""
-        this.statusTarget.className = "feedback-preview-status"
-      }, 5000)
-    }
-  }
-
-  getCsrfToken() {
-    return document.querySelector('meta[name="csrf-token"]')?.content || ""
-  }
+  // status表示・CSRF取得はControllerUtilsに統一
 }
 
