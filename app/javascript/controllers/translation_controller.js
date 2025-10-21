@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { ControllerUtils } from "./utils"
+import { ControllerUtils } from "controllers/utils"
 
 export default class extends Controller {
   static targets = [
