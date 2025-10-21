@@ -1,7 +1,14 @@
+html {
+  -webkit-overflow-scrolling: touch;
+  overflow-x: hidden;
+}
+
 body {
   margin: 0;
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   background: #ffffff;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
 :root {
@@ -14,6 +21,31 @@ body {
 
 main {
   margin: 0;
+  padding-top: 90px;
+  /* ヘッダーの高さ分のスペースを確保 */
+}
+
+/* entries-indexページはpadding不要（content-wrapperで調整） */
+main.entries-index {
+  padding-top: 0;
+}
+
+/* スマートフォンでヘッダーが高くなる場合の調整 */
+@media (max-width: 768px) {
+
+  /* mainの基本padding-topをリセットし、各コンテナで個別調整 */
+  main {
+    padding-top: 0;
+  }
+
+  /* 各コンテナ要素にpadding-topを付与 */
+  .content-wrapper,
+  .entry-detail,
+  .vocabularies-container,
+  .form-page,
+  .contents.row {
+    padding-top: 120px !important;
+  }
 }
 
 /* Flash messages */
@@ -89,4 +121,63 @@ main {
   background-color: #f8d7da;
   border: 1px solid #f5c6cb;
   color: #721c24;
+}
+
+/* Responsive Design for Base Styles */
+@media (max-width: 768px) {
+
+  .flash-notice,
+  .flash-alert {
+    padding: 12px 16px;
+    margin: 15px auto;
+    font-size: 13px;
+    border-radius: 6px;
+  }
+
+  #error_explanation {
+    padding: 16px;
+    margin-bottom: 16px;
+    border-radius: 6px;
+  }
+
+  #error_explanation h2 {
+    font-size: 16px;
+  }
+
+  #error_explanation ul li {
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+
+  .alert {
+    padding: 12px 16px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .flash-notice,
+  .flash-alert {
+    padding: 10px 12px;
+    margin: 12px auto;
+    font-size: 12px;
+  }
+
+  #error_explanation {
+    padding: 14px;
+  }
+
+  #error_explanation h2 {
+    font-size: 15px;
+  }
+
+  #error_explanation ul li {
+    font-size: 13px;
+  }
+
+  .alert {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
 }

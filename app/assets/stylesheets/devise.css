@@ -444,22 +444,28 @@
     border-radius: 12px;
   }
 
-  .contents.row .container h2 {
+  .contents.row .container h2,
+  .devise-title {
     font-size: 1.5rem;
   }
 
   .devise-container {
+    margin-top: 120px;
     padding: 1.5rem 1rem;
   }
 
   .new_user .field input[type="text"],
   .new_user .field input[type="email"],
-  .new_user .field input[type="password"] {
+  .new_user .field input[type="password"],
+  .form-input {
     padding: 0.75rem;
+    font-size: 0.95rem;
   }
 
-  .new_user .actions input[type="submit"] {
+  .new_user .actions input[type="submit"],
+  .btn-primary {
     padding: 0.875rem;
+    font-size: 0.95rem;
   }
 
   .auth-links {
@@ -479,5 +485,148 @@
   .btn-login {
     padding: 0.75rem;
     font-size: 0.9375rem;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .remember-me {
+    order: 2;
+  }
+
+  .forgot-password {
+    order: 1;
+    text-align: center;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .contents.row {
+    padding: 1rem 0.75rem;
+  }
+
+  .contents.row .container,
+  .devise-card {
+    padding: 1.25rem 1rem;
+    border-radius: 10px;
+  }
+
+  .contents.row .container h2,
+  .devise-title {
+    font-size: 1.35rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .devise-container {
+    margin-top: 120px;
+    padding: 1rem 0.75rem;
+  }
+
+  .new_user .field {
+    margin-bottom: 0.875rem;
+  }
+
+  .new_user .field label,
+  .form-label {
+    font-size: 0.8125rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .new_user .field input[type="text"],
+  .new_user .field input[type="email"],
+  .new_user .field input[type="password"],
+  .form-input {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.9rem;
+  }
+
+  .new_user .actions {
+    margin-top: 1.25rem;
+  }
+
+  .new_user .actions input[type="submit"],
+  .btn-primary {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .btn-danger {
+    padding: 0.625rem;
+    font-size: 0.8125rem;
+  }
+
+  .cancel-title {
+    font-size: 1.125rem;
+  }
+
+  .cancel-description {
+    font-size: 0.8125rem;
+  }
+
+  .alert {
+    padding: 0.75rem 0.875rem;
+    font-size: 0.8125rem;
+  }
+
+  #error_explanation {
+    padding: 0.875rem;
+    margin-bottom: 1.25rem;
+  }
+
+  #error_explanation h2 {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  #error_explanation ul li {
+    font-size: 0.8125rem;
+  }
+
+  .auth-links {
+    margin-top: 1.25rem;
+  }
+
+  .divider {
+    margin-bottom: 0.875rem;
+  }
+
+  .divider span {
+    font-size: 0.75rem;
+    padding: 0 0.625rem;
+  }
+
+  .btn-signup,
+  .btn-login {
+    padding: 0.625rem;
+    font-size: 0.875rem;
+  }
+
+  .devise-links {
+    margin-top: 1.25rem;
+  }
+
+  .link-secondary {
+    font-size: 0.8125rem;
+  }
+
+  .password-hint {
+    font-size: 0.7rem;
+    margin-top: 0.375rem;
+  }
+
+  .remember-me {
+    font-size: 0.8125rem;
+  }
+
+  .remember-me input[type="checkbox"] {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
+  .forgot-password {
+    font-size: 0.8125rem;
   }
 }
