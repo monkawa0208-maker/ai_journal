@@ -19,7 +19,6 @@ export default class extends Controller {
   connect() {
     this.isJapaneseMode = false
     this.currentTranslation = ""
-    console.log("Translation controller connected")
     this.updateTranslateButtonState()
   }
 

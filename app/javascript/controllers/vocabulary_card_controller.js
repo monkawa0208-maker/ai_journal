@@ -10,7 +10,6 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log("Vocabulary card controller connected", this.idValue)
     this.updateButtonStyles()
   }
 
