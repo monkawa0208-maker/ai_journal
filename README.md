@@ -1,342 +1,230 @@
-# AI Journal 
+# AI Journal
 
-## 1. プロダクト概要
+## アプリケーション概要
+英語学習法のひとつに、その日の出来事や感情・考えを英語で書き出す “ジャーナリング” があります。
+語彙力や文法力の向上、アウトプット習慣の定着に効果的で、継続することでスピーキング時にも自然と英語が出てくるようになります。
 
-* **目的**: 日々の学習・振り返りを"AIフィードバック"で質的に高めるジャーナルアプリ。
-* **想定ユーザー**: 英語学習者／自己省察を習慣化したい人。
+AI Journalは、このジャーナリングをAIの力でサポートする英語学習アプリです。
+日々の出来事を英語で投稿すると、AIが文法の誤りや不自然な表現を指摘し、より自然で伝わる英文を提案してくれます。
 
-## 2. 主要機能
+「いきなり英語で書くのは難しい」というユーザーのために、日本語で下書きし、AIが英文を提案する機能も搭載しています。
+また、学習した単語や表現を登録できるMy Dictionary機能では、日記と単語が自動的に紐づくため、自分の文章がそのまま例文になります。
+単語ごとに「修得済み」「お気に入り」を設定して管理でき、フラッシュカード形式で効率的に復習することも可能です。
 
-### 2.1 日記機能（Entries）
-* ユーザー登録/ログイン（Devise）
-* 日記の投稿/編集/削除/一覧/詳細
-* **カレンダー表示**：日付クリックでその日のエントリへ
-* タグ付け & タグでのフィルタ
-* AIフィードバック自動生成（OpenAI API）
-* 日本語翻訳機能
+「せっかく学んだ英語を使う機会がない」
+「英文の添削を受ける機会がない」
+「書きたい内容を英語で表現できない」
+「覚えた単語が定着しない」
+——そんな悩みを解決するために、AI Journalを開発しました。
 
-### 2.2 MyDictionary機能（Vocabularies）✨
-英語学習をサポートする単語帳機能
 
-#### 単語登録
-* **日記から登録**: 日記の本文中の英単語を選択して即座に登録
-* **直接登録**: 日記に紐づかない単語も個別に登録可能
-* **既存単語の編集**: 同じ単語を選択すると編集モードに自動切り替え
+## URL
+https://ai-journal-k7ua.onrender.com
 
-#### 単語管理
-* 一覧表示：登録した単語を一覧で確認（ページネーション対応）
-* 検索機能：リアルタイムで単語を検索
-* フィルタ機能：「すべて」「未習得」「習得済み」「お気に入り」で絞り込み
-* 編集/削除：単語と意味の両方を編集可能
+## テスト用アカウント
+### Basic認証
+- **ID**: admin
+- **パスワード**: 2222
 
-#### フラッシュカード復習
-* **カード表示**: 英→日、日→英の2モード切り替え
-* **インタラクティブ操作**: 
-  - クリックまたはスペースキーでカード反転
-  - 左右矢印キーで前後の単語に移動
-* **学習管理**: 
-  - 習得済みマーク：学習済みの単語をマーク
-  - お気に入りマーク：重要な単語をマーク
-* **レスポンシブデザイン**: PC、タブレット、スマートフォンに対応
+### ログイン情報
+- **メールアドレス**: test@example.com
+- **パスワード**: password
 
-#### UI/UX機能
-* **スティッキーヘッダー**: 日記詳細ページで登録単語が常に表示
-* **トースト通知**: 単語登録・更新時に自動で通知表示
-* **モーダル**: 単語選択から登録まで、ページ遷移なしで完結
-* **連続登録**: 一つの日記から複数の単語を連続して登録可能
+※ログインせずにトップページから新規登録も可能です。
 
-> **技術的特徴**: Ajax/Turbo、Stimulus.js、レスポンシブCSS、N+1クエリ対策
+## 利用方法
+1. トップページの「新規登録」ボタンからアカウントを作成する（またはテスト用アカウントでログイン）
+2. 「新規日記作成」ボタンをクリックし、英語で日記を書く
+   - 日本語で書いて「翻訳」ボタンをクリックすると英語に自動翻訳される
+   - 「AIプレビュー」ボタンで投稿前にAIのフィードバックを確認できる
+3. 日記を投稿すると、AIが英文の誤りを指摘し、より良い表現を提案してくれる
+4. 日記の中で覚えたい単語をダブルクリックして単語帳に登録する
+5. 「My Dictionary」ページで単語を管理し、フラッシュカードで学習する
+6. カレンダービューで過去の投稿履歴を視覚的に確認できる
 
-## 3. 非機能要件
+## アプリケーションを作成した背景
+英語学習において、特にライティングスキルの向上には「書く → 添削を受ける → 改善する」というサイクルが重要です。しかし、個人で学習している場合、以下のような課題がありました：
 
-* **認証・権限**: 自分の投稿・単語のみ編集/削除可
-* **セキュリティ**: CSRF対策、Strong Parameters、APIキーは環境変数で管理
-* **レイアウト**: レスポンシブ対応（モバイル、タブレット、デスクトップ）
-* **パフォーマンス**: N+1クエリ対策（eager loading）、ページネーション
-* **テスト**: RSpec（モデル、リクエスト）による自動テスト
+- **フィードバックを得る機会が少ない**: 独学では自分の英文が正しいのか判断できず、間違いに気づきにくい
+- **継続が難しい**: 学習の習慣化が難しく、三日坊主になりがち
+- **語彙力の定着が不十分**: 新しい単語を学んでも、復習する仕組みがないため忘れてしまう
+- **翻訳の手間**: 英語で考えることのハードルが高く、日本語で考えた内容を英語にするのに時間がかかる
 
-## 4. 技術スタック
+このような課題を抱える英語学習者に対して、AIの力を活用することで、即座に質の高いフィードバックを提供し、継続的な学習をサポートし、体系的な語彙学習を実現するアプリケーションを開発しました。
 
-### バックエンド
-* **言語**: Ruby 3.2.0
-* **フレームワーク**: Ruby on Rails 7.1.0
-* **DB**: PostgreSQL 14.19（本番）/ MySQL 8.0.42（開発）
-* **認証**: Devise
-* **AI**: OpenAI API（GPT-4）
-* **ファイルストレージ**: Active Storage（開発=local、本番=S3）
+## 実装した機能についての画像やGIFおよびその説明
+※別途記載予定
 
-### フロントエンド
-* **JavaScript**: Stimulus.js（Hotwire）
-* **CSS**: カスタムCSS（Flexbox、Grid、アニメーション）
-* **UI/UX**: レスポンシブデザイン、モーダル、トースト通知
+## 実装予定の機能
+- **タグ機能**: 日記をカテゴリー別に分類・管理できる機能
+- **日記の公開機能**: 他のユーザーと日記を共有し、いいねやコメントをもらえる機能
+- **詳細な統計・分析機能**: 学習の進捗をグラフで可視化し、弱点を分析する機能
+- **音声入力機能**: マイクから英語を吹き込んで日記を作成できる機能
+- **単語テスト機能**: 習得度を測定するための小テスト機能
 
-### インフラ・ツール
-* **環境変数**: dotenv-rails
-* **デプロイ**: Render
-* **テスト**: RSpec、FactoryBot
-* **ページネーション**: Kaminari
+## データベース設計
+[![ER図](er.dio)](er.dio)
 
-## 5. 画面フロー
+### 主要テーブル
 
-### 日記フロー
-1. サインアップ/ログイン
-2. 日記一覧（カレンダー表示、タグフィルタ）
-3. 新規日記作成（英語本文、日本語翻訳、画像添付）
-4. 日記詳細（本文、AIフィードバック、登録単語表示）
-5. 日記編集/削除
+#### users（ユーザー）
+| Column             | Type   | Options     |
+| ------------------ | ------ | ----------- |
+| nickname           | string | null: false |
+| email              | string | null: false, unique: true |
+| encrypted_password | string | null: false |
 
-### MyDictionary フロー
-1. 単語一覧（検索、フィルタ、ページネーション）
-2. 単語登録
-   - 日記から登録：日記ページで英単語を選択 → モーダル表示 → 登録
-   - 直接登録：単語一覧から「新しい単語を追加」ボタン
-3. 単語編集/削除
-4. フラッシュカード復習
-   - モード選択（英→日 / 日→英）
-   - カード操作（前/次、反転）
-   - 学習状態更新（習得済み、お気に入り）
+**Association**
+- has_many :entries
+- has_many :vocabularies
 
-## 6. データベース設計
+#### entries（日記）
+| Column       | Type       | Options     |
+| ------------ | ---------- | ----------- |
+| user_id      | references | null: false, foreign_key: true |
+| title        | string     | null: false |
+| content      | text       | null: false |
+| content_ja   | text       |             |
+| ai_translate | text       |             |
+| response     | text       |             |
+| posted_on    | date       | null: false |
 
-### ER 図
+**Association**
+- belongs_to :user
+- has_many :entry_vocabularies
+- has_many :vocabularies, through: :entry_vocabularies
+- has_one_attached :image
 
-```mermaid
-erDiagram
-  users ||--o{ entries : has_many
-  users ||--o{ vocabularies : has_many
-  entries ||--o{ entry_vocabularies : has_many
-  vocabularies ||--o{ entry_vocabularies : has_many
+**Unique Index**: [user_id, posted_on]（1日1件制約）
 
-  users {
-    bigint id PK
-    string email
-    string encrypted_password
-    string nickname
-    datetime created_at
-    datetime updated_at
-  }
-  
-  entries {
-    bigint id PK
-    bigint user_id FK
-    string title
-    text content
-    text japanese_content
-    text translation_notes
-    datetime posted_on
-    text ai_body
-    string ai_model
-    json ai_meta
-    datetime ai_generated_at
-    datetime created_at
-    datetime updated_at
-  }
-  
-  vocabularies {
-    bigint id PK
-    bigint user_id FK
-    string word
-    text meaning
-    boolean mastered
-    boolean favorited
-    datetime created_at
-    datetime updated_at
-  }
-  
-  entry_vocabularies {
-    bigint id PK
-    bigint entry_id FK
-    bigint vocabulary_id FK
-    datetime created_at
-    datetime updated_at
-  }
+#### vocabularies（単語）
+| Column    | Type       | Options     |
+| --------- | ---------- | ----------- |
+| user_id   | references | null: false, foreign_key: true |
+| word      | string     | null: false |
+| meaning   | text       | null: false |
+| mastered  | boolean    | default: false, null: false |
+| favorited | boolean    | default: false, null: false |
+
+**Association**
+- belongs_to :user
+- has_many :entry_vocabularies
+- has_many :entries, through: :entry_vocabularies
+
+**Unique Index**: [user_id, word]（ユーザーごとに単語は一意）
+
+#### entry_vocabularies（日記と単語の中間テーブル）
+| Column        | Type       | Options     |
+| ------------- | ---------- | ----------- |
+| entry_id      | references | null: false, foreign_key: true |
+| vocabulary_id | references | null: false, foreign_key: true |
+
+**Association**
+- belongs_to :entry
+- belongs_to :vocabulary
+
+## 画面遷移図
+※別途記載予定
+
+## 開発環境
+- **言語**: Ruby 3.2.0
+- **フレームワーク**: Ruby on Rails 7.1.0
+- **フロントエンド**: Hotwire (Turbo + Stimulus), JavaScript, HTML/CSS
+- **データベース**: MySQL 8.0（開発環境）, PostgreSQL（本番環境）
+- **認証**: Devise
+- **外部API**: OpenAI API (GPT-4o-mini)
+- **テスト**: RSpec, FactoryBot, Capybara, Selenium WebDriver
+- **その他**: FullCalendar, Kaminari, Active Storage, ImageProcessing, MiniMagick
+- **インフラ**: Render
+- **バージョン管理**: Git / GitHub
+
+## ローカルでの動作方法
+```bash
+# リポジトリをクローン
+git clone https://github.com/yourusername/ai_journal.git
+cd ai_journal
+
+# 依存関係をインストール
+bundle install
+
+# データベースの作成とマイグレーション
+rails db:create
+rails db:migrate
+
+# 環境変数の設定
+# `OPENAI_API_KEY`: OpenAI APIキー（必須）
+# `BASIC_AUTH_USER`: Basic認証のユーザー名（本番環境用）
+# `BASIC_AUTH_PASSWORD`: Basic認証のパスワード（本番環境用）
+
+# サーバーの起動
+rails server
+
+# ブラウザで http://localhost:3000 にアクセス
 ```
 
-### 主要な制約
-* `vocabularies`: `user_id` + `word` でユニーク制約
-* `entry_vocabularies`: `entry_id` + `vocabulary_id` でユニーク制約
-* インデックス: `user_id`, `word`, `mastered`, `favorited`
+## 工夫したポイント
 
-## 7. テーブル設計
+### 1. AI機能の実用性と信頼性
+- **プレビュー機能**: 投稿前にAIのフィードバックを確認できる機能を実装し、ユーザーが安心して投稿できるようにしました
+- **エラーハンドリング**: OpenAI APIの障害時にも適切なエラーメッセージを表示し、ユーザー体験を損なわないようにしました
+- **プロンプトの最適化**: 学習者に寄り添った励ましのフィードバックを生成するようプロンプトを工夫しました
 
-### users
+### 2. 学習継続を促す仕組み
+- **1日1件ルール**: データベースに一意制約を設け、1日1件の日記投稿を促すことで学習習慣の定着を支援
+- **ストリーク機能**: 連続投稿日数を可視化し、ゲーミフィケーション要素を取り入れました
+- **達成度表示**: 投稿数に応じた学習レベルと励ましメッセージで、モチベーションを維持できるようにしました
 
-| Column                | Type     | Options                   |
-| --------------------- | -------- | ------------------------- |
-| email                 | string   | null: false, unique: true |
-| encrypted_password    | string   | null: false               |
-| nickname              | string   | null: false               |
-| created_at/updated_at | datetime |                           |
+### 3. 語彙学習の最適化
+- **日記から直接登録**: ダブルクリックで単語を登録できる機能により、文脈と共に単語を学習できます
+- **フラッシュカード**: インタラクティブなフラッシュカードで効果的な復習を実現
+- **柔軟な管理**: 習得状態とお気に入り機能で、自分に合った学習ができます
 
-**Association**: 
-- `has_many :entries, dependent: :destroy`
-- `has_many :vocabularies, dependent: :destroy`
+### 4. コード品質と保守性
+- **サービスレイヤーパターン**: ビジネスロジックをサービスクラスに分離し、コントローラーをシンプルに保ちました
+- **包括的なテスト**: 266個のテストを記述し、テストカバレッジを高めました（モデル57個、サービス114個、リクエスト82個、システム11個）
+- **DRY原則**: 共通処理をモジュール化し、保守しやすいコードを心がけました
 
----
+### 5. ユーザビリティとアクセシビリティ
+- **Hotwire（Turbo + Stimulus）**: ページ遷移なしでスムーズなユーザー体験を実現
 
-### entries
-
-| Column                | Type     | Options                            |
-| --------------------- | -------- | ---------------------------------- |
-| user_id               | bigint   | null: false, foreign_key: true     |
-| title                 | string   | null: false                        |
-| content               | text     | null: false                        |
-| japanese_content      | text     |                                    |
-| translation_notes     | text     |                                    |
-| posted_on             | datetime | null: false（デフォルト: now）        |
-| ai_body               | text     |                                    |
-| ai_model              | string   |                                    |
-| ai_meta               | json     |                                    |
-| ai_generated_at       | datetime |                                    |
-| created_at/updated_at | datetime |                                    |
-
-**Association**: 
-- `belongs_to :user`
-- `has_many :entry_vocabularies, dependent: :destroy`
-- `has_many :vocabularies, through: :entry_vocabularies`
-- `has_one_attached :image`
-
-**Index**: `user_id`, `posted_on`
-
----
-
-### vocabularies ✨
-
-| Column                | Type     | Options                               |
-| --------------------- | -------- | ------------------------------------- |
-| user_id               | bigint   | null: false, foreign_key: true        |
-| word                  | string   | null: false                           |
-| meaning               | text     | null: false                           |
-| mastered              | boolean  | default: false, null: false           |
-| favorited             | boolean  | default: false, null: false           |
-| created_at/updated_at | datetime |                                       |
-
-**Association**: 
-- `belongs_to :user`
-- `has_many :entry_vocabularies, dependent: :destroy`
-- `has_many :entries, through: :entry_vocabularies`
-
-**Index**: 
-- `user_id`
-- `word`
-- `mastered`
-- `favorited`
-- **Unique**: `[user_id, word]`（ユーザーごとに単語は一意）
-
-**Scopes**:
-- `recent`: 最新順
-- `alphabetical`: アルファベット順
-- `mastered`: 習得済み
-- `unmastered`: 未習得
-- `favorited`: お気に入り
-- `search_by_word(query)`: 単語で検索
-
----
-
-### entry_vocabularies（中間テーブル）✨
-
-| Column                | Type     | Options                        |
-| --------------------- | -------- | ------------------------------ |
-| entry_id              | bigint   | null: false, foreign_key: true |
-| vocabulary_id         | bigint   | null: false, foreign_key: true |
-| created_at/updated_at | datetime |                                |
-
-**Association**: 
-- `belongs_to :entry`
-- `belongs_to :vocabulary`
-
-**Index**: 
-- **Unique**: `[entry_id, vocabulary_id]`
-
----
-
-## 8. バリデーション
-
-### User
-* `email`: presence, uniqueness, format（Devise標準）
-* `password`: Devise標準（6文字以上）
-* `nickname`: presence, length: 1..30
-
-### Entry
-* `title`: presence, length: 1..100
-* `content`: presence, length: 1..10,000
-* `posted_on`: presence
-
-### Vocabulary ✨
-* `user_id`: presence
-* `word`: presence, length: 1..100, uniqueness scoped to `user_id`
-* `meaning`: presence
-
-### EntryVocabulary ✨
-* `entry_id`: presence, uniqueness scoped to `vocabulary_id`
-* `vocabulary_id`: presence
-
-## 9. ルーティング
-
-```ruby
-Rails.application.routes.draw do
-  devise_for :users
-  root "entries#index"
-  
-  resources :entries do
-    member do
-      post :generate_ai_feedback
-      post :generate_translation
-    end
-  end
-  
-  resources :vocabularies do
-    collection do
-      get :flashcard              # フラッシュカード復習ページ
-      post :add_from_entry        # 日記から単語を追加（Ajax）
-    end
-    member do
-      patch :toggle_mastered      # 習得済みトグル（Ajax）
-      patch :toggle_favorited     # お気に入りトグル（Ajax）
-    end
-  end
-end
-```
-
-## 10. AI機能
-
-### OpenAI 連携フロー
-
-1. **AIフィードバック生成**
-   - ユーザーが日記を作成
-   - 詳細ページで「AIフィードバックを生成」ボタンをクリック
-   - サーバー側でOpenAI APIに本文を送信（同期処理）
-   - 返ってきたフィードバックを `entries.ai_body` に保存
-   - `ai_model`, `ai_meta`, `ai_generated_at` も記録
-
-2. **日本語翻訳**
-   - 英語の日記本文を日本語に翻訳
-   - `entries.japanese_content` に保存
-   - リアルタイムプレビュー機能
-
-### サービスクラス構成
-
-* `AiFeedbackGenerator` - AIフィードバック生成サービス
-* `AiTranslator` - 日本語翻訳サービス
-
-### 使用モデル
-* GPT-4（`gpt-4`）- フィードバック生成
-* GPT-4（`gpt-4`）- 翻訳
-
-## 11. テスト
-
-### テストカバレッジ
-```
-94 examples, 0 failures
-
-内訳:
-- Model: Entry, User, Vocabulary, EntryVocabulary
-- Request: Entries, Vocabularies（全CRUD、認証・認可）
-```
-
-### テストツール
-* **RSpec**: テストフレームワーク
-* **FactoryBot**: テストデータ生成
-* **Shoulda Matchers**: モデルテスト（バリデーション、アソシエーション）
+- **直感的なUI**: ユーザーが迷わず操作できるシンプルで分かりやすいインターフェース
 
 
+## 改善点
+### より改善するとしたら
+1. **パフォーマンス最適化**
+   - N+1問題の解消（includes/joinsの活用）
+   - データベースクエリのさらなる最適化
+   - キャッシング機構の導入（Redis等）
+
+2. **AI機能の拡張**
+   - レスポンスのストリーミング表示（リアルタイムで生成される様子を表示）
+   - ユーザーの学習レベルに応じたフィードバックの難易度調整
+   - 固定化されたプロンプトではなく、ユーザーが任意のプロンプトで質問できる機能を実装
+
+3. **ソーシャル機能の実装**
+   - 他のユーザーとの交流機能（フォロー、コメント、いいね）
+   - 学習グループやコミュニティ機能
+
+4. **分析機能の強化**
+   - 日記投稿頻度の可視化（グラフ、チャート）
+   - よく使う表現や文法の分析
+   - ユーザーのよくする英文ミスパターンの分析
+
+5. **モバイルアプリ化**
+   - React Nativeやフラッターを使用したネイティブアプリ開発
+   - プッシュ通知による学習リマインダー
+   - オフライン対応
+
+## 制作時間
+約180時間（約3週間）
+
+### 内訳
+- 要件定義・設計: 20時間
+- データベース設計: 10時間
+- 基本機能実装（日記CRUD、認証）: 35時間
+- AI機能実装（翻訳、フィードバック）: 35時間
+- My Dictionary機能実装: 30時間
+- テスト作成: 15時間
+- デプロイ・調整: 15時間
+- その他（必要技術のキャッチアップ、README作成 等）: 20時間

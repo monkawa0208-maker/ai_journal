@@ -25,19 +25,24 @@
                       <h3 class="recent-entry-title"><%= truncate(entry.title, length: 80, omission: "...") %></h3>
                     </div>
                     <% if entry.image.attached? %>
-                      <div class="recent-entry-title-right">
-                        <div class="recent-entry-image">
-                          <% if entry.image.variable? %>
-                            <%= image_tag entry.image.variant(resize_to_limit: [150, 150]).processed,
-                                          alt: "#{entry.title.presence || '日記'}の画像",
-                                          class: "recent-entry-thumbnail" %>
-                          <% else %>
-                            <%= image_tag entry.image,
-                                          alt: "#{entry.title.presence || '日記'}の画像",
-                                          class: "recent-entry-thumbnail" %>
-                          <% end %>
+                      <% begin %>
+                        <div class="recent-entry-title-right">
+                          <div class="recent-entry-image">
+                            <% if entry.image.variable? %>
+                              <%= image_tag entry.image.variant(resize_to_limit: [150, 150]).processed,
+                                            alt: "#{entry.title.presence || '日記'}の画像",
+                                            class: "recent-entry-thumbnail" %>
+                            <% else %>
+                              <%= image_tag entry.image,
+                                            alt: "#{entry.title.presence || '日記'}の画像",
+                                            class: "recent-entry-thumbnail" %>
+                            <% end %>
+                          </div>
                         </div>
-                      </div>
+                      <% rescue ActiveStorage::FileNotFoundError, ActiveStorage::IntegrityError => e %>
+                        <%# 画像ファイルが見つからない場合は表示しない %>
+                        <% Rails.logger.warn "画像の読み込みに失敗しました (Entry ##{entry.id}): #{e.message}" %>
+                      <% end %>
                     <% end %>
                   </div>
                   <div class="recent-entry-content">

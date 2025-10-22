@@ -77,16 +77,21 @@
   <% end %>
 
   <% if @entry.image.attached? %>
-    <section class="entry-detail__section">
-      <h2>Photo of the day</h2>
-      <% if @entry.image.variable? %>
-        <%= image_tag @entry.image.variant(resize_to_limit: [800, 800]).processed,
-                      alt: "#{@entry.title.presence || '日記'}の画像" %>
-      <% else %>
-        <%= image_tag @entry.image,
-                      alt: "#{@entry.title.presence || '日記'}の画像" %>
-      <% end %>
-    </section>
+    <% begin %>
+      <section class="entry-detail__section">
+        <h2>Photo of the day</h2>
+        <% if @entry.image.variable? %>
+          <%= image_tag @entry.image.variant(resize_to_limit: [800, 800]).processed,
+                        alt: "#{@entry.title.presence || '日記'}の画像" %>
+        <% else %>
+          <%= image_tag @entry.image,
+                        alt: "#{@entry.title.presence || '日記'}の画像" %>
+        <% end %>
+      </section>
+    <% rescue ActiveStorage::FileNotFoundError, ActiveStorage::IntegrityError => e %>
+      <%# 画像ファイルが見つからない場合は表示しない %>
+      <% Rails.logger.warn "画像の読み込みに失敗しました (Entry ##{@entry.id}): #{e.message}" %>
+    <% end %>
   <% end %>
 
   <nav class="entry-detail__actions">
