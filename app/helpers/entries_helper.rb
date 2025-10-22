@@ -2,7 +2,7 @@ module EntriesHelper
   def motivation_message(recent_entries, user)
     nickname = user.nickname
 
-    return "Welcome, #{nickname}! Start your English learning journey today! 🚀" if recent_entries.empty?
+    return "Welcome, #{nickname}!　右上の”新規日記作成”ボタンから日記を作成してください！<br>Start your English learning journey today! 🚀".html_safe if recent_entries.empty?
 
     posted_days = recent_entries.map(&:posted_on).uniq.count
     last_entry_date = recent_entries.max_by(&:posted_on)&.posted_on
@@ -11,13 +11,13 @@ module EntriesHelper
 
     case
     when last_entry_date == today
-      [
+      "#{[
         "You finished today’s entry! Great job, #{nickname}! 💪",
         "Nice work, #{nickname}! You’ve kept the streak going! ✨",
         "Well done, #{nickname}! Another day, another step forward! 🚀",
         "Fantastic consistency, #{nickname}! Keep that energy up! 🌟",
         "Awesome job, #{nickname}! Don’t forget to review your words in My Dictionary! 📖"
-      ].sample
+      ].sample}<br>日記の作成お疲れ様でした！💪　単語の復習はMy Dictionaryを活用しましょう！📖".html_safe
 
     when last_entry_date == today - 1
       [
