@@ -25,18 +25,19 @@
                      autofocus: true,
                      class: "form-input",
                      "data-action": "input->form-feedback#checkTitle" %>
+    <p class="field-hint">タイトルを入力せずに保存するとAIによって自動生成されます。</p>
   </div>
 
   <!-- 日本語入力フィールド表示/非表示切り替えボタン -->
   <div class="form-field">
     <div class="language-toggle">
-      <p class="toggle-hint">英文の書き方に迷ったらまずは日本語で下書きしてAIに翻訳してもらおう（日本語入力フィールドが表示されます）</p>
       <button type="button" 
               class="toggle-button" 
               data-action="click->translation#toggleLanguage"
               data-translation-target="toggleButton">
         📝 日本語で下書き
       </button>
+      <p class="toggle-hint">英文の書き方に迷ったらまずは日本語で下書きしてAIに翻訳してもらおう（日本語入力フィールドが表示されます）</p>
     </div>
   </div>
 
@@ -118,7 +119,7 @@
 
 
   <div class="form-field">
-    <%= f.label :image, "Photo of the day（任意）", class: "form-label" %>
+    <%= f.label :image, "Photo of the day", class: "form-label" %>
     <p class="field-hint">今日1日を表す写真をアップロードできます。</p>
     <%= f.file_field :image,
                      accept: "image/png,image/jpg,image/jpeg",

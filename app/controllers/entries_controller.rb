@@ -86,16 +86,15 @@ class EntriesController < ApplicationController
   end
 
   def preview_feedback
-    title = params[:title]
     content = params[:content]
     
-    if title.blank? || content.blank?
-      return render json: { error: "タイトルと本文を入力してください。" }, status: :unprocessable_content
+    if content.blank?
+      return render json: { error: "本文を入力してください。" }, status: :unprocessable_content
     end
 
     # 一時的なエントリーオブジェクトを作成（保存しない）
     temp_entry = current_user.entries.build(
-      title: title,
+      title: "Temporary",
       content: content,
       posted_on: Date.current
     )

@@ -4,8 +4,6 @@ class AiFeedbackPromptTemplate
     あなたは共感的で肯定的な英語の先生です。以下は英語学習中ユーザーの日記です。
 
     【今日の日記】
-    タイトル: %{title}
-    本文:
     %{content}
 
     #下記フォーマットで日本語で回答して下さい。ユーザーの気持ちや状況を汲み取り、短い励ましや洞察、次の一歩の提案を日本語で返してください。断定しすぎず、優しく、読みやすく。
@@ -15,7 +13,7 @@ class AiFeedbackPromptTemplate
             # コメント (英文についてではなく日記の内容についてコメントして下さい。必ずポジティブな表現を使って下さい)
   PROMPT
 
-  def self.build(title:, content:)
-    TEMPLATE % { title: title, content: content }
+  def self.build(content:)
+    TEMPLATE % { content: content }
   end
 end

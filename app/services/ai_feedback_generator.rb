@@ -16,7 +16,6 @@ class AiFeedbackGenerator
 
   def build_prompt
     AiFeedbackPromptTemplate.build(
-      title: @entry.title,
       content: @entry.content
     )
   end

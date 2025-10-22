@@ -39,16 +39,14 @@ export default class extends Controller {
     this.buttonTarget.disabled = !isActive
   }
 
-  // 保存ボタンの状態を更新（タイトルと本文の両方が必要）
+  // 保存ボタンの状態を更新（本文のみ必要、タイトルはAI自動生成）
   updateSubmitButtonState() {
-    const titleField = this.element.querySelector('[name="entry[title]"]')
     const contentField = this.element.querySelector('[name="entry[content]"]')
 
-    const title = titleField?.value.trim() || ""
     const content = contentField?.value.trim() || ""
 
     if (this.hasSubmitButtonTarget) {
-      const canSubmit = title.length > 0 && content.length > 0
+      const canSubmit = content.length > 0
       this.submitButtonTarget.classList.toggle("disabled", !canSubmit)
       this.submitButtonTarget.disabled = !canSubmit
     }

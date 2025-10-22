@@ -24,6 +24,30 @@ RSpec.describe EntryService, type: :service do
       end
     end
 
+    context 'titleが空でcontentがある場合' do
+      let(:params_without_title) { { title: '', content: 'Test content', posted_on: Date.today } }
+
+      it 'AI生成によりタイトルが自動設定されること' do
+        allow(AiTitleGenerator).to receive(:call).and_return('AI Generated Title')
+        
+        result = EntryService.create_entry(user: user, entry_params: params_without_title)
+        
+        expect(result[:success]).to be true
+        expect(result[:entry]).to be_persisted
+        expect(result[:entry].title).to eq('AI Generated Title')
+      end
+
+      it 'AI生成失敗時はデフォルトタイトルが設定されること' do
+        allow(AiTitleGenerator).to receive(:call).and_raise(StandardError.new('API Error'))
+        
+        result = EntryService.create_entry(user: user, entry_params: params_without_title)
+        
+        expect(result[:success]).to be true
+        expect(result[:entry]).to be_persisted
+        expect(result[:entry].title).to match(/日記 \d{4}-\d{2}-\d{2}/)
+      end
+    end
+
     context '無効なパラメータの場合' do
       it 'エントリーが作成されないこと' do
         result = EntryService.create_entry(user: user, entry_params: invalid_params)
@@ -53,10 +77,31 @@ RSpec.describe EntryService, type: :service do
       end
     end
 
+    context 'titleを空にしてcontentを更新する場合' do
+      it 'AI生成によりタイトルが自動設定されること' do
+        allow(AiTitleGenerator).to receive(:call).and_return('AI Updated Title')
+        
+        result = EntryService.update_entry(entry: entry, entry_params: { title: '', content: 'Updated content' })
+        
+        expect(result[:success]).to be true
+        expect(result[:entry].title).to eq('AI Updated Title')
+        expect(result[:message]).to eq('日記を更新しました。')
+      end
+
+      it 'AI生成失敗時はデフォルトタイトルが設定されること' do
+        allow(AiTitleGenerator).to receive(:call).and_raise(StandardError.new('API Error'))
+        
+        result = EntryService.update_entry(entry: entry, entry_params: { title: '', content: 'Updated content' })
+        
+        expect(result[:success]).to be true
+        expect(result[:entry].title).to match(/日記 \d{4}-\d{2}-\d{2}/)
+      end
+    end
+
     context '無効なパラメータの場合' do
-      it 'エントリーが更新されないこと' do
+      it 'titleとcontentの両方が空の場合は更新されないこと' do
         original_title = entry.title
-        result = EntryService.update_entry(entry: entry, entry_params: { title: '' })
+        result = EntryService.update_entry(entry: entry, entry_params: { title: '', content: '' })
         
         expect(result[:success]).to be false
         entry.reload

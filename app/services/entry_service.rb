@@ -28,6 +28,18 @@ class EntryService
   def create_entry
     @entry = @user.entries.build(@entry_params)
     
+    # タイトルが空でcontentがある場合、AIでタイトルを自動生成
+    if @entry.title.blank? && @entry.content.present?
+      begin
+        generated_title = AiTitleGenerator.call(@entry.content)
+        @entry.title = generated_title if generated_title.present?
+      rescue => e
+        Rails.logger.error("タイトル自動生成エラー: #{e.message}")
+        # エラーが発生してもデフォルトタイトルを設定
+        @entry.title = "日記 #{Date.current.strftime('%Y-%m-%d')}"
+      end
+    end
+    
     if @entry.save
       {
         success: true,
@@ -47,7 +59,21 @@ class EntryService
   def update_entry
     return { success: false, message: "エントリーが見つかりません。" } unless @entry
 
-    if @entry.update(@entry_params)
+    # タイトルが空でcontentがある場合、AIでタイトルを自動生成
+    params_to_update = @entry_params.dup
+    if params_to_update[:title].blank? && (params_to_update[:content].present? || @entry.content.present?)
+      begin
+        content_for_title = params_to_update[:content].presence || @entry.content
+        generated_title = AiTitleGenerator.call(content_for_title)
+        params_to_update[:title] = generated_title if generated_title.present?
+      rescue => e
+        Rails.logger.error("タイトル自動生成エラー: #{e.message}")
+        # エラーが発生してもデフォルトタイトルを設定
+        params_to_update[:title] = "日記 #{Date.current.strftime('%Y-%m-%d')}"
+      end
+    end
+
+    if @entry.update(params_to_update)
       {
         success: true,
         entry: @entry,
