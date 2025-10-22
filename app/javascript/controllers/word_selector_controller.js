@@ -5,9 +5,16 @@ export default class extends Controller {
   static values = { entryId: Number }
 
   connect() {
-    // テキスト選択イベントを設定
+    // テキスト選択イベントを設定（マウス + タッチ）
     this.boundHandleTextSelection = this.handleTextSelection.bind(this)
     document.addEventListener('mouseup', this.boundHandleTextSelection)
+    document.addEventListener('touchend', this.boundHandleTextSelection)
+
+    // タッチ位置の追跡用
+    this.touchStartX = null
+    this.touchStartY = null
+    this.touchStartTime = null
+    this.touchedElement = null
 
     // 単語選択可能エリアを取得してマウスオーバーイベントを追加
     this.setupWordHighlight()
@@ -16,11 +23,15 @@ export default class extends Controller {
   disconnect() {
     if (this.boundHandleTextSelection) {
       document.removeEventListener('mouseup', this.boundHandleTextSelection)
+      document.removeEventListener('touchend', this.boundHandleTextSelection)
     }
     if (this.selectableAreas) {
       this.selectableAreas.forEach(area => {
         area.removeEventListener('mouseover', this.boundHandleMouseOver)
         area.removeEventListener('mouseout', this.boundHandleMouseOut)
+        area.removeEventListener('touchstart', this.boundHandleTouchStart)
+        area.removeEventListener('touchend', this.boundHandleTouchEnd)
+        area.removeEventListener('touchcancel', this.boundHandleTouchCancel)
       })
     }
   }
@@ -34,14 +45,24 @@ export default class extends Controller {
     this.boundHandleMouseOver = this.handleMouseOver.bind(this)
     this.boundHandleMouseOut = this.handleMouseOut.bind(this)
 
+    // タッチイベントをバインド
+    this.boundHandleTouchStart = this.handleTouchStart.bind(this)
+    this.boundHandleTouchEnd = this.handleTouchEnd.bind(this)
+    this.boundHandleTouchCancel = this.handleTouchCancel.bind(this)
+
     // 各エリアに対して処理
     this.selectableAreas.forEach(area => {
       // テキストコンテンツを単語ごとにspanでラップ
       this.wrapWordsInSpans(area)
 
-      // イベントリスナーを追加
+      // イベントリスナーを追加（マウス）
       area.addEventListener('mouseover', this.boundHandleMouseOver)
       area.addEventListener('mouseout', this.boundHandleMouseOut)
+
+      // イベントリスナーを追加（タッチ）
+      area.addEventListener('touchstart', this.boundHandleTouchStart, { passive: true })
+      area.addEventListener('touchend', this.boundHandleTouchEnd)
+      area.addEventListener('touchcancel', this.boundHandleTouchCancel)
     })
   }
 
@@ -96,6 +117,73 @@ export default class extends Controller {
     if (target.classList && target.classList.contains('word-wrapper')) {
       target.classList.remove('word-hover')
     }
+  }
+
+  handleTouchStart(event) {
+    // タッチ開始位置と時刻を記録
+    const touch = event.touches[0]
+    this.touchStartX = touch.clientX
+    this.touchStartY = touch.clientY
+    this.touchStartTime = Date.now()
+
+    // タッチされた要素を記録
+    const target = event.target
+    if (target.classList && target.classList.contains('word-wrapper')) {
+      this.touchedElement = target
+      // タッチ時のハイライト表示
+      target.classList.add('word-hover')
+    }
+  }
+
+  handleTouchEnd(event) {
+    // タッチ終了位置を取得
+    const touch = event.changedTouches[0]
+    const touchEndX = touch.clientX
+    const touchEndY = touch.clientY
+    const touchEndTime = Date.now()
+
+    // 移動距離を計算（スクロールと区別するため）
+    const moveDistance = Math.sqrt(
+      Math.pow(touchEndX - this.touchStartX, 2) +
+      Math.pow(touchEndY - this.touchStartY, 2)
+    )
+
+    // タッチ時間を計算
+    const touchDuration = touchEndTime - this.touchStartTime
+
+    // ハイライトを解除
+    if (this.touchedElement) {
+      this.touchedElement.classList.remove('word-hover')
+    }
+
+    // 移動距離が小さい（10px以下）かつ短時間（500ms以下）のタップの場合のみ処理
+    // = スクロールや長押しではない通常のタップ
+    if (moveDistance < 10 && touchDuration < 500 && this.touchedElement) {
+      // word-wrapperをタップした場合、モーダルを開く
+      const word = this.touchedElement.textContent.trim()
+      if (word) {
+        // デフォルトのテキスト選択動作を防ぐ
+        event.preventDefault()
+        this.openModal(word)
+      }
+    }
+
+    // リセット
+    this.touchedElement = null
+    this.touchStartX = null
+    this.touchStartY = null
+    this.touchStartTime = null
+  }
+
+  handleTouchCancel(event) {
+    // タッチがキャンセルされた場合、ハイライトを解除
+    if (this.touchedElement) {
+      this.touchedElement.classList.remove('word-hover')
+      this.touchedElement = null
+    }
+    this.touchStartX = null
+    this.touchStartY = null
+    this.touchStartTime = null
   }
 
   handleTextSelection(event) {
@@ -301,7 +389,7 @@ export default class extends Controller {
     const tagsContainer = vocabulariesDiv.querySelector('.vocabulary-tags')
 
     // 「まだ単語が登録されていません」メッセージを削除
-    const emptyMessage = vocabulariesDiv.querySelector('p')
+    const emptyMessage = tagsContainer.querySelector('p')
     if (emptyMessage) {
       emptyMessage.remove()
     }
@@ -322,7 +410,7 @@ export default class extends Controller {
     } else {
       // なければ新規追加
       const tagLink = document.createElement('a')
-      tagLink.href = `/vocabularies#vocab-${vocabulary.id}`
+      tagLink.href = `/vocabularies/${vocabulary.id}/edit`
       tagLink.className = 'vocabulary-tag'
       tagLink.textContent = `${vocabulary.word} ： ${vocabulary.meaning}`
       tagsContainer.appendChild(tagLink)

@@ -4,6 +4,29 @@
   <h1>単語を編集</h1>
   
   <%= render 'form', vocabulary: @vocabulary %>
+  <% if @vocabulary.entries.any? %>
+    <div class="used-entries-section">
+      <h2>📝 使用した日記</h2>
+      <ul class="used-entries-list">
+        <% @vocabulary.entries.each do |entry| %>
+          <li>
+            <%= link_to entry_path(entry) do %>
+              <%= entry.posted_on.strftime('%Y/%m/%d') %>
+              <%= h entry.title %>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <% else %>
+    <div class="used-entries-section">
+      <h2>📝 使用した日記</h2>
+      <p>この単語はまだ日記に紐づいていません。</p>
+    </div>
+  <% end %>
+  <div class="vocabulary-delete-section">
+    <%= button_to "単語を削除", vocabulary_path(@vocabulary), method: :delete, data: { confirm: "本当にこの単語を削除しますか？" }, class: "vocabulary-delete-button" %>
+  </div>
 </div>
 
 

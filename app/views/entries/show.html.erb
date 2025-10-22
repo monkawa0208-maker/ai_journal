@@ -12,14 +12,14 @@
     <div class="entry-vocabularies">
       <p class="selection-hint">💡 英単語を選択してMyDictionaryに登録できます。</p>
       <h3>この日記で登録した単語:</h3>
-      <% if @entry.vocabularies.any? %>
       <div class="vocabulary-tags">
-        <% @entry.vocabularies.each do |vocab| %>
-          <%= link_to "#{vocab.word} ： #{vocab.meaning}", edit_vocabulary_path(vocab), class: "vocabulary-tag" %>
+        <% if @entry.vocabularies.any? %>
+          <% @entry.vocabularies.each do |vocab| %>
+            <%= link_to "#{vocab.word} ： #{vocab.meaning}", edit_vocabulary_path(vocab), class: "vocabulary-tag" %>
+          <% end %>
+        <% else %>
+          <p>まだ単語が登録されていません。</p>
         <% end %>
-      <% else %>
-        <p>まだ単語が登録されていません。</p>
-      <% end %>
       </div>
     </div>
   </header>

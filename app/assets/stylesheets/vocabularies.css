@@ -824,6 +824,31 @@ body.vocabularies-index {
   margin-top: 2rem;
 }
 
+/* 削除ボタンエリア（目立たない位置） */
+.vocabulary-delete-section {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid #f3f4f6;
+  text-align: center;
+}
+
+.vocabulary-delete-button {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  color: #9ca3af;
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.vocabulary-delete-button:hover {
+  color: #ef4444;
+  border-color: #ef4444;
+  background: #fef2f2;
+}
+
 /* ========================================
    レスポンシブデザイン
    ======================================== */
