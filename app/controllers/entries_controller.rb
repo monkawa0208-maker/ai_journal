@@ -1,4 +1,5 @@
 class EntriesController < ApplicationController
+  protect_from_forgery except: [:generate_feedback, :translate, :preview_feedback]
 
   before_action :authenticate_user!
   before_action :set_entry, only: %i[show edit update destroy generate_feedback]

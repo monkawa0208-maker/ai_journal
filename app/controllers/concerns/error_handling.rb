@@ -14,12 +14,16 @@ module ErrorHandling
     Rails.logger.error("[#{self.class.name}] #{exception.class}: #{exception.message}")
     Rails.logger.error(exception.backtrace.join("\n")) if Rails.env.development?
 
-    if request.format.json?
-      render json: { 
-        error: "サーバーエラーが発生しました。しばらく時間をおいてから再度お試しください。" 
-      }, status: :internal_server_error
+    error_message = if Rails.env.production?
+      "サーバーエラーが発生しました。しばらく時間をおいてから再度お試しください。"
     else
-      redirect_with_message(root_path, "エラーが発生しました。しばらく時間をおいてから再度お試しください。", type: :alert)
+      "#{exception.class}: #{exception.message}"
+    end
+
+    if request.format.json?
+      render json: { error: error_message }, status: :internal_server_error
+    else
+      redirect_with_message(root_path, error_message, type: :alert)
     end
   end
 

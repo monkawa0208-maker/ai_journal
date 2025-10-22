@@ -20,7 +20,7 @@ class AiTitleGenerator
       【日記の内容】
       #{@content}
 
-      上記の日記内容から、30文字以内の簡潔で内容を表す英語のタイトルを生成してください。
+      上記の日記内容から、簡潔で内容を表す英語のタイトルを生成してください。
       タイトルのみを返答し、余計な説明は不要です。
     PROMPT
   end
@@ -35,7 +35,7 @@ class AiTitleGenerator
         { role: 'user', content: build_prompt }
       ],
       temperature: 0.7,
-      max_tokens: 50
+      max_tokens: 100
     }
 
     response = HTTP.headers(AiServiceConfig.headers).post(AiServiceConfig.base_url, json: payload)

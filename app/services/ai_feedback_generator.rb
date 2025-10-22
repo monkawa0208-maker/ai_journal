@@ -36,11 +36,15 @@ class AiFeedbackGenerator
     response = HTTP.headers(AiServiceConfig.headers).post(AiServiceConfig.base_url, json: payload)
 
     unless response.status.success?
-      raise "OpenAI API error: #{response.status} #{response.body.to_s}"
+      error_body = response.body.to_s
+      Rails.logger.error("[AiFeedbackGenerator] OpenAI API error: #{response.status} - #{error_body}")
+      raise "OpenAI API error: #{response.status} #{error_body}"
     end
 
     body = JSON.parse(response.body.to_s)
-    body.dig('choices', 0, 'message', 'content') || ''
+    content = body.dig('choices', 0, 'message', 'content') || ''
+    Rails.logger.info("[AiFeedbackGenerator] Successfully generated feedback")
+    content
   end
 end
 
