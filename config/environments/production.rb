@@ -51,6 +51,17 @@ Rails.application.configure do
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   config.force_ssl = true
 
+  # セッションストアの設定（本番環境でのセッション管理を確実にする）
+  # httponly: Cookieへのクライアントサイドスクリプトアクセスを防ぐ
+  # secure: HTTPS接続でのみCookieを送信
+  # same_site: CSRF攻撃を防ぐ（:laxは通常のGETリクエストでCookieを送信）
+  config.session_store :cookie_store, 
+                       key: '_ai_journal_session',
+                       secure: Rails.env.production?,
+                       httponly: true,
+                       same_site: :lax,
+                       expire_after: 2.weeks
+
   # Log to STDOUT by default
   config.logger = ActiveSupport::Logger.new(STDOUT)
     .tap  { |logger| logger.formatter = ::Logger::Formatter.new }

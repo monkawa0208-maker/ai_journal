@@ -1,7 +1,7 @@
 class ApplicationController < ActionController::Base
   include ErrorHandling
   
-  before_action :basic_auth
+  before_action :basic_auth, unless: :devise_controller?
   before_action :configure_permitted_parameters, if: :devise_controller?
 
   private
@@ -12,9 +12,19 @@ class ApplicationController < ActionController::Base
   end
 
   def configure_permitted_parameters
-    added_attrs = [:nickname, :email, :password, :password_confirmation]
+    added_attrs = [:nickname]
     devise_parameter_sanitizer.permit(:sign_up,        keys: added_attrs)
     devise_parameter_sanitizer.permit(:account_update, keys: added_attrs)
+  end
+
+  # Devise: 新規登録後のリダイレクト先を指定
+  def after_sign_up_path_for(resource)
+    root_path
+  end
+
+  # Devise: ログイン後のリダイレクト先を指定
+  def after_sign_in_path_for(resource)
+    root_path
   end
 
   # AIサービス呼び出しの共通エラーハンドリング
@@ -33,7 +43,8 @@ class ApplicationController < ActionController::Base
     if success
       render json: data, status: status
     else
-      error_message = error&.include?('Translation') ? error : "フィードバック生成に失敗しました。"
+      # より詳細なエラーメッセージを返す（本番環境での原因特定のため）
+      error_message = error.presence || "処理に失敗しました。"
       render json: { error: error_message }, status: :internal_server_error
     end
   end
