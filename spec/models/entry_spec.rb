@@ -126,11 +126,13 @@ RSpec.describe Entry, type: :model do
   describe 'スコープ' do
     it 'recentスコープで新しい順に取得できること' do
       user = FactoryBot.create(:user)
-      entry1 = FactoryBot.create(:entry, user: user, posted_on: Date.today - 2.days)
-      entry2 = FactoryBot.create(:entry, user: user, posted_on: Date.today)
-      entry3 = FactoryBot.create(:entry, user: user, posted_on: Date.today - 1.day)
+      # 他のテストと日付が被らないように遠い過去の日付を使用
+      entry1 = FactoryBot.create(:entry, user: user, posted_on: Date.today - 102.days)
+      entry2 = FactoryBot.create(:entry, user: user, posted_on: Date.today - 100.days)
+      entry3 = FactoryBot.create(:entry, user: user, posted_on: Date.today - 101.days)
       
-      recent_entries = Entry.recent
+      # このユーザーのエントリーのみを取得
+      recent_entries = user.entries.recent
       expect(recent_entries.to_a).to eq([entry2, entry3, entry1])
     end
 

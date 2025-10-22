@@ -102,11 +102,10 @@ RSpec.describe AiFeedbackGenerator, type: :service do
   end
 
   describe '#build_prompt (private)' do
-    it 'エントリーのタイトルと内容を含むプロンプトを生成すること' do
+    it 'エントリーの内容を含むプロンプトを生成すること' do
       generator = AiFeedbackGenerator.new(@entry)
       prompt = generator.send(:build_prompt)
       
-      expect(prompt).to include(@entry.title)
       expect(prompt).to include(@entry.content)
       expect(prompt).to include('あなたは共感的で肯定的な英語の先生です')
     end

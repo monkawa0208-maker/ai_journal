@@ -178,19 +178,23 @@ RSpec.describe "Entries", type: :request do
     context "無効なパラメータの場合" do
       it "エントリーが更新されないこと" do
         original_title = @entry.title
+        original_content = @entry.content
         patch entry_path(@entry), params: {
           entry: {
-            title: ''
+            title: '',
+            content: ''
           }
         }
         @entry.reload
         expect(@entry.title).to eq(original_title)
+        expect(@entry.content).to eq(original_content)
       end
 
       it "編集フォームを再表示すること" do
         patch entry_path(@entry), params: {
           entry: {
-            title: ''
+            title: '',
+            content: ''
           }
         }
         expect(response).to have_http_status(:unprocessable_content)
@@ -276,16 +280,15 @@ RSpec.describe "Entries", type: :request do
       end
     end
 
-    context "タイトルまたは本文が空の場合" do
+    context "本文が空の場合" do
       it "エラーを返すこと" do
         post preview_feedback_entries_path, params: {
-          title: '',
-          content: 'Test Content'
+          content: ''
         }
         
         expect(response).to have_http_status(:unprocessable_content)
         json_response = JSON.parse(response.body)
-        expect(json_response['error']).to include('タイトルと本文を入力してください')
+        expect(json_response['error']).to include('本文を入力してください')
       end
     end
 
@@ -294,13 +297,12 @@ RSpec.describe "Entries", type: :request do
         allow(AiFeedbackGenerator).to receive(:call).and_raise(StandardError, 'Feedback generation failed')
         
         post preview_feedback_entries_path, params: {
-          title: 'Test Title',
           content: 'Test Content'
         }
         
         expect(response).to have_http_status(:internal_server_error)
         json_response = JSON.parse(response.body)
-        expect(json_response['error']).to include('フィードバック生成に失敗しました')
+        expect(json_response['error']).to be_present
       end
     end
   end

@@ -25,8 +25,8 @@ RSpec.describe "【デモ】ブラウザで動作確認", type: :system, js: tru
       sleep 2
       
       # 3. 新規日記作成ページ
-      click_link "NEW POST"
-      expect(page).to have_content("新規投稿")
+      click_link "新規日記作成"
+      expect(page).to have_content("新規日記作成")
       save_screenshot('tmp/capybara/demo_3_new_entry.png')
       sleep 2
       

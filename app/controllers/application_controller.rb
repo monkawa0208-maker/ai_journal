@@ -1,10 +1,14 @@
 class ApplicationController < ActionController::Base
   include ErrorHandling
   
-  before_action :basic_auth, unless: :devise_controller?
+  before_action :basic_auth, unless: :devise_controller?, if: :require_basic_auth?
   before_action :configure_permitted_parameters, if: :devise_controller?
 
   private
+  def require_basic_auth?
+    Rails.env.production? && ENV["BASIC_AUTH_USER"].present? && ENV["BASIC_AUTH_PASSWORD"].present?
+  end
+
   def basic_auth
     authenticate_or_request_with_http_basic do |username, password|
       username == ENV["BASIC_AUTH_USER"] && password == ENV["BASIC_AUTH_PASSWORD"]

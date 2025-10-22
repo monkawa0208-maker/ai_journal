@@ -19,7 +19,7 @@ RSpec.describe "シンプルなナビゲーションテスト", type: :system do
       visit entries_path
       
       expect(page).to have_current_path(entries_path)
-      expect(page).to have_link("NEW POST")
+      expect(page).to have_link("新規日記作成")
     end
 
     it "単語帳ページにアクセスできること" do
@@ -35,7 +35,7 @@ RSpec.describe "シンプルなナビゲーションテスト", type: :system do
       visit new_entry_path
       
       expect(page).to have_current_path(new_entry_path)
-      expect(page).to have_content("新規投稿")
+      expect(page).to have_content("新規日記作成")
       
       # フォームに入力
       fill_in "entry_title", with: "My Test Entry"
