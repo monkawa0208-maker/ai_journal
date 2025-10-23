@@ -1,0 +1,44 @@
+services:
+  - type: web
+    name: ai_journal
+    runtime: ruby
+    buildCommand: "./bin/render-build.sh"
+    startCommand: "bundle exec puma -C config/puma.rb"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ai_journal_db
+          property: connectionString
+      - key: RAILS_MASTER_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: BASIC_AUTH_USER
+        sync: false
+      - key: BASIC_AUTH_PASSWORD
+        sync: false
+      # メモリ最適化のための環境変数設定
+      - key: WEB_CONCURRENCY
+        value: 2  # ワーカー数を2に制限（512MB-1GBインスタンス向け）
+      - key: RAILS_MAX_THREADS
+        value: 5  # スレッド数（デフォルト）
+      - key: RAILS_LOG_LEVEL
+        value: warn  # ログレベルを上げてI/Oを削減
+      - key: MALLOC_ARENA_MAX
+        value: 2  # メモリアロケーションを最適化
+      - key: RUBY_GC_HEAP_GROWTH_FACTOR
+        value: 1.1  # GCの積極性を調整
+      - key: RUBY_GC_MALLOC_LIMIT
+        value: 16000000  # メモリ制限を16MBに設定
+    plan: standard  # または starter/free プランに応じて調整
+
+databases:
+  - name: ai_journal_db
+    databaseName: ai_journal_production
+    user: ai_journal
+    plan: starter  # または free プランに応じて調整
+

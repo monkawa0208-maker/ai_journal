@@ -9,6 +9,7 @@ class Entry < ApplicationRecord
   validates :content, presence: true, length: { maximum: 10_000 }
   validates :posted_on, presence: true
   validate :unique_posted_on_per_user  # 1日1件ルール
+  validate :acceptable_image  # 画像サイズとフォーマットの検証
 
   validates :response, length: { maximum: 10_000 }, allow_nil: true
 
@@ -23,6 +24,22 @@ class Entry < ApplicationRecord
     existing_entry = user.entries.where(posted_on: posted_on).where.not(id: id).first
     if existing_entry
       errors.add(:base, 'すでにこの日の日記は作成済みです')
+    end
+  end
+
+  # 画像のバリデーション（メモリ使用量を抑えるため）
+  def acceptable_image
+    return unless image.attached?
+
+    # ファイルサイズの制限（10MB以下）
+    if image.byte_size > 10.megabytes
+      errors.add(:image, '画像ファイルは10MB以下にしてください')
+    end
+
+    # 許可する画像フォーマット
+    acceptable_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
+    unless acceptable_types.include?(image.content_type)
+      errors.add(:image, '画像はJPEG, PNG, GIF, WebP形式でアップロードしてください')
     end
   end
 
