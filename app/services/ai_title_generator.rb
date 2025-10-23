@@ -31,7 +31,7 @@ class AiTitleGenerator
     payload = {
       model: AiServiceConfig.default_model,
       messages: [
-        { role: 'system', content: 'あなたは日記のタイトル生成アシスタントです。簡潔で適切なタイトルを生成してください。' },
+        { role: 'system', content: 'あなたは日記のタイトル生成アシスタントです。90字以内で簡潔で適切なタイトルを英語で生成してください。' },
         { role: 'user', content: build_prompt }
       ],
       temperature: 0.7,
@@ -47,8 +47,8 @@ class AiTitleGenerator
     body = JSON.parse(response.body.to_s)
     title = body.dig('choices', 0, 'message', 'content') || ''
     
-    # タイトルをクリーンアップ（改行や余分な空白を削除、30文字制限）
-    title.strip.gsub(/\s+/, ' ').truncate(30, omission: '...')
+    # タイトルをクリーンアップ（改行や余分な空白を削除、90文字制限）
+    title.strip.gsub(/\s+/, ' ').truncate(90, omission: '...')
   end
 end
 

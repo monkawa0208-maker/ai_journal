@@ -92,7 +92,7 @@ export default class extends Controller {
     } catch (error) {
       ControllerUtils.showStatus(this.statusTarget, "❌ ネットワークエラーが発生しました", "error", "feedback-preview-status")
     } finally {
-      ControllerUtils.setLoadingState(this.buttonTarget, false, undefined, "🤖 AIフィードバックをもらう")
+      ControllerUtils.setLoadingState(this.buttonTarget, false, undefined, "AIからフィードバックをもらう")
     }
   }
 
