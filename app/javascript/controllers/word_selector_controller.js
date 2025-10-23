@@ -18,6 +18,9 @@ export default class extends Controller {
 
     // 単語選択可能エリアを取得してマウスオーバーイベントを追加
     this.setupWordHighlight()
+
+    // DOM変更を監視して動的コンテンツに対応
+    this.setupMutationObserver()
   }
 
   disconnect() {
@@ -33,6 +36,9 @@ export default class extends Controller {
         area.removeEventListener('touchend', this.boundHandleTouchEnd)
         area.removeEventListener('touchcancel', this.boundHandleTouchCancel)
       })
+    }
+    if (this.mutationObserver) {
+      this.mutationObserver.disconnect()
     }
   }
 
@@ -52,17 +58,7 @@ export default class extends Controller {
 
     // 各エリアに対して処理
     this.selectableAreas.forEach(area => {
-      // テキストコンテンツを単語ごとにspanでラップ
-      this.wrapWordsInSpans(area)
-
-      // イベントリスナーを追加（マウス）
-      area.addEventListener('mouseover', this.boundHandleMouseOver)
-      area.addEventListener('mouseout', this.boundHandleMouseOut)
-
-      // イベントリスナーを追加（タッチ）
-      area.addEventListener('touchstart', this.boundHandleTouchStart, { passive: true })
-      area.addEventListener('touchend', this.boundHandleTouchEnd)
-      area.addEventListener('touchcancel', this.boundHandleTouchCancel)
+      this.processNewSelectableArea(area)
     })
   }
 
@@ -99,6 +95,84 @@ export default class extends Controller {
     }
 
     walkNode(container)
+  }
+
+  setupMutationObserver() {
+    // MutationObserverを設定してDOM変更を監視
+    this.mutationObserver = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'childList') {
+          mutation.addedNodes.forEach((node) => {
+            if (node.nodeType === Node.ELEMENT_NODE) {
+              // 新しく追加された要素が単語選択可能エリアかチェック
+              if (node.classList && (
+                node.classList.contains('ai-feedback-content') ||
+                node.classList.contains('ai-translation-content') ||
+                node.classList.contains('word-selectable')
+              )) {
+                this.processNewSelectableArea(node)
+              }
+
+              // 子要素の中に単語選択可能エリアがあるかチェック
+              const selectableChildren = node.querySelectorAll('.ai-feedback-content, .ai-translation-content, .word-selectable')
+              selectableChildren.forEach(child => this.processNewSelectableArea(child))
+            }
+          })
+        } else if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+          // クラス名が変更された場合（ai-feedback-contentクラスが追加された場合）
+          const target = mutation.target
+          if (target.classList && target.classList.contains('ai-feedback-content')) {
+            this.processNewSelectableArea(target)
+          }
+        }
+      })
+    })
+
+    // コントローラーの要素全体を監視
+    this.mutationObserver.observe(this.element, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['class']
+    })
+  }
+
+  processNewSelectableArea(area) {
+    // 既に処理済みの場合はスキップ
+    if (area.dataset.wordSelectorProcessed === 'true') return
+
+    // テキストコンテンツを単語ごとにspanでラップ
+    this.wrapWordsInSpans(area)
+
+    // イベントリスナーを追加
+    if (this.boundHandleMouseOver) {
+      area.addEventListener('mouseover', this.boundHandleMouseOver)
+      area.addEventListener('mouseout', this.boundHandleMouseOut)
+    }
+
+    if (this.boundHandleTouchStart) {
+      area.addEventListener('touchstart', this.boundHandleTouchStart, { passive: true })
+      area.addEventListener('touchend', this.boundHandleTouchEnd)
+      area.addEventListener('touchcancel', this.boundHandleTouchCancel)
+    }
+
+    // 処理済みマークを付ける
+    area.dataset.wordSelectorProcessed = 'true'
+  }
+
+  // AIフィードバック完了後に呼び出される公開メソッド
+  refreshWordHighlight() {
+    // 既存の処理済みマークをリセット
+    const processedAreas = this.element.querySelectorAll('[data-word-selector-processed="true"]')
+    processedAreas.forEach(area => {
+      delete area.dataset.wordSelectorProcessed
+    })
+
+    // 現在の単語選択可能エリアを再処理
+    const currentAreas = this.element.querySelectorAll('.word-selectable, .ai-feedback-content, .ai-translation-content')
+    currentAreas.forEach(area => {
+      this.processNewSelectableArea(area)
+    })
   }
 
   handleMouseOver(event) {

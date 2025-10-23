@@ -26,6 +26,9 @@ export default class extends Controller {
         this.outputTarget.className = 'ai-feedback-content'
         // ボタンを除去
         button.remove()
+
+        // word_selector_controllerに通知して単語選択機能を更新
+        this.notifyWordSelector()
       })
       .catch((err) => {
         alert(err.message)
@@ -33,6 +36,24 @@ export default class extends Controller {
         button.textContent = originalText
         button.dataset.loading = 'false'
       })
+  }
+
+  notifyWordSelector() {
+    // 親要素からword-selectorコントローラーを探す
+    const wordSelectorElement = this.element.closest('[data-controller*="word-selector"]')
+    if (wordSelectorElement) {
+      // Stimulusのアプリケーションインスタンスを取得
+      const application = this.application
+      if (application) {
+        const wordSelectorController = application.getControllerForElementAndIdentifier(wordSelectorElement, 'word-selector')
+        if (wordSelectorController && wordSelectorController.refreshWordHighlight) {
+          // 少し遅延させてDOMの更新を確実にする
+          setTimeout(() => {
+            wordSelectorController.refreshWordHighlight()
+          }, 100)
+        }
+      }
+    }
   }
 }
 
