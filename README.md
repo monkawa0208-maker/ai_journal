@@ -267,57 +267,6 @@ rails server
 # ブラウザで http://localhost:3000 にアクセス
 ```
 
-## 本番環境（Render）でのデプロイ設定
-
-### メモリ最適化
-Renderの小さいインスタンス（512MB〜1GB）でも安定して動作するよう、以下のメモリ最適化を実施しています：
-
-#### 1. Puma設定の最適化
-- ワーカー数を2に制限（`WEB_CONCURRENCY=2`）
-- メモリリークを防ぐためのワーカー再起動機能
-
-#### 2. 画像処理の最適化
-- MiniMagickのメモリ制限（256MB）
-- 画像アップロードサイズ制限（10MB以下）
-- 画像バリアントのキャッシュ設定
-
-#### 3. Rails設定の最適化
-- ログレベルをwarnに設定してI/Oを削減
-- アセットキャッシュを64MBに制限
-- データベースコネクションプール数の最適化
-
-### 推奨環境変数（Renderダッシュボードで設定）
-
-#### 既存のデプロイを更新する場合
-Renderダッシュボードの「Environment」タブで、以下の環境変数を**追加**してください：
-
-```bash
-WEB_CONCURRENCY=2                # Pumaワーカー数（512MB〜1GB: 2, 2GB以上: 4）
-RAILS_MAX_THREADS=5              # スレッド数
-RAILS_LOG_LEVEL=warn             # ログレベル
-MALLOC_ARENA_MAX=2               # メモリアロケーション最適化
-RUBY_GC_HEAP_GROWTH_FACTOR=1.1   # GC調整
-RUBY_GC_MALLOC_LIMIT=16000000    # メモリ制限（16MB）
-```
-
-#### 新規デプロイの場合
-上記に加えて、以下の必須環境変数も設定してください：
-
-```bash
-OPENAI_API_KEY=your_openai_api_key
-AWS_ACCESS_KEY_ID=your_aws_access_key
-AWS_SECRET_ACCESS_KEY=your_aws_secret_key
-BASIC_AUTH_USER=your_username
-BASIC_AUTH_PASSWORD=your_password
-DATABASE_URL=（自動設定）
-RAILS_MASTER_KEY=（credentialsから取得）
-```
-
-### インスタンスタイプ別の推奨設定
-- **Starter/Free (512MB)**: `WEB_CONCURRENCY=1` または `2`
-- **Standard (1GB)**: `WEB_CONCURRENCY=2`
-- **Pro (2GB以上)**: `WEB_CONCURRENCY=4`
-
 ## 工夫したポイント
 
 ### 1. AI機能の実用性と信頼性

@@ -73,8 +73,7 @@ Rails.application.configure do
   # Info include generic and useful information about system operation, but avoids logging too much
   # information to avoid inadvertent exposure of personally identifiable information (PII). If you
   # want to log everything, set the level to "debug".
-  # メモリ制限のある環境ではログレベルを上げてI/Oを削減
-  config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "warn")
+  config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
 
   # Use a different cache store in production.
   # config.cache_store = :mem_cache_store
@@ -106,11 +105,4 @@ Rails.application.configure do
   # ]
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
-
-  # メモリ最適化設定
-  # データベースコネクションプール数を制限（デフォルトはRAILS_MAX_THREADSと同じ）
-  config.active_record.connection_pool_size = ENV.fetch("RAILS_MAX_THREADS") { 5 }.to_i
-  
-  # キャッシュストアの容量を制限してメモリ使用量を削減
-  config.cache_store = :memory_store, { size: 64.megabytes }
 end

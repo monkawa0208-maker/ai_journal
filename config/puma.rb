@@ -12,11 +12,9 @@ min_threads_count = ENV.fetch("RAILS_MIN_THREADS") { max_threads_count }
 threads min_threads_count, max_threads_count
 
 # Specifies that the worker count should equal the number of processors in production.
-# メモリ制限がある環境向けに最適化：ワーカー数を制限
 if ENV["RAILS_ENV"] == "production"
-  # WEB_CONCURRENCYが明示的に設定されていない場合は2に制限
-  # 小さいインスタンス（512MB〜1GB）ではワーカー数を減らすことでメモリ使用量を大幅に削減
-  worker_count = Integer(ENV.fetch("WEB_CONCURRENCY") { 2 })
+  require "concurrent-ruby"
+  worker_count = Integer(ENV.fetch("WEB_CONCURRENCY") { Concurrent.physical_processor_count })
   workers worker_count if worker_count > 1
 end
 
@@ -35,15 +33,3 @@ pidfile ENV.fetch("PIDFILE") { "tmp/pids/server.pid" }
 
 # Allow puma to be restarted by `bin/rails restart` command.
 plugin :tmp_restart
-
-# メモリ管理の最適化
-# ワーカープロセスを定期的に再起動してメモリリークを防ぐ
-on_worker_boot do
-  # ワーカーが起動する際に実行される処理
-  ActiveRecord::Base.establish_connection if defined?(ActiveRecord)
-end
-
-# ワーカーがシャットダウンする前に実行される処理
-before_fork do
-  ActiveRecord::Base.connection_pool.disconnect! if defined?(ActiveRecord)
-end
