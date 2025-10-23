@@ -55,7 +55,7 @@
                       <% begin %>
                         <div class="recent-entry-image">
                           <% if entry.image.variable? %>
-                            <%= image_tag entry.image.variant(resize_to_limit: [150, 150]),
+                            <%= image_tag entry.image.variant(resize_to_limit: [150, 150]).processed,
                                           alt: "#{entry.title.presence || '日記'}の画像",
                                           class: "recent-entry-thumbnail" %>
                           <% else %>
