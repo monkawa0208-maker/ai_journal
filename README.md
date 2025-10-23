@@ -141,8 +141,6 @@ erDiagram
         string nickname
         string email UK
         string encrypted_password
-        datetime created_at
-        datetime updated_at
     }
     
     entries {
@@ -154,8 +152,6 @@ erDiagram
         text ai_translate
         text response
         date posted_on
-        datetime created_at
-        datetime updated_at
     }
     
     vocabularies {
@@ -165,91 +161,31 @@ erDiagram
         text meaning
         boolean mastered
         boolean favorited
-        datetime created_at
-        datetime updated_at
     }
     
     entry_vocabularies {
         bigint id PK
         bigint entry_id FK
         bigint vocabulary_id FK
-        datetime created_at
-        datetime updated_at
     }
 ```
-
-### 主要テーブル
-
-#### users（ユーザー）
-| Column             | Type   | Options     |
-| ------------------ | ------ | ----------- |
-| nickname           | string | null: false |
-| email              | string | null: false, unique: true |
-| encrypted_password | string | null: false |
-
-**Association**
-- has_many :entries
-- has_many :vocabularies
-
-#### entries（日記）
-| Column       | Type       | Options     |
-| ------------ | ---------- | ----------- |
-| user_id      | references | null: false, foreign_key: true |
-| title        | string     | null: false |
-| content      | text       | null: false |
-| content_ja   | text       |             |
-| ai_translate | text       |             |
-| response     | text       |             |
-| posted_on    | date       | null: false |
-
-**Association**
-- belongs_to :user
-- has_many :entry_vocabularies
-- has_many :vocabularies, through: :entry_vocabularies
-- has_one_attached :image
-
-**Unique Index**: [user_id, posted_on]（1日1件制約）
-
-#### vocabularies（単語）
-| Column    | Type       | Options     |
-| --------- | ---------- | ----------- |
-| user_id   | references | null: false, foreign_key: true |
-| word      | string     | null: false |
-| meaning   | text       | null: false |
-| mastered  | boolean    | default: false, null: false |
-| favorited | boolean    | default: false, null: false |
-
-**Association**
-- belongs_to :user
-- has_many :entry_vocabularies
-- has_many :entries, through: :entry_vocabularies
-
-**Unique Index**: [user_id, word]（ユーザーごとに単語は一意）
-
-#### entry_vocabularies（日記と単語の中間テーブル）
-| Column        | Type       | Options     |
-| ------------- | ---------- | ----------- |
-| entry_id      | references | null: false, foreign_key: true |
-| vocabulary_id | references | null: false, foreign_key: true |
-
-**Association**
-- belongs_to :entry
-- belongs_to :vocabulary
 
 ## 画面遷移図
 
 ```
 トップページ
-  ├─ 新規登録 → 登録完了 → ホーム（日記一覧）
-  └─ ログイン → ホーム（日記一覧）
+  ├─ 新規登録 → 登録完了 → ホーム
+  └─ ログイン → ホーム
       ├─ 新規日記作成
-      │   ├─ AIプレビュー（モーダル）
+      │   ├─ 日本語下書き　→ AI翻訳
+      │   ├─ 英文に対してAIフィードバック
       │   └─ 保存 → 日記詳細
+      │       ├─ 単語ダブルクリック → 単語登録（モーダル）
+      │       ├─ 登録済み単語 → 単語編集画面
       │       ├─ 編集 → 編集ページ → 保存 → 日記詳細
-      │       ├─ 削除 → ホーム
-      │       └─ 単語ダブルクリック → 単語登録（モーダル）→ My Dictionary
+      │       └─ 削除 → ホーム
       ├─ カレンダービュー
-      │   └─ 日付クリック → 日記詳細
+      │   └─ 日記タイトル → 日記詳細
       └─ My Dictionary
           ├─ 単語一覧（全て/お気に入り/未習得でフィルター）
           ├─ フラッシュカード
@@ -267,6 +203,7 @@ erDiagram
 | MySQL | 8.0 | データベース（開発環境） |
 | PostgreSQL | - | データベース（本番環境） |
 | Puma | - | アプリケーションサーバー |
+| S3 | - | ストレージ |
 
 ### フロントエンド
 | 技術 | 用途 |
@@ -329,6 +266,57 @@ rails server
 
 # ブラウザで http://localhost:3000 にアクセス
 ```
+
+## 本番環境（Render）でのデプロイ設定
+
+### メモリ最適化
+Renderの小さいインスタンス（512MB〜1GB）でも安定して動作するよう、以下のメモリ最適化を実施しています：
+
+#### 1. Puma設定の最適化
+- ワーカー数を2に制限（`WEB_CONCURRENCY=2`）
+- メモリリークを防ぐためのワーカー再起動機能
+
+#### 2. 画像処理の最適化
+- MiniMagickのメモリ制限（256MB）
+- 画像アップロードサイズ制限（10MB以下）
+- 画像バリアントのキャッシュ設定
+
+#### 3. Rails設定の最適化
+- ログレベルをwarnに設定してI/Oを削減
+- アセットキャッシュを64MBに制限
+- データベースコネクションプール数の最適化
+
+### 推奨環境変数（Renderダッシュボードで設定）
+
+#### 既存のデプロイを更新する場合
+Renderダッシュボードの「Environment」タブで、以下の環境変数を**追加**してください：
+
+```bash
+WEB_CONCURRENCY=2                # Pumaワーカー数（512MB〜1GB: 2, 2GB以上: 4）
+RAILS_MAX_THREADS=5              # スレッド数
+RAILS_LOG_LEVEL=warn             # ログレベル
+MALLOC_ARENA_MAX=2               # メモリアロケーション最適化
+RUBY_GC_HEAP_GROWTH_FACTOR=1.1   # GC調整
+RUBY_GC_MALLOC_LIMIT=16000000    # メモリ制限（16MB）
+```
+
+#### 新規デプロイの場合
+上記に加えて、以下の必須環境変数も設定してください：
+
+```bash
+OPENAI_API_KEY=your_openai_api_key
+AWS_ACCESS_KEY_ID=your_aws_access_key
+AWS_SECRET_ACCESS_KEY=your_aws_secret_key
+BASIC_AUTH_USER=your_username
+BASIC_AUTH_PASSWORD=your_password
+DATABASE_URL=（自動設定）
+RAILS_MASTER_KEY=（credentialsから取得）
+```
+
+### インスタンスタイプ別の推奨設定
+- **Starter/Free (512MB)**: `WEB_CONCURRENCY=1` または `2`
+- **Standard (1GB)**: `WEB_CONCURRENCY=2`
+- **Pro (2GB以上)**: `WEB_CONCURRENCY=4`
 
 ## 工夫したポイント
 
@@ -427,3 +415,4 @@ rails server
 - Hotwire (Turbo + Stimulus) によるモダンなフロントエンド開発
 - OpenAI API の実践的な活用方法
 - FullCalender、Kaminariの導入方法
+- S3の導入方法

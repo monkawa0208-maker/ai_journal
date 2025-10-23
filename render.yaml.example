@@ -21,24 +21,20 @@ services:
         sync: false
       - key: BASIC_AUTH_PASSWORD
         sync: false
-      # メモリ最適化のための環境変数設定
       - key: WEB_CONCURRENCY
-        value: 2  # ワーカー数を2に制限（512MB-1GBインスタンス向け）
+        value: "2"
       - key: RAILS_MAX_THREADS
-        value: 5  # スレッド数（デフォルト）
+        value: "5"
       - key: RAILS_LOG_LEVEL
-        value: warn  # ログレベルを上げてI/Oを削減
+        value: "warn"
       - key: MALLOC_ARENA_MAX
-        value: 2  # メモリアロケーションを最適化
+        value: "2"
       - key: RUBY_GC_HEAP_GROWTH_FACTOR
-        value: 1.1  # GCの積極性を調整
+        value: "1.1"
       - key: RUBY_GC_MALLOC_LIMIT
-        value: 16000000  # メモリ制限を16MBに設定
-    plan: standard  # または starter/free プランに応じて調整
+        value: "16000000"
 
 databases:
   - name: ai_journal_db
     databaseName: ai_journal_production
     user: ai_journal
-    plan: starter  # または free プランに応じて調整
-

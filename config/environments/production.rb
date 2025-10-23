@@ -108,14 +108,9 @@ Rails.application.configure do
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 
   # メモリ最適化設定
-  # Active Recordのコネクションプール数を制限（デフォルトはRAILS_MAX_THREADSと同じ）
+  # データベースコネクションプール数を制限（デフォルトはRAILS_MAX_THREADSと同じ）
   config.active_record.connection_pool_size = ENV.fetch("RAILS_MAX_THREADS") { 5 }.to_i
   
-  # アセットのガベージコレクションを有効化
-  config.assets.configure do |env|
-    env.cache = ActiveSupport::Cache.lookup_store(:memory_store, { size: 32.megabytes })
-  end
-  
-  # ファイルキャッシュの容量を制限
+  # キャッシュストアの容量を制限してメモリ使用量を削減
   config.cache_store = :memory_store, { size: 64.megabytes }
 end

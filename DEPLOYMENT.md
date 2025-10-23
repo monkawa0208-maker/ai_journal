@@ -114,26 +114,37 @@ RUBY_GC_MALLOC_LIMIT=16000000    # GCトリガーメモリ量（16MB）
 
 ## Renderでの設定手順
 
-### 1. render.yamlを使用する場合
+### 推奨：手動設定（既存のデプロイを更新する場合）
 
-リポジトリのルートに`render.yaml`が用意されているので、Renderダッシュボードで「New > Blueprint」から選択してデプロイできます。
+既にRenderでデプロイ済みの場合は、手動で環境変数を追加するだけで済みます：
 
-### 2. 手動設定する場合
+1. **Renderダッシュボードにアクセス**
+   - あなたのWeb Serviceを選択
 
-1. **Web Serviceを作成**
-   - Environment: Ruby
-   - Build Command: `./bin/render-build.sh`
-   - Start Command: `bundle exec puma -C config/puma.rb`
+2. **環境変数を追加**
+   - 「Environment」タブをクリック
+   - 以下の環境変数を追加（既存の環境変数はそのまま）：
+   ```
+   WEB_CONCURRENCY=2
+   RAILS_MAX_THREADS=5
+   RAILS_LOG_LEVEL=warn
+   MALLOC_ARENA_MAX=2
+   RUBY_GC_HEAP_GROWTH_FACTOR=1.1
+   RUBY_GC_MALLOC_LIMIT=16000000
+   ```
 
-2. **環境変数を設定**
-   - Renderダッシュボードの「Environment」タブで上記の環境変数を設定
+3. **変更を保存して再デプロイ**
+   - 「Save Changes」をクリック
+   - 自動的に再デプロイが開始されます
 
-3. **データベースを接続**
-   - PostgreSQLデータベースを作成
-   - `DATABASE_URL`を自動設定
+### オプション：新規デプロイの場合（render.yaml使用）
 
-4. **インスタンスタイプを選択**
-   - 予算に応じて選択（推奨: Standard以上）
+新規にデプロイする場合は、`render.yaml.example`をコピーして使用できます：
+
+1. `render.yaml.example`を`render.yaml`にリネーム
+2. Renderダッシュボードで「New > Blueprint」を選択
+3. リポジトリを接続
+4. 必須環境変数を設定
 
 ## モニタリングとトラブルシューティング
 
